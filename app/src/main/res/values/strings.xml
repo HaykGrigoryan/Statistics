@@ -5,10 +5,10 @@
     <string name="error_default">An error has occurred. Please try again later.</string>
     <string name="ok">OK</string>
     <string name="please_wait">Please Wait…</string>
-    <string name="hint_username">Username</string>
-    <string name="hint_password">Password</string>
-    <string name="btn_text_login">Login</string>
-    <string name="statistics">Statistics</string>
+    <string name="hint_login">логин</string>
+    <string name="hint_password">пароль</string>
+    <string name="btn_text_login">войти</string>
+    <string name="authorization_system">Авторизация в системе</string>
     <string name="residents">Residents</string>
     <string name="apartments">Apartments</string>
     <string name="buildings">Buildings</string>
