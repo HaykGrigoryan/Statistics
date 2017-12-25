@@ -17,6 +17,8 @@ import com.constantlab.statistics.models.ApartmentType;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -27,13 +29,14 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * Created by Sunny Kinger on 19-12-2017.
+ * Created by Hayk on 26/12/2017.
  */
 
-public class EditApartmentFragment extends BaseFragment {
+public class ApartmentDetailsFragment extends BaseFragment {
 
     Integer buildingId;
     Integer apartmentId;
+    String apartmentName;
     @BindView(R.id.et_apartment)
     EditText etApartmentNumber;
     @BindView(R.id.et_total_rooms)
@@ -48,13 +51,15 @@ public class EditApartmentFragment extends BaseFragment {
 //    EditText etArea;
     @BindView(R.id.et_residents)
     EditText etResidents;
-    @BindView(R.id.tv_save)
-    TextView tvSave;
 
-    public static EditApartmentFragment newInstance(Integer apartmentId) {
-        EditApartmentFragment fragment = new EditApartmentFragment();
+    @BindView(R.id.title)
+    TextView mTitle;
+
+    public static ApartmentDetailsFragment newInstance(Integer apartmentId, String apartmentName) {
+        ApartmentDetailsFragment fragment = new ApartmentDetailsFragment();
         Bundle args = new Bundle();
         args.putInt(ConstKeys.TAG_APARTMENT, apartmentId);
+        args.putString(ConstKeys.TAG_APARTMENT_NAME, apartmentName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,16 +70,25 @@ public class EditApartmentFragment extends BaseFragment {
         if (getArguments() != null) {
             buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
             apartmentId = getArguments().getInt(ConstKeys.TAG_APARTMENT);
+            apartmentName = getArguments().getString(ConstKeys.TAG_APARTMENT_NAME);
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_apartment, container, false);
+        View view = inflater.inflate(R.layout.fragment_apartment_details, container, false);
         ButterKnife.bind(this, view);
         showStoredInformation();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (apartmentName != null) {
+            mTitle.setText(apartmentName);
+        }
     }
 
     private void showStoredInformation() {
@@ -124,8 +138,14 @@ public class EditApartmentFragment extends BaseFragment {
         etTotalRooms.setText(object.getTotalRooms() != null ? String.format(Locale.getDefault(), "%d", object.getTotalRooms()) : "");
     }
 
+    @OnClick(R.id.iv_back)
+    public void back() {
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
+    }
 
-    @OnClick(R.id.tv_save)
+    @OnClick(R.id.btn_save)
     public void save() {
         etApartmentNumber.setError(null);
 //        etArea.setError(null);
@@ -184,7 +204,6 @@ public class EditApartmentFragment extends BaseFragment {
             }
         }
 
-        getActivity().setResult(Activity.RESULT_OK);
-        getActivity().finish();
+        getActivity().onBackPressed();
     }
 }

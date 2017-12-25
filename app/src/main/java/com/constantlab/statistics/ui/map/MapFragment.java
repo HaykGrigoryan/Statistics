@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.ui.base.BaseFragment;
+import com.constantlab.statistics.utils.ConstKeys;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,8 +44,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 43;
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
+
     private static final int DEFAULT_ZOOM = 15;
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     @BindView(R.id.tv_select)
@@ -57,14 +57,35 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     private Double latitude;
     private Double longitude;
 
-    public static MapFragment newInstance() {
-        return new MapFragment();
+    MapAction mMapAction = MapAction.VIEW;
+
+    public static MapFragment newInstance(MapAction action, Double lat, Double lon) {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putInt(ConstKeys.KEY_MAP_ACTION, action.ordinal());
+        if (lat != null && lon != null) {
+            args.putDouble(ConstKeys.KEY_LATITUDE, lat);
+            args.putDouble(ConstKeys.KEY_LONGITUDE, lon);
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static MapFragment newInstance(MapAction action) {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putInt(ConstKeys.KEY_MAP_ACTION, action.ordinal());
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        if (getArguments() != null) {
+            mMapAction = MapAction.values()[getArguments().getInt(ConstKeys.TAG_TASK)];
+        }
     }
 
 
@@ -75,8 +96,8 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
         ButterKnife.bind(this, view);
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
-            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+            mLastKnownLocation = savedInstanceState.getParcelable(ConstKeys.KEY_LOCATION);
+            mCameraPosition = savedInstanceState.getParcelable(ConstKeys.KEY_CAMERA_POSITION);
         }
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -85,10 +106,18 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (mMapAction == MapAction.VIEW) {
+            tvSelect.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         if (mMap != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
-            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
+            outState.putParcelable(ConstKeys.KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(ConstKeys.KEY_LOCATION, mLastKnownLocation);
             super.onSaveInstanceState(outState);
         }
     }
@@ -215,9 +244,15 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
 
     @Override
     public void onMapClick(LatLng latLng) {
-        mMap.clear();
-        latitude = latLng.latitude;
-        longitude = latLng.longitude;
-        mMap.addMarker(new MarkerOptions().position(latLng));
+        if (mMapAction == MapAction.PICK_LOCATION) {
+            mMap.clear();
+            latitude = latLng.latitude;
+            longitude = latLng.longitude;
+            mMap.addMarker(new MarkerOptions().position(latLng));
+        }
+    }
+
+    public enum MapAction {
+        VIEW, PICK_LOCATION;
     }
 }

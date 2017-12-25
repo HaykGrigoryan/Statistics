@@ -22,6 +22,7 @@ import com.constantlab.statistics.ui.apartments.ApartmentActivity;
 import com.constantlab.statistics.ui.apartments.ApartmentFragment;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.Actions;
+import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.NotificationCenter;
 
 import java.util.List;
@@ -60,8 +61,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     public static BuildingsFragment newInstance(Integer taskId, String taskName) {
         BuildingsFragment fragment = new BuildingsFragment();
         Bundle args = new Bundle();
-        args.putInt(BuildingActivity.TASK_TAG, taskId);
-        args.putString(BuildingActivity.TASK_NAME_TAG, taskName);
+        args.putInt(ConstKeys.TAG_TASK, taskId);
+        args.putString(ConstKeys.TAG_TASK_NAME, taskName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,8 +71,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            taskId = getArguments().getInt(BuildingActivity.TASK_TAG);
-            taskName = getArguments().getString(BuildingActivity.TASK_NAME_TAG);
+            taskId = getArguments().getInt(ConstKeys.TAG_TASK);
+            taskName = getArguments().getString(ConstKeys.TAG_TASK_NAME);
         }
         mBuildingsAdapter = new BuildingsAdapter();
     }
@@ -133,10 +134,11 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     @Override
     public void onEditBuilding(Building building, int adapterPosition) {
-        Intent intent = new Intent(getContext(), BuildingActivity.class);
-        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.EDIT_BUILDING);
-        intent.putExtra(BuildingActivity.BUILDING_TAG, building.getId());
-        startActivityForResult(intent, REQUEST_EDIT_BUILDING);
+        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(building.getId(), building.getDisplayAddress(getContext())));
+//        Intent intent = new Intent(getContext(), BuildingActivity.class);
+//        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.EDIT_BUILDING);
+//        intent.putExtra(BuildingActivity.BUILDING_TAG, building.getId());
+//        startActivityForResult(intent, REQUEST_EDIT_BUILDING);
     }
 
     @Override
@@ -150,10 +152,11 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     @OnClick(R.id.iv_add)
     public void addBuilding() {
-        Intent intent = new Intent(getContext(), BuildingActivity.class);
-        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.ADD_BUILDING);
-        intent.putExtra(BuildingActivity.TASK_TAG, taskId);
-        startActivityForResult(intent, REQUEST_ADD_BUILDING);
+        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null));
+//        Intent intent = new Intent(getContext(), BuildingActivity.class);
+//        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.ADD_BUILDING);
+//        intent.putExtra(BuildingActivity.TASK_TAG, taskId);
+//        startActivityForResult(intent, REQUEST_ADD_BUILDING);
     }
 
     @OnClick(R.id.iv_back)
@@ -170,10 +173,10 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         if (requestCode == REQUEST_ADD_BUILDING && resultCode == Activity.RESULT_OK) {
             mBuildingsAdapter.clear();
             showDummyData();
-            Integer buildingId = data.getExtras().getInt(BuildingActivity.BUILDING_TAG);
+            Integer buildingId = data.getExtras().getInt(ConstKeys.TAG_BUILDING);
             Intent intent = new Intent(getContext(), ApartmentActivity.class);
-            intent.putExtra(ApartmentActivity.BUILDING_TAG, buildingId);
-            intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.VIEW_APARTMENTS);
+            intent.putExtra(ConstKeys.TAG_BUILDING, buildingId);
+            intent.putExtra(ConstKeys.TAG_ACTION, Actions.VIEW_APARTMENTS);
             startActivityForResult(intent, REQUEST_APARTMENTS);
             getActivity().setResult(Activity.RESULT_OK);
         } else if (requestCode == REQUEST_EDIT_BUILDING && resultCode == Activity.RESULT_OK) {

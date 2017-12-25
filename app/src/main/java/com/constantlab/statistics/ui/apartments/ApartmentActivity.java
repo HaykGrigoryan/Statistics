@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.ui.base.BaseActivity;
 import com.constantlab.statistics.utils.Actions;
+import com.constantlab.statistics.utils.ConstKeys;
 
 
 /**
@@ -13,11 +14,6 @@ import com.constantlab.statistics.utils.Actions;
  */
 
 public class ApartmentActivity extends BaseActivity {
-
-    public static final String BUILDING_TAG = "building_tag";
-    public static final String BUILDING_NAME_TAG = "building_name_tag";
-    public static final String APARTMENT_TAG = "apartment_tag";
-    public static final String ACTION_TAG = "action_tag";
 
     @Actions.Action
     int action;
@@ -38,15 +34,15 @@ public class ApartmentActivity extends BaseActivity {
         setContentView(R.layout.activity_with_fragment);
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
-            action = extra.getInt(ACTION_TAG);
+            action = extra.getInt(ConstKeys.TAG_ACTION);
             if (action == Actions.VIEW_APARTMENTS) {
-                Integer buildingId = extra.getInt(BUILDING_TAG);
+                Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
                 showFragment(ApartmentFragment.newInstance(buildingId, ""), false);
             } else if (action == Actions.ADD_APARTMENT) {
-                Integer buildingId = extra.getInt(BUILDING_TAG);
+                Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
                 showFragment(AddApartmentFragment.newInstance(buildingId), false);
             } else if (action == Actions.EDIT_APARTMENT) {
-                Integer apartmentId = extra.getInt(APARTMENT_TAG);
+                Integer apartmentId = extra.getInt(ConstKeys.TAG_APARTMENT);
                 showFragment(EditApartmentFragment.newInstance(apartmentId), false);
             }
         }

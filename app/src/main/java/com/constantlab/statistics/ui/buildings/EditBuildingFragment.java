@@ -23,6 +23,7 @@ import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.map.MapActivity;
+import com.constantlab.statistics.utils.ConstKeys;
 
 import java.util.List;
 import java.util.Locale;
@@ -80,7 +81,7 @@ public class EditBuildingFragment extends BaseFragment {
     public static EditBuildingFragment newInstance(Integer buildingId) {
         EditBuildingFragment fragment = new EditBuildingFragment();
         Bundle args = new Bundle();
-        args.putInt(BuildingActivity.BUILDING_TAG, buildingId);
+        args.putInt(ConstKeys.TAG_BUILDING, buildingId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,7 +90,7 @@ public class EditBuildingFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            buildingId = getArguments().getInt(BuildingActivity.BUILDING_TAG);
+            buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
         }
     }
 

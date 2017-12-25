@@ -16,6 +16,7 @@ import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.ApartmentType;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.ui.base.BaseFragment;
+import com.constantlab.statistics.utils.ConstKeys;
 
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class AddApartmentFragment extends BaseFragment {
     public static AddApartmentFragment newInstance(Integer buildingId) {
         AddApartmentFragment fragment = new AddApartmentFragment();
         Bundle args = new Bundle();
-        args.putInt(ApartmentActivity.BUILDING_TAG, buildingId);
+        args.putInt(ConstKeys.TAG_BUILDING, buildingId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,7 +65,7 @@ public class AddApartmentFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            buildingId = getArguments().getInt(ApartmentActivity.BUILDING_TAG);
+            buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
         }
     }
 

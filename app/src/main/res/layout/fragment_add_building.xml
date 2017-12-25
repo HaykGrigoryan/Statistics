@@ -45,7 +45,7 @@
                 android:fontFamily="@font/opensanslight"
                 android:padding="8dp"
                 android:text="@string/label_street_type"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentSecondary" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -88,7 +88,7 @@
                 android:fontFamily="@font/opensanslight"
                 android:padding="8dp"
                 android:text="@string/label_building_type"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentSecondary" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -113,7 +113,7 @@
                 android:fontFamily="@font/opensanslight"
                 android:padding="8dp"
                 android:text="@string/label_building_status"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccentSecondary" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -163,7 +163,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="#3d51b2"
+                    android:background="@color/colorPrimary"
                     android:drawablePadding="8dp"
                     android:paddingEnd="32dp"
                     android:paddingStart="32dp"
@@ -175,8 +175,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|right"
-                    android:text="@string/tv_hav_a_mark"
-                    android:textColor="#3d51b2" />
+                    android:text="@string/label_have_mark"
+                    android:textColor="@color/colorPrimary" />
 
             </LinearLayout>
 
@@ -233,101 +233,187 @@
             </android.support.design.widget.TextInputLayout>
 
 
-<LinearLayout
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:visibility="gone"
-    android:orientation="vertical">
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+<!--<LinearLayout-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:visibility="gone"-->
+    <!--android:orientation="vertical">-->
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                <EditText
-                    android:id="@+id/et_territory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:hint="@string/hint_territory"
-                    android:inputType="textNoSuggestions"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
+                <!--<EditText-->
+                    <!--android:id="@+id/et_territory"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:layout_marginStart="16dp"-->
+                    <!--android:fontFamily="@font/opensansregular"-->
+                    <!--android:hint="@string/hint_territory"-->
+                    <!--android:inputType="textNoSuggestions"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="14sp" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                <EditText
-                    android:id="@+id/et_total_flats"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:hint="@string/hint_total_flats"
-                    android:inputType="numberSigned"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
+                <!--<EditText-->
+                    <!--android:id="@+id/et_total_flats"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:layout_marginStart="16dp"-->
+                    <!--android:fontFamily="@font/opensansregular"-->
+                    <!--android:hint="@string/hint_total_flats"-->
+                    <!--android:inputType="numberSigned"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="14sp" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                <EditText
-                    android:id="@+id/et_area"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:hint="@string/hint_area"
-                    android:inputType="numberDecimal"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
+                <!--<EditText-->
+                    <!--android:id="@+id/et_area"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:layout_marginStart="16dp"-->
+                    <!--android:fontFamily="@font/opensansregular"-->
+                    <!--android:hint="@string/hint_area"-->
+                    <!--android:inputType="numberDecimal"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="14sp" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                <EditText
-                    android:id="@+id/et_floors"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:hint="@string/hint_floors"
-                    android:inputType="numberDecimal"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
+                <!--<EditText-->
+                    <!--android:id="@+id/et_floors"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:layout_marginStart="16dp"-->
+                    <!--android:fontFamily="@font/opensansregular"-->
+                    <!--android:hint="@string/hint_floors"-->
+                    <!--android:inputType="numberDecimal"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="14sp" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
+
+            <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_gravity="center_horizontal"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:fontFamily="@font/opensanslight"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:padding="8dp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/label_house_wall"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:textColor="@color/colorAccent" />&ndash;&gt;-->
+
+            <!--&lt;!&ndash;<FrameLayout&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_marginEnd="16dp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_marginStart="16dp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:background="@drawable/spinner_bg">&ndash;&gt;-->
+
+            <!--&lt;!&ndash;<android.support.v7.widget.AppCompatSpinner&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/sp_house_wall"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:entries="@array/demo_list"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:padding="16dp" />&ndash;&gt;-->
+
+            <!--&lt;!&ndash;</FrameLayout>&ndash;&gt;-->
+
+
+
+
+
+
+
 
             <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:fontFamily="@font/opensanslight"-->
-            <!--android:padding="8dp"-->
-            <!--android:text="@string/label_house_wall"-->
-            <!--android:textColor="@color/colorAccent" />-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:layout_marginTop="16dp"-->
+                <!--android:fontFamily="@font/opensansbold"-->
+                <!--android:padding="8dp"-->
+                <!--android:text="@string/hint_address"-->
+                <!--android:textAllCaps="true"-->
+                <!--android:textColor="@color/text_primary" />-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/et_full_address"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginEnd="16dp"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:fontFamily="@font/opensansregular"-->
+                <!--android:hint="@string/hint_full_address"-->
+                <!--android:inputType="textPostalAddress"-->
+                <!--android:padding="16dp"-->
+                <!--android:textSize="14sp" />-->
+
+
+
+
+
+
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:fontFamily="@font/opensanslight"-->
+                <!--android:padding="8dp"-->
+                <!--android:text="@string/label_region"-->
+                <!--android:textColor="@color/colorAccent" />-->
 
             <!--<FrameLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="16dp"-->
-            <!--android:layout_marginStart="16dp"-->
-            <!--android:background="@drawable/spinner_bg">-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginEnd="16dp"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:background="@drawable/spinner_bg">-->
 
-            <!--<android.support.v7.widget.AppCompatSpinner-->
-            <!--android:id="@+id/sp_house_wall"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:entries="@array/demo_list"-->
-            <!--android:padding="16dp" />-->
+                <!--<android.support.v7.widget.AppCompatSpinner-->
+                    <!--android:id="@+id/sp_region"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:entries="@array/demo_list"-->
+                    <!--android:padding="16dp" />-->
+
+            <!--</FrameLayout>-->
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:fontFamily="@font/opensanslight"-->
+                <!--android:padding="8dp"-->
+                <!--android:text="@string/label_street"-->
+                <!--android:textColor="@color/colorAccent" />-->
+
+            <!--<FrameLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginEnd="16dp"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:background="@drawable/spinner_bg">-->
+
+                <!--<android.support.v7.widget.AppCompatSpinner-->
+                    <!--android:id="@+id/sp_street"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:entries="@array/demo_list"-->
+                    <!--android:padding="16dp" />-->
 
             <!--</FrameLayout>-->
 
@@ -338,143 +424,57 @@
 
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/opensansbold"
-                android:padding="8dp"
-                android:text="@string/hint_address"
-                android:textAllCaps="true"
-                android:textColor="@color/text_primary" />
-
-            <EditText
-                android:id="@+id/et_full_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/opensansregular"
-                android:hint="@string/hint_full_address"
-                android:inputType="textPostalAddress"
-                android:padding="16dp"
-                android:textSize="14sp" />
 
 
 
 
 
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:layout_marginTop="16dp"-->
+                <!--android:fontFamily="@font/opensansbold"-->
+                <!--android:padding="8dp"-->
+                <!--android:text="@string/label_location"-->
+                <!--android:textAllCaps="true"-->
+                <!--android:textColor="@color/text_primary" />-->
 
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/opensanslight"
-                android:padding="8dp"
-                android:text="@string/label_region"
-                android:textColor="@color/colorAccent" />
+                <!--<EditText-->
+                    <!--android:id="@+id/et_latitude"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:layout_marginStart="16dp"-->
+                    <!--android:enabled="false"-->
+                    <!--android:fontFamily="@font/opensansregular"-->
+                    <!--android:hint="@string/hint_latitude"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="14sp" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:background="@drawable/spinner_bg">
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                <android.support.v7.widget.AppCompatSpinner
-                    android:id="@+id/sp_region"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/demo_list"
-                    android:padding="16dp" />
+                <!--<EditText-->
+                    <!--android:id="@+id/et_longitude"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:layout_marginStart="16dp"-->
+                    <!--android:enabled="false"-->
+                    <!--android:fontFamily="@font/opensansregular"-->
+                    <!--android:hint="@string/hint_longitude"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="14sp" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
 
-            </FrameLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/opensanslight"
-                android:padding="8dp"
-                android:text="@string/label_street"
-                android:textColor="@color/colorAccent" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:background="@drawable/spinner_bg">
-
-                <android.support.v7.widget.AppCompatSpinner
-                    android:id="@+id/sp_street"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/demo_list"
-                    android:padding="16dp" />
-
-            </FrameLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/opensansbold"
-                android:padding="8dp"
-                android:text="@string/label_location"
-                android:textAllCaps="true"
-                android:textColor="@color/text_primary" />
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/et_latitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:enabled="false"
-                    android:fontFamily="@font/opensansregular"
-                    android:hint="@string/hint_latitude"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/et_longitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:enabled="false"
-                    android:fontFamily="@font/opensansregular"
-                    android:hint="@string/hint_longitude"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
-
-</LinearLayout>
+<!--</LinearLayout>-->
 
 
             <Button
@@ -486,12 +486,10 @@
                 android:layout_marginBottom="16dp"
                 android:paddingStart="32dp"
                 android:paddingEnd="32dp"
-                android:textAllCaps="false"
                 android:background="#3d51b2"
                 android:textColor="#f7f7fb"
                 android:text="Сохранить"
                 android:layout_marginTop="32dp"
-                android:visibility="gone"
                 tools:visibility="visible" />
 
 

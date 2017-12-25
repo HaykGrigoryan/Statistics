@@ -69,7 +69,7 @@ public class MainActivity extends BaseActivity implements INavigation {
                     hideTaskContainer();
                     break;
                 case R.id.tab_map:
-                    showFragment(MapFragment.newInstance(), false);
+                    showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
                     hideTaskContainer();
                     break;
             }

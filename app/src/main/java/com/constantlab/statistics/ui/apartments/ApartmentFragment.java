@@ -19,6 +19,8 @@ import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.Actions;
+import com.constantlab.statistics.utils.ConstKeys;
+import com.constantlab.statistics.utils.NotificationCenter;
 
 import java.util.List;
 
@@ -55,8 +57,8 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     public static ApartmentFragment newInstance(Integer buildingId, String buildingName) {
         ApartmentFragment fragment = new ApartmentFragment();
         Bundle args = new Bundle();
-        args.putInt(ApartmentActivity.BUILDING_TAG, buildingId);
-        args.putString(ApartmentActivity.BUILDING_NAME_TAG, buildingName);
+        args.putInt(ConstKeys.TAG_BUILDING, buildingId);
+        args.putString(ConstKeys.TAG_BUILDING_NAME, buildingName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,8 +67,8 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            buildingId = getArguments().getInt(ApartmentActivity.BUILDING_TAG);
-            buildingName = getArguments().getString(ApartmentActivity.BUILDING_NAME_TAG);
+            buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
+            buildingName = getArguments().getString(ConstKeys.TAG_BUILDING_NAME);
         }
         mApartmentAdapter = new ApartmentAdapter();
     }
@@ -129,10 +131,11 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
 
     @OnClick(R.id.iv_add)
     public void addApartment() {
-        Intent intent = new Intent(getContext(), ApartmentActivity.class);
-        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.ADD_APARTMENT);
-        intent.putExtra(ApartmentActivity.BUILDING_TAG, buildingId);
-        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
+        NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(-1, null));
+//        Intent intent = new Intent(getContext(), ApartmentActivity.class);
+//        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.ADD_APARTMENT);
+//        intent.putExtra(ApartmentActivity.BUILDING_TAG, buildingId);
+//        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
     }
 
     @OnClick(R.id.iv_back)
@@ -144,10 +147,11 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
 
     @Override
     public void onEditApartment(Apartment apartment, int adapterPosition) {
-        Intent intent = new Intent(getContext(), ApartmentActivity.class);
-        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.EDIT_APARTMENT);
-        intent.putExtra(ApartmentActivity.APARTMENT_TAG, apartment.getId());
-        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
+        NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(apartment.getId(), apartment.getDisplayName(getContext())));
+//        Intent intent = new Intent(getContext(), ApartmentActivity.class);
+//        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.EDIT_APARTMENT);
+//        intent.putExtra(ApartmentActivity.APARTMENT_TAG, apartment.getId());
+//        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
     }
 
     @Override

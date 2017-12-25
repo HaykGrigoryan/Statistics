@@ -19,7 +19,7 @@
     <string name="tab_map">Карта</string>
     <string name="title_buildings">Buildings</string>
     <string name="edit">Edit</string>
-    <string name="title_add_building">Add Building</string>
+    <string name="title_add_building">Добавить здание</string>
     <string name="hint_building_number">Номер дома</string>
     <string name="hint_total_flats">Total Flats</string>
     <string name="hint_area">Area Size</string>
@@ -29,7 +29,7 @@
     <string name="label_street">Улица</string>
     <string name="label_street_type">Тип улицы</string>
     <string name="label_region">Регион</string>
-    <string name="save">Save</string>
+    <string name="save">Сохранить</string>
     <string name="label_location">Location</string>
     <string name="hint_latitude">Latitude</string>
     <string name="hint_longitude">Longitude</string>
@@ -47,11 +47,12 @@
     <string name="label_area">Area</string>
     <string name="message_no_apartments">Нет Квартир в этом Здании</string>
     <string name="message_no_buildings">Нет Зданий</string>
-    <string name="title_add_apartment">Add Apartment</string>
+    <string name="title_add_apartment">Добавить квартиру</string>
     <string name="hint_apartment_number">Номер квартиры</string>
     <string name="hint_total_rooms">Total Rooms</string>
     <string name="hint_total_residents">Количество проживаюших</string>
     <string name="label_apartment_type">Тип Апартамента</string>
+    <string name="label_object_type">Тип объекта</string>
     <string name="hint_owner_name_surname_etc">Владелец (ФИО или организация)</string>
     <string name="hint_owner_organization">Owner/organization</string>
     <string name="hint_owner_or_organization_owner">ФИО или организация кому принадлежит</string>
@@ -64,7 +65,8 @@
     <string name="btn_title_next">Next</string>
     <string name="btn_text_save">Сохранить</string>
     <string name="hint_name_of_street">Название улицы, проспекта, переулка</string>
-    <string name="tv_hav_a_mark">есть отментка</string>
+    <string name="label_have_mark">Отмечено на карте</string>
+    <string name="label_not_have_mark">Не отмечено на карте</string>
     <string name="hint_count_of_lives_study_etc">Число проживающих учашихся в школах интернатах, число мест в больницах, санаториях, гостиницах, домах отдыха, и т.п.</string>
 
 

@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.ui.base.BaseActivity;
+import com.constantlab.statistics.utils.ConstKeys;
 
 /**
  * Created by Sunny Kinger on 11-12-2017.
@@ -29,6 +30,15 @@ public class MapActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_fragment);
-        showFragment(MapFragment.newInstance(), false);
+        if (getIntent() != null) {
+            MapFragment.MapAction action = MapFragment.MapAction.values()[getIntent().getIntExtra(ConstKeys.KEY_MAP_ACTION, 0)];
+            Double lat = getIntent().getDoubleExtra(ConstKeys.KEY_LATITUDE, Double.NaN);
+            Double lon = getIntent().getDoubleExtra(ConstKeys.KEY_LONGITUDE, Double.NaN);
+            showFragment(MapFragment.newInstance(action, lat, lon), false);
+        } else {
+            showFragment(MapFragment.newInstance(MapFragment.MapAction.PICK_LOCATION), false);
+        }
+
+
     }
 }

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.ui.base.BaseActivity;
 import com.constantlab.statistics.utils.Actions;
+import com.constantlab.statistics.utils.ConstKeys;
 
 
 /**
@@ -13,10 +14,6 @@ import com.constantlab.statistics.utils.Actions;
  */
 
 public class BuildingActivity extends BaseActivity {
-    public static final String TASK_TAG = "tasktag";
-    public static final String TASK_NAME_TAG = "tasknametag";
-    public static final String BUILDING_TAG = "building_tag";
-    public static final String ACTION_TAG = "action_tag";
 
     @Actions.Action
     int action;
@@ -37,15 +34,15 @@ public class BuildingActivity extends BaseActivity {
         setContentView(R.layout.activity_with_fragment);
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
-            action = extra.getInt(ACTION_TAG);
+            action = extra.getInt(ConstKeys.TAG_ACTION);
             if (action == Actions.VIEW_BUILDINGS) {
-                Integer taskId = extra.getInt(TASK_TAG);
+                Integer taskId = extra.getInt(ConstKeys.TAG_TASK);
                 showFragment(BuildingsFragment.newInstance(taskId, "Task"), false);
             } else if (action == Actions.ADD_BUILDING) {
-                Integer taskId = extra.getInt(TASK_TAG);
+                Integer taskId = extra.getInt(ConstKeys.TAG_TASK);
                 showFragment(AddBuildingFragment.newInstance(taskId), false);
             } else if (action == Actions.EDIT_BUILDING) {
-                Integer buildingId = extra.getInt(BUILDING_TAG);
+                Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
                 showFragment(EditBuildingFragment.newInstance(buildingId), false);
             }
         }

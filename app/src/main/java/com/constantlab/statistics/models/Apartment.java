@@ -1,5 +1,9 @@
 package com.constantlab.statistics.models;
 
+import android.content.Context;
+
+import com.constantlab.statistics.R;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -74,6 +78,9 @@ public class Apartment extends RealmObject {
         this.totalInhabitants = totalInhabitants;
     }
 
+    public String getDisplayName(Context context) {
+        return context.getString(R.string.label_apt_no) + " " + getApartmentNumber();
+    }
 //    public Integer getAreaSquare() {
 //        return areaSquare;
 //    }
