@@ -8,8 +8,8 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="1dp"
+        app:cardElevation="@dimen/card_elevation"
         app:cardUseCompatPadding="true">
 
         <RelativeLayout
@@ -22,10 +22,10 @@
                 android:id="@+id/layout_apt_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp">
+                android:paddingBottom="@dimen/padding_medium"
+                android:paddingEnd="@dimen/padding_large"
+                android:paddingStart="@dimen/padding_large"
+                android:paddingTop="@dimen/padding_medium">
 
                 <TextView
                     android:id="@+id/tv_apartment_no_label"
@@ -36,7 +36,7 @@
                     android:gravity="center_vertical"
                     android:text="@string/label_apt_no"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_medium_large" />
 
                 <TextView
                     android:id="@+id/tv_apartment_no"
@@ -52,7 +52,7 @@
                     android:paddingStart="8dp"
                     android:text="102"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_medium_large" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/btn_edit"
@@ -94,10 +94,11 @@
                 android:layout_below="@id/layout_apt_name"
                 android:fontFamily="@font/opensansregular"
 
-                android:paddingBottom="16dp"
-                android:paddingEnd="32dp"
-                android:paddingStart="16dp"
+                android:paddingBottom="@dimen/padding_large"
+                android:paddingEnd="@dimen/padding_ex_large"
+                android:paddingStart="@dimen/padding_large"
                 android:text="@string/label_residents"
+                android:textSize="@dimen/text_ex_small"
                 android:textColor="@color/text_gray_1" />
 
 
@@ -109,6 +110,7 @@
                 android:layout_toEndOf="@id/tv_residents_label"
                 android:fontFamily="@font/opensansbold"
                 android:textColor="@color/text_gray_1"
+                android:textSize="@dimen/text_ex_small"
                 tools:text="120" />
 
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--fragment_login.xml-->
+    <dimen name="tv_authorization_system_padding">30dp</dimen>
+    <dimen name="tv_authorization_system_padding_medium">22dp</dimen>
+    <dimen name="tv_authorization_system_padding_small">15dp</dimen>
+    <dimen name="tv_authorization_system_margin_bottom">9.3dp</dimen>
+    <dimen name="tv_authorization_system_text_size">45sp</dimen>
+    <dimen name="et_login_pass_linear_layout">90dp</dimen>
+    <dimen name="et_login_password_margin_End">30dp</dimen>
+    <dimen name="et_login_password_margin_Start">30dp</dimen>
+    <dimen name="et_login_password_padding">30dp</dimen>
+    <dimen name="et_login_password_text_size">26sp</dimen>
+    <dimen name="btn_margin">30dp</dimen>
+    <dimen name="btn_text_size">30sp</dimen>
+    <!--fragment_login.xml-->
+
+    <!--activity_main.xml-->
+    <dimen name="bottomBar_height">120dp</dimen>
+    <dimen name="botomBar_img_size">64dp</dimen>
+    <!--activity_main.xml-->
+
+    <dimen name="toolbar_title">36sp</dimen>
+    <dimen name="card_elevation">8dp</dimen>
+    <dimen name="padding_small">9dp</dimen>
+    <dimen name="padding_medium">18dp</dimen>
+    <dimen name="padding_large">26dp</dimen>
+    <dimen name="padding_ex_large">64dp</dimen>
+
+    <dimen name="nav_bar_icon">48dp</dimen>
+    <dimen name="text_ex_small">24sp</dimen>
+    <dimen name="text_small">28sp</dimen>
+    <dimen name="text_medium">32sp</dimen>
+    <dimen name="text_medium_large">40sp</dimen>
+    <dimen name="text_large">48sp</dimen>
+
+    <dimen name="margin_medium">30dp</dimen>
+
+</resources>

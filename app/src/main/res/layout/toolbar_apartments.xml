@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_large"
     android:background="@color/colorPrimaryDark">
 
     <android.support.v7.widget.AppCompatImageView
@@ -10,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
-        android:padding="16dp"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_arrow_back" />
 
@@ -20,18 +20,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:fontFamily="@font/opensansregular"
-        android:padding="16dp"
         android:text="@string/title_apartments"
         android:textAlignment="center"
         android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:textSize="@dimen/toolbar_title"  />
 
     <ImageView
         android:id="@+id/iv_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
-        android:padding="16dp"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_add" />
 

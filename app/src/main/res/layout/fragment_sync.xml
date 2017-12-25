@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="@dimen/padding_large">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -31,21 +31,21 @@
                     android:fontFamily="@font/opensansbold"
                     android:text="@string/label_sync_from_server"
                     android:textColor="@color/text_gray_1"
-                    android:textSize="21dp" />
+                    android:textSize="@dimen/text_medium_large" />
 
                 <Button
                     android:id="@+id/btn_sync_with_server"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="25dp"
-                    android:paddingRight="25dp"
-                    android:paddingTop="5dp"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:paddingBottom="@dimen/padding_medium"
+                    android:paddingLeft="@dimen/padding_ex_large"
+                    android:paddingRight="@dimen/padding_ex_large"
+                    android:paddingTop="@dimen/padding_medium"
                     android:text="@string/label_get_task"
                     android:textAllCaps="false"
-                    android:textSize="16dp" />
+                    android:textSize="@dimen/text_medium" />
 
                 <TextView
                     android:id="@+id/last_sync_from_server"
@@ -54,7 +54,7 @@
                     android:fontFamily="@font/opensansbold"
                     android:text="@string/label_last_sync"
                     android:textColor="@color/text_gray_2"
-                    android:textSize="13dp" />
+                    android:textSize="@dimen/text_ex_small" />
 
             </LinearLayout>
 
@@ -71,21 +71,21 @@
                     android:fontFamily="@font/opensansbold"
                     android:text="@string/label_sync_to_server"
                     android:textColor="@color/text_gray_1"
-                    android:textSize="21dp" />
+                    android:textSize="@dimen/text_medium_large"/>
 
                 <Button
                     android:id="@+id/btn_sync_to_server"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="25dp"
-                    android:paddingRight="25dp"
-                    android:paddingTop="5dp"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:paddingBottom="@dimen/padding_medium"
+                    android:paddingLeft="@dimen/padding_ex_large"
+                    android:paddingRight="@dimen/padding_ex_large"
+                    android:paddingTop="@dimen/padding_medium"
                     android:text="@string/label_send"
                     android:textAllCaps="false"
-                    android:textSize="16dp" />
+                    android:textSize="@dimen/text_medium" />
 
                 <TextView
                     android:id="@+id/last_sync_to_server"
@@ -94,7 +94,7 @@
                     android:fontFamily="@font/opensansbold"
                     android:text="@string/label_last_sync"
                     android:textColor="@color/text_gray_2"
-                    android:textSize="13dp" />
+                    android:textSize="@dimen/text_ex_small" />
 
             </LinearLayout>
 

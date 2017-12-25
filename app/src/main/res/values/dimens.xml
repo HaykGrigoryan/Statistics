@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--fragment_login.xml-->
+    <dimen name="tv_authorization_system_padding">16dp</dimen>
+    <dimen name="tv_authorization_system_padding_medium">12dp</dimen>
+    <dimen name="tv_authorization_system_padding_small">8dp</dimen>
+    <dimen name="tv_authorization_system_margin_bottom">5dp</dimen>
+    <dimen name="tv_authorization_system_text_size">24sp</dimen>
+    <dimen name="et_login_pass_linear_layout">48dp</dimen>
+    <dimen name="et_login_password_margin_End">16dp</dimen>
+    <dimen name="et_login_password_margin_Start">16dp</dimen>
+    <dimen name="et_login_password_padding">16dp</dimen>
+    <dimen name="et_login_password_text_size">14sp</dimen>
+    <dimen name="btn_margin">16dp</dimen>
+    <dimen name="btn_text_size">18sp</dimen>
+<!--fragment_login.xml-->
+
+<!--activity_main.xml-->
+    <dimen name="bottomBar_height">60dp</dimen>
+    <dimen name="botomBar_img_size">24dp</dimen>
+<!--activity_main.xml-->
+
+    <dimen name="toolbar_title">18sp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_medium">10dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_ex_large">32dp</dimen>
+
+    <dimen name="nav_bar_icon">24dp</dimen>
+
+    <dimen name="text_ex_small">11sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_medium">18sp</dimen>
+    <dimen name="text_medium_large">20sp</dimen>
+    <dimen name="text_large">24sp</dimen>
+
+    <dimen name="margin_medium">15dp</dimen>
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+    <!--<dimen name=""></dimen>-->
+
+
+</resources>

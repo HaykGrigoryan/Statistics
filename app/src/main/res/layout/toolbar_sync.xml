@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
+    android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark">
 
     <TextView
@@ -9,9 +9,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:fontFamily="@font/opensansregular"
-        android:padding="16dp"
+        android:padding="@dimen/padding_large"
         android:text="@string/title_sync"
         android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:textSize="@dimen/toolbar_title" />
 
 </FrameLayout>
