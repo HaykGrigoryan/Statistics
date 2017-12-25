@@ -3,6 +3,7 @@ package com.constantlab.statistics.ui.customviews;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -21,8 +22,8 @@ import java.util.Locale;
 public class ApartmentView extends RelativeLayout {
     private static final String FORMAT = "%d";
     private static final String ZERO = "0";
-    TextView tvApartmentNumber, tvTotalRooms, tvResidents;
-    Button btnEdit;
+    TextView tvApartmentNumber, tvResidents; //, tvTotalRooms
+    AppCompatImageView btnEdit;
 
     public ApartmentView(Context context) {
         super(context);
@@ -48,7 +49,7 @@ public class ApartmentView extends RelativeLayout {
     private void init() {
         inflate(getContext(), R.layout.view_apartment, this);
         tvApartmentNumber = findViewById(R.id.tv_apartment_no);
-        tvTotalRooms = findViewById(R.id.tv_total_rooms);
+//        tvTotalRooms = findViewById(R.id.tv_total_rooms);
         tvResidents = findViewById(R.id.tv_total_residents);
 //        tvArea = findViewById(R.id.tv_area);
         btnEdit = findViewById(R.id.btn_edit);
@@ -57,7 +58,7 @@ public class ApartmentView extends RelativeLayout {
     public void setData(Apartment apartment) {
         tvApartmentNumber.setText(apartment.getApartmentNumber());
 //        tvArea.setText(String.format(Locale.getDefault(), FORMAT, apartment.getAreaSquare()));
-        tvTotalRooms.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalRooms()));
+//        tvTotalRooms.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalRooms()));
         if (apartment.getTotalInhabitants() != null)
             tvResidents.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalInhabitants()));
         else

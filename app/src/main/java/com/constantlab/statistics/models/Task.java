@@ -1,5 +1,7 @@
 package com.constantlab.statistics.models;
 
+import java.io.Serializable;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -8,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by Sunny Kinger on 04-12-2017.
  */
 
-public class Task extends RealmObject {
+public class Task extends RealmObject implements Serializable {
     @PrimaryKey
     private Integer id;
     private String taskName;

@@ -9,8 +9,8 @@
     <string name="hint_password">пароль</string>
     <string name="btn_text_login">войти</string>
     <string name="authorization_system">Авторизация в системе</string>
-    <string name="residents">Residents</string>
-    <string name="apartments">Apartments</string>
+    <string name="label_residents">Проживающих:</string>
+    <string name="label_apartments">Квартир:</string>
     <string name="buildings">Buildings</string>
     <string name="title_tasks">Задания</string>
     <string name="title_sync">Синхронизация</string>
@@ -35,7 +35,8 @@
     <string name="hint_longitude">Longitude</string>
     <string name="select_from_map">Отметить на карте</string>
     <string name="location">Location</string>
-    <string name="select">Select</string>
+    <string name="label_map">Карта</string>
+    <string name="label_select">Выбрать</string>
     <string name="select_location">Please Select Location</string>
     <string name="error_empty_field">Field cannot be empty</string>
     <string name="error_select_location">Select Location From Map</string>
@@ -44,8 +45,8 @@
     <string name="label_apartment_no">Apartment No</string>
     <string name="label_rooms">Rooms</string>
     <string name="label_area">Area</string>
-    <string name="message_no_apartments">No Apartments In This Building</string>
-    <string name="message_no_buildings">No Buildings</string>
+    <string name="message_no_apartments">Нет Квартир в этом Здании</string>
+    <string name="message_no_buildings">Нет Зданий</string>
     <string name="title_add_apartment">Add Apartment</string>
     <string name="hint_apartment_number">Номер квартиры</string>
     <string name="hint_total_rooms">Total Rooms</string>
@@ -74,7 +75,12 @@
 
 
     <string name="label_sync_from_server">Синхронизация с сервера</string>
+    <string name="label_sync_to_server">Отправить изменения на сервер</string>
     <string name="label_last_sync">Дата последней синхронизации: 21.12.2017</string>
-    <string name="get_tasks">Получить задание</string>
+    <string name="label_get_task">Получить задание</string>
+    <string name="label_send">Отправить</string>
+    <string name="label_apt_no">кв.</string>
+    <string name="label_street_short">ул.</string>
+    <string name="label_bld_short">д.</string>
     <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
 </resources>

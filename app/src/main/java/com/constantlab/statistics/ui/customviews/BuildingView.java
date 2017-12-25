@@ -3,6 +3,7 @@ package com.constantlab.statistics.ui.customviews;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,7 @@ public class BuildingView extends RelativeLayout {
     private static final String FORMAT = "%d";
     private static final String ZERO = "0";
     TextView buildingName, apartmentsCount, residentsCount;
-    Button btnEdit;
+    AppCompatImageView btnEdit;
 
     public BuildingView(Context context) {
         super(context);
@@ -56,7 +57,7 @@ public class BuildingView extends RelativeLayout {
     }
 
     public void setData(Building building) {
-        buildingName.setText(building.getHouseNumber());
+        buildingName.setText(building.getDisplayAddress(getContext()));
         apartmentsCount
                 .setText(building.getApartmentList() != null ? String.format(Locale.getDefault(), FORMAT, building.getApartmentList().size()) : ZERO);
         int residents = 0;

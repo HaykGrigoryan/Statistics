@@ -16,6 +16,11 @@ public class LoginActivity extends BaseActivity {
         return R.id.fragment_container;
     }
 
+    @Override
+    protected int getTaskFragmentContainerId() {
+        return 0;
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

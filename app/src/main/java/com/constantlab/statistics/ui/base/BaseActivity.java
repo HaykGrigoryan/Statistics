@@ -39,6 +39,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract @IdRes
     int getFragmentContainerId();
 
+    protected abstract @IdRes
+    int getTaskFragmentContainerId();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         statistics = (Statistics) getApplicationContext();
@@ -61,7 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (goToPrevFragmentIfExist()) return;
-        finish();
+//        finish();
         super.onBackPressed();
 
     }
@@ -138,6 +141,19 @@ public abstract class BaseActivity extends AppCompatActivity {
             fragmentTransaction.addToBackStack(newFragment.getTagForStack());
         } else {
             fragmentTransaction.replace(getFragmentContainerId(), newFragment);
+        }
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    public void showTaskFragment(BaseFragment newFragment, boolean addToBackStack) {
+        if (newFragment == null) return;
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        if (addToBackStack) {
+            fragmentTransaction.replace(getTaskFragmentContainerId(), newFragment);
+            fragmentTransaction.addToBackStack(newFragment.getTagForStack());
+        } else {
+            fragmentTransaction.replace(getTaskFragmentContainerId(), newFragment);
         }
         fragmentTransaction.commitAllowingStateLoss();
     }

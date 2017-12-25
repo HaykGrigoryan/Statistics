@@ -36,6 +36,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     private static final int REQUEST_ADD_APARTMENT = 89;
     private static final int REQUEST_EDIT_APARTMENT = 90;
     Integer buildingId;
+    String buildingName;
     @BindView(R.id.rv_apartments)
     RecyclerView rvApartments;
     @BindView(R.id.pb_apartments)
@@ -45,13 +46,17 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     @BindView(R.id.iv_add)
     ImageView add;
 
+    @BindView(R.id.title)
+    TextView mToolbarTitle;
+
     private ApartmentAdapter mApartmentAdapter;
 
 
-    public static ApartmentFragment newInstance(Integer buildingId) {
+    public static ApartmentFragment newInstance(Integer buildingId, String buildingName) {
         ApartmentFragment fragment = new ApartmentFragment();
         Bundle args = new Bundle();
         args.putInt(ApartmentActivity.BUILDING_TAG, buildingId);
+        args.putString(ApartmentActivity.BUILDING_NAME_TAG, buildingName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +66,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             buildingId = getArguments().getInt(ApartmentActivity.BUILDING_TAG);
+            buildingName = getArguments().getString(ApartmentActivity.BUILDING_NAME_TAG);
         }
         mApartmentAdapter = new ApartmentAdapter();
     }
@@ -73,6 +79,14 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
         setupRecyclerView();
         showDummyData();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (buildingName != null) {
+            mToolbarTitle.setText(buildingName);
+        }
     }
 
     private void showDummyData() {
@@ -119,6 +133,13 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
         intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.ADD_APARTMENT);
         intent.putExtra(ApartmentActivity.BUILDING_TAG, buildingId);
         startActivityForResult(intent, REQUEST_ADD_APARTMENT);
+    }
+
+    @OnClick(R.id.iv_back)
+    public void back() {
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
     @Override

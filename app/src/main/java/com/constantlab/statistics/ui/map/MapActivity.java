@@ -21,6 +21,11 @@ public class MapActivity extends BaseActivity {
     }
 
     @Override
+    protected int getTaskFragmentContainerId() {
+        return 0;
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_fragment);

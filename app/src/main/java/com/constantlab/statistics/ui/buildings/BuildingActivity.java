@@ -14,6 +14,7 @@ import com.constantlab.statistics.utils.Actions;
 
 public class BuildingActivity extends BaseActivity {
     public static final String TASK_TAG = "tasktag";
+    public static final String TASK_NAME_TAG = "tasknametag";
     public static final String BUILDING_TAG = "building_tag";
     public static final String ACTION_TAG = "action_tag";
 
@@ -26,6 +27,11 @@ public class BuildingActivity extends BaseActivity {
     }
 
     @Override
+    protected int getTaskFragmentContainerId() {
+        return 0;
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_fragment);
@@ -34,7 +40,7 @@ public class BuildingActivity extends BaseActivity {
             action = extra.getInt(ACTION_TAG);
             if (action == Actions.VIEW_BUILDINGS) {
                 Integer taskId = extra.getInt(TASK_TAG);
-                showFragment(BuildingsFragment.newInstance(taskId), false);
+                showFragment(BuildingsFragment.newInstance(taskId, "Task"), false);
             } else if (action == Actions.ADD_BUILDING) {
                 Integer taskId = extra.getInt(TASK_TAG);
                 showFragment(AddBuildingFragment.newInstance(taskId), false);

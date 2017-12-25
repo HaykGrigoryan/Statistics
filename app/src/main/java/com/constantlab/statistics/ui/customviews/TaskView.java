@@ -49,16 +49,16 @@ public class TaskView extends FrameLayout {
     private void init() {
         inflate(getContext(), R.layout.view_task, this);
         tvTaskName = findViewById(R.id.tv_task_name);
-        tvTotalBuildings = findViewById(R.id.tv_total_buildings);
-        tvTotalApartments = findViewById(R.id.tv_total_rooms);
-        tvTotalResidents = findViewById(R.id.tv_total_residents);
+//        tvTotalBuildings = findViewById(R.id.tv_total_buildings);
+//        tvTotalApartments = findViewById(R.id.tv_total_rooms);
+//        tvTotalResidents = findViewById(R.id.tv_total_residents);
     }
 
     public void setData(Task task) {
         tvTaskName.setText(task.getTaskName());
-        tvTotalResidents.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalResidents()));
-        tvTotalApartments.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalApartments()));
-        tvTotalBuildings.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalBuildings()));
+//        tvTotalResidents.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalResidents()));
+//        tvTotalApartments.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalApartments()));
+//        tvTotalBuildings.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalBuildings()));
     }
 
 }

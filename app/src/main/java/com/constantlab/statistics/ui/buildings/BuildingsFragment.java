@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,8 +19,10 @@ import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.apartments.ApartmentActivity;
+import com.constantlab.statistics.ui.apartments.ApartmentFragment;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.Actions;
+import com.constantlab.statistics.utils.NotificationCenter;
 
 import java.util.List;
 
@@ -38,6 +41,7 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     private static final int REQUEST_EDIT_BUILDING = 24;
     private static final int REQUEST_APARTMENTS = 34;
     Integer taskId;
+    String taskName;
     @BindView(R.id.rv_buildings)
     RecyclerView rvBuildings;
     @BindView(R.id.pb_buildings)
@@ -47,13 +51,17 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     @BindView(R.id.iv_add)
     ImageView add;
 
+    @BindView(R.id.title)
+    TextView mToolbarTitle;
+
     private BuildingsAdapter mBuildingsAdapter;
 
 
-    public static BuildingsFragment newInstance(Integer taskId) {
+    public static BuildingsFragment newInstance(Integer taskId, String taskName) {
         BuildingsFragment fragment = new BuildingsFragment();
         Bundle args = new Bundle();
         args.putInt(BuildingActivity.TASK_TAG, taskId);
+        args.putString(BuildingActivity.TASK_NAME_TAG, taskName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,6 +71,7 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             taskId = getArguments().getInt(BuildingActivity.TASK_TAG);
+            taskName = getArguments().getString(BuildingActivity.TASK_NAME_TAG);
         }
         mBuildingsAdapter = new BuildingsAdapter();
     }
@@ -74,7 +83,16 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         ButterKnife.bind(this, view);
         setupRecyclerView();
         showDummyData();
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (taskName != null) {
+            mToolbarTitle.setText(taskName);
+        }
     }
 
     private void showDummyData() {
@@ -123,10 +141,11 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     @Override
     public void onBuildingDetail(Building building, int adapterPosition) {
-        Intent intent = new Intent(getContext(), ApartmentActivity.class);
-        intent.putExtra(ApartmentActivity.BUILDING_TAG, building.getId());
-        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.VIEW_APARTMENTS);
-        startActivityForResult(intent, REQUEST_APARTMENTS);
+        NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext())));
+//        Intent intent = new Intent(getContext(), ApartmentActivity.class);
+//        intent.putExtra(ApartmentActivity.BUILDING_TAG, building.getId());
+//        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.VIEW_APARTMENTS);
+//        startActivityForResult(intent, REQUEST_APARTMENTS);
     }
 
     @OnClick(R.id.iv_add)
@@ -135,6 +154,13 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         intent.putExtra(BuildingActivity.ACTION_TAG, Actions.ADD_BUILDING);
         intent.putExtra(BuildingActivity.TASK_TAG, taskId);
         startActivityForResult(intent, REQUEST_ADD_BUILDING);
+    }
+
+    @OnClick(R.id.iv_back)
+    public void back() {
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
 

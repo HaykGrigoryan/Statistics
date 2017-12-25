@@ -10,8 +10,7 @@
         android:layout_gravity="center"
         android:fontFamily="@font/opensansregular"
         android:padding="16dp"
-        android:text="@string/location"
-        android:textAllCaps="true"
+        android:text="@string/label_map"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 
@@ -21,8 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:padding="16dp"
-        android:text="@string/select"
+        android:text="@string/label_select"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorAccentSecondary" />
 
 </FrameLayout>

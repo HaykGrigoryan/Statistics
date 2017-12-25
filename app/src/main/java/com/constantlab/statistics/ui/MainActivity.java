@@ -2,6 +2,8 @@ package com.constantlab.statistics.ui;
 
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Address;
@@ -15,46 +17,75 @@ import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseActivity;
+import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.map.MapFragment;
 import com.constantlab.statistics.ui.sync.SyncFragment;
 import com.constantlab.statistics.ui.tasks.TasksFragment;
+import com.constantlab.statistics.utils.INavigation;
+import com.constantlab.statistics.utils.NotificationCenter;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements INavigation {
+    @BindView(R.id.fragment_container)
+    FrameLayout mFragmentContainer;
+
+    @BindView(R.id.task_container)
+    FrameLayout mTaskContainer;
+
     @Override
     protected int getFragmentContainerId() {
         return R.id.fragment_container;
     }
 
     @Override
+    protected int getTaskFragmentContainerId() {
+        return R.id.task_container;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         insertDummyContent();
 
-
-        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottom_navigation);
-        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
-            @Override
-            public void onTabSelected(@IdRes int tabId) {
-                switch (tabId) {
-                    case R.id.tab_tasks:
-                        showFragment(TasksFragment.newInstance(), false);
-                        break;
-                    case R.id.tab_sync:
-                        showFragment(SyncFragment.newInstance(), false);
-                        break;
-                    case R.id.tab_map:
-                        showFragment(MapFragment.newInstance(), false);
-                        break;
-                }
+        showTaskFragment(TasksFragment.newInstance(), false);
+        showFragment(SyncFragment.newInstance(), false);
+        BottomBar bottomBar = findViewById(R.id.bottom_navigation);
+        bottomBar.setOnTabSelectListener(tabId -> {
+            switch (tabId) {
+                case R.id.tab_tasks:
+                    showTaskContainer();
+                    break;
+                case R.id.tab_sync:
+                    showFragment(SyncFragment.newInstance(), false);
+                    hideTaskContainer();
+                    break;
+                case R.id.tab_map:
+                    showFragment(MapFragment.newInstance(), false);
+                    hideTaskContainer();
+                    break;
             }
         });
+
+        NotificationCenter.getInstance().addNavigationListener(this);
+    }
+
+    private void showTaskContainer() {
+        mFragmentContainer.setVisibility(View.GONE);
+        mTaskContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void hideTaskContainer() {
+        mFragmentContainer.setVisibility(View.VISIBLE);
+        mTaskContainer.setVisibility(View.GONE);
     }
 
     private void insertDummyContent() {
@@ -324,5 +355,16 @@ public class MainActivity extends BaseActivity {
             if (realm != null)
                 realm.close();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationCenter.getInstance().removeNavigationListener(this);
+    }
+
+    @Override
+    public void openPage(BaseFragment fragment) {
+        showTaskFragment(fragment, true);
     }
 }

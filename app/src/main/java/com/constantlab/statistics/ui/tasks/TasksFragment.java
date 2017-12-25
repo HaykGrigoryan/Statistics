@@ -18,7 +18,9 @@ import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.buildings.BuildingActivity;
+import com.constantlab.statistics.ui.buildings.BuildingsFragment;
 import com.constantlab.statistics.utils.Actions;
+import com.constantlab.statistics.utils.NotificationCenter;
 
 import java.util.List;
 
@@ -96,10 +98,12 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
 
     @Override
     public void onTaskSelected(Task task, int position) {
-        Intent intent = new Intent(getContext(), BuildingActivity.class);
-        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.VIEW_BUILDINGS);
-        intent.putExtra(BuildingActivity.TASK_TAG, task.getId());
-        startActivityForResult(intent, REQUEST_BUILDINGS);
+
+        NotificationCenter.getInstance().notifyOpenPage(BuildingsFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
+//        Intent intent = new Intent(getContext(), BuildingActivity.class);
+//        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.VIEW_BUILDINGS);
+//        intent.putExtra(BuildingActivity.TASK_TAG, task.getId());
+//        startActivityForResult(intent, REQUEST_BUILDINGS);
     }
 
     @Override

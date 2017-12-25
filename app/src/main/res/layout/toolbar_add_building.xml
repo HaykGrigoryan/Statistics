@@ -25,6 +25,6 @@
         android:padding="16dp"
         android:text="@string/save"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorAccentSecondary" />
 
 </RelativeLayout>
