@@ -1,0 +1,59 @@
+package com.constantlab.statistics.models;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+/**
+ * Created by Sunny Kinger on 08-12-2017.
+ */
+
+public class StreetType extends RealmObject {
+    @PrimaryKey
+    private Integer id;
+    private String titleRu;
+    private String titleKk;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StreetType that = (StreetType) o;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTitleRu() {
+        return titleRu;
+    }
+
+    public void setTitleRu(String titleRu) {
+        this.titleRu = titleRu;
+    }
+
+    public String getTitleKk() {
+        return titleKk;
+    }
+
+    public void setTitleKk(String titleKk) {
+        this.titleKk = titleKk;
+    }
+
+    @Override
+    public String toString() {
+        return titleRu;
+    }
+}

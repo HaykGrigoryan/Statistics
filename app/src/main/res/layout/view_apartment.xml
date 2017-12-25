@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_apartment_no_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensanslight"
+                android:paddingBottom="8dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:text="@string/label_apartment_no"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_apartment_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tv_apartment_no_label"
+                android:layout_alignTop="@id/tv_apartment_no_label"
+                android:layout_toEndOf="@id/tv_apartment_no_label"
+                android:fontFamily="@font/opensansregular"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                tools:text="102" />
+
+            <TextView
+                android:id="@+id/tv_rooms_label"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_apartment_no"
+                android:fontFamily="@font/opensansregular"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/label_rooms"
+                android:textColor="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/tv_total_rooms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/tv_rooms_label"
+                android:layout_toEndOf="@id/tv_rooms_label"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/text_primary"
+                tools:text="32" />
+
+            <TextView
+                android:id="@+id/tv_residents_label"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_rooms_label"
+                android:fontFamily="@font/opensansregular"
+                android:paddingBottom="16dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/residents"
+                android:textColor="@color/colorAccent" />
+
+
+            <TextView
+                android:id="@+id/tv_total_residents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/tv_residents_label"
+                android:layout_toEndOf="@id/tv_residents_label"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/text_primary"
+                tools:text="120" />
+
+
+            <!--<TextView-->
+            <!--android:id="@+id/tv_area_label"-->
+            <!--android:layout_width="120dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/tv_residents_label"-->
+            <!--android:fontFamily="@font/opensansregular"-->
+            <!--android:paddingBottom="16dp"-->
+            <!--android:paddingEnd="16dp"-->
+            <!--android:paddingStart="16dp"-->
+            <!--android:text="@string/label_area"-->
+            <!--android:textColor="@color/colorAccent" />-->
+
+
+            <!--<TextView-->
+            <!--android:id="@+id/tv_area"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignTop="@id/tv_area_label"-->
+            <!--android:layout_toEndOf="@id/tv_area_label"-->
+            <!--android:fontFamily="@font/opensansbold"-->
+            <!--android:textColor="@color/text_primary"-->
+            <!--tools:text="120" />-->
+
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_edit"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:fontFamily="@font/opensansbold"
+            android:text="@string/edit"
+            android:textSize="14sp" />
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

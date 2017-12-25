@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@drawable/ic_view_list"
+        id="@+id/tab_tasks"
+        title="Tasks" />
+    <tab
+        icon="@drawable/ic_sync"
+        id="@+id/tab_sync"
+        title="Sync" />
+    <tab
+        icon="@drawable/ic_map"
+        id="@+id/tab_map"
+        title="Map" />
+
+</tabs>

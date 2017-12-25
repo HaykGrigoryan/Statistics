@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">Statistics</string>
+
+
+    <string name="error_default">An error has occurred. Please try again later.</string>
+    <string name="ok">OK</string>
+    <string name="please_wait">Please Wait…</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_text_login">Login</string>
+    <string name="statistics">Statistics</string>
+    <string name="residents">Residents</string>
+    <string name="apartments">Apartments</string>
+    <string name="buildings">Buildings</string>
+    <string name="title_tasks">Tasks</string>
+    <string name="title_buildings">Buildings</string>
+    <string name="edit">Edit</string>
+    <string name="title_add_building">Add Building</string>
+    <string name="hint_building_number">Building Number</string>
+    <string name="hint_total_flats">Total Flats</string>
+    <string name="hint_area">Area Size</string>
+    <string name="label_house_wall">House Wall</string>
+    <string name="hint_address">Address</string>
+    <string name="hint_full_address">Full Address</string>
+    <string name="label_street">Street</string>
+    <string name="label_street_type">Street Type</string>
+    <string name="label_region">Region</string>
+    <string name="save">Save</string>
+    <string name="label_location">Location</string>
+    <string name="hint_latitude">Latitude</string>
+    <string name="hint_longitude">Longitude</string>
+    <string name="select_from_map">Select from Map</string>
+    <string name="location">Location</string>
+    <string name="select">Select</string>
+    <string name="select_location">Please Select Location</string>
+    <string name="error_empty_field">Field cannot be empty</string>
+    <string name="error_select_location">Select Location From Map</string>
+    <string name="hint_floors">Floors</string>
+    <string name="title_apartments">Apartments</string>
+    <string name="label_apartment_no">Apartment No</string>
+    <string name="label_rooms">Rooms</string>
+    <string name="label_area">Area</string>
+    <string name="message_no_apartments">No Apartments In This Building</string>
+    <string name="message_no_buildings">No Buildings</string>
+    <string name="title_add_apartment">Add Apartment</string>
+    <string name="hint_apartment_number">Apartment Number</string>
+    <string name="hint_total_rooms">Total Rooms</string>
+    <string name="hint_total_residents">Total Residents</string>
+    <string name="label_apartment_type">Apartment Type</string>
+    <string name="hint_owner_organization">Owner/Organization</string>
+    <string name="hint_comment">Comment</string>
+    <string name="label_building_status">Building Status</string>
+    <string name="hint_territory">Territory</string>
+    <string name="label_building_type">Building Type</string>
+    <string name="btn_title_next">Next</string>
+
+
+    <string-array name="demo_list">
+        <item>Bricks</item>
+        <item>Concrete</item>
+    </string-array>
+
+    <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
+</resources>
