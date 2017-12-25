@@ -1,6 +1,7 @@
 package com.constantlab.statistics.ui;
 
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Address;
@@ -14,15 +15,17 @@ import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseActivity;
+import com.constantlab.statistics.ui.map.MapFragment;
+import com.constantlab.statistics.ui.sync.SyncFragment;
 import com.constantlab.statistics.ui.tasks.TasksFragment;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class MainActivity extends BaseActivity {
-
-
     @Override
     protected int getFragmentContainerId() {
         return R.id.fragment_container;
@@ -33,7 +36,25 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         insertDummyContent();
-        showFragment(TasksFragment.newInstance(), false);
+
+
+        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottom_navigation);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                switch (tabId) {
+                    case R.id.tab_tasks:
+                        showFragment(TasksFragment.newInstance(), false);
+                        break;
+                    case R.id.tab_sync:
+                        showFragment(SyncFragment.newInstance(), false);
+                        break;
+                    case R.id.tab_map:
+                        showFragment(MapFragment.newInstance(), false);
+                        break;
+                }
+            }
+        });
     }
 
     private void insertDummyContent() {

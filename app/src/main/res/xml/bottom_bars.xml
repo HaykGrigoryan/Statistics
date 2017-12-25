@@ -3,14 +3,13 @@
     <tab
         icon="@drawable/ic_view_list"
         id="@+id/tab_tasks"
-        title="Tasks" />
+        title="@string/tab_tasks" />
     <tab
         icon="@drawable/ic_sync"
         id="@+id/tab_sync"
-        title="Sync" />
+        title="@string/tab_sync" />
     <tab
         icon="@drawable/ic_map"
         id="@+id/tab_map"
-        title="Map" />
-
+        title="@string/tab_map" />
 </tabs>

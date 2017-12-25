@@ -12,7 +12,11 @@
     <string name="residents">Residents</string>
     <string name="apartments">Apartments</string>
     <string name="buildings">Buildings</string>
-    <string name="title_tasks">Tasks</string>
+    <string name="title_tasks">Задания</string>
+    <string name="title_sync">Синхронизация</string>
+    <string name="tab_tasks">Задания</string>
+    <string name="tab_sync">Синхронизация</string>
+    <string name="tab_map">Карта</string>
     <string name="title_buildings">Buildings</string>
     <string name="edit">Edit</string>
     <string name="title_add_building">Add Building</string>
@@ -68,5 +72,9 @@
         <item>Concrete</item>
     </string-array>
 
+
+    <string name="label_sync_from_server">Синхронизация с сервера</string>
+    <string name="label_last_sync">Дата последней синхронизации: 21.12.2017</string>
+    <string name="get_tasks">Получить задание</string>
     <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
 </resources>
