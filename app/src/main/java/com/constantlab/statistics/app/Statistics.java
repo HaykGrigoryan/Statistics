@@ -14,6 +14,7 @@ public class Statistics extends Application {
     public void onCreate() {
         super.onCreate();
         //Realm
-        Realm.init(this);
+        RealmManager.getInstance().init(this);
+//        Realm.init(this);
     }
 }

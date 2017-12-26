@@ -15,10 +15,12 @@ import android.widget.ProgressBar;
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.Building;
+import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.buildings.BuildingActivity;
 import com.constantlab.statistics.ui.buildings.BuildingsFragment;
+import com.constantlab.statistics.ui.street.StreetFragment;
 import com.constantlab.statistics.utils.Actions;
 import com.constantlab.statistics.utils.NotificationCenter;
 
@@ -98,8 +100,7 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
 
     @Override
     public void onTaskSelected(Task task, int position) {
-
-        NotificationCenter.getInstance().notifyOpenPage(BuildingsFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
+        NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
 //        Intent intent = new Intent(getContext(), BuildingActivity.class);
 //        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.VIEW_BUILDINGS);
 //        intent.putExtra(BuildingActivity.TASK_TAG, task.getId());
@@ -126,11 +127,13 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
                     int totalApartments = 0;
                     int totalResidents = 0;
                     //Count Apartments
-                    for (Building building : task.getBuildingList()) {
-                        if (building.getApartmentList() != null) {
-                            totalApartments += building.getApartmentList().size();
-                            for (Apartment apartment : building.getApartmentList()) {
-                                totalResidents += apartment.getTotalInhabitants();
+                    for (Street street: task.getStreetList()) {
+                        for (Building building : street.getBuildingList()) {
+                            if (building.getApartmentList() != null) {
+                                totalApartments += building.getApartmentList().size();
+                                for (Apartment apartment : building.getApartmentList()) {
+                                    totalResidents += apartment.getTotalInhabitants();
+                                }
                             }
                         }
                     }

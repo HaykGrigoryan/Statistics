@@ -1,32 +1,23 @@
 package com.constantlab.statistics.models;
 
+import android.content.Context;
+
+import com.constantlab.statistics.R;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
- * Created by Sunny Kinger on 07-12-2017.
+ * Created by Hayk on 26/12/2017.
  */
 
 public class Street extends RealmObject {
+
     @PrimaryKey
     private Integer id;
-    private String titleRu;
-    private String titleKz;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Street street = (Street) o;
-
-        return id.equals(street.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+    private String name;
+    private RealmList<Building> buildingList;
 
     public Integer getId() {
         return id;
@@ -36,24 +27,45 @@ public class Street extends RealmObject {
         this.id = id;
     }
 
-    public String getTitleRu() {
-        return titleRu;
+    public String getName() {
+        return name;
     }
 
-    public void setTitleRu(String titleRu) {
-        this.titleRu = titleRu;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTitleKz() {
-        return titleKz;
+    public RealmList<Building> getBuildingList() {
+        return buildingList;
     }
 
-    public void setTitleKz(String titleKz) {
-        this.titleKz = titleKz;
+    public void setBuildingList(RealmList<Building> buildingList) {
+        this.buildingList = buildingList;
     }
 
-    @Override
-    public String toString() {
-        return titleRu;
+    public int getBuidingsCount() {
+        return buildingList.size();
+    }
+
+    public int getApartmentCount() {
+        int count = 0;
+        for (Building building : buildingList) {
+            count += building.getApartmentList().size();
+        }
+        return count;
+    }
+
+    public int getResidentsCount() {
+        int count = 0;
+        for (Building building : buildingList) {
+            for (Apartment apartment : building.getApartmentList()) {
+                count += apartment.getTotalInhabitants();
+            }
+        }
+        return count;
+    }
+
+    public String getDisplayName(Context context) {
+        return context.getString(R.string.label_street_short) + " " + name;
     }
 }

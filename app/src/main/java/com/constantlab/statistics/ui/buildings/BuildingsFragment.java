@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Building;
+import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.apartments.ApartmentActivity;
 import com.constantlab.statistics.ui.apartments.ApartmentFragment;
@@ -41,8 +42,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     private static final int REQUEST_ADD_BUILDING = 23;
     private static final int REQUEST_EDIT_BUILDING = 24;
     private static final int REQUEST_APARTMENTS = 34;
-    Integer taskId;
-    String taskName;
+    Integer streetId;
+    String streetName;
     @BindView(R.id.rv_buildings)
     RecyclerView rvBuildings;
     @BindView(R.id.pb_buildings)
@@ -57,12 +58,11 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     private BuildingsAdapter mBuildingsAdapter;
 
-
-    public static BuildingsFragment newInstance(Integer taskId, String taskName) {
+    public static BuildingsFragment newInstance(Integer streetId, String streetName) {
         BuildingsFragment fragment = new BuildingsFragment();
         Bundle args = new Bundle();
-        args.putInt(ConstKeys.TAG_TASK, taskId);
-        args.putString(ConstKeys.TAG_TASK_NAME, taskName);
+        args.putInt(ConstKeys.TAG_STREET, streetId);
+        args.putString(ConstKeys.TAG_STREET_NAME, streetName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,8 +71,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            taskId = getArguments().getInt(ConstKeys.TAG_TASK);
-            taskName = getArguments().getString(ConstKeys.TAG_TASK_NAME);
+            streetId = getArguments().getInt(ConstKeys.TAG_STREET);
+            streetName = getArguments().getString(ConstKeys.TAG_STREET_NAME);
         }
         mBuildingsAdapter = new BuildingsAdapter();
     }
@@ -91,8 +91,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (taskName != null) {
-            mToolbarTitle.setText(taskName);
+        if (streetName != null) {
+            mToolbarTitle.setText(streetName);
         }
     }
 
@@ -111,9 +111,9 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Task taskFirst = realm.where(Task.class).equalTo("id", taskId).findFirst();
-            if (taskFirst != null && taskFirst.getBuildingList() != null) {
-                buildingList = realm.copyFromRealm(taskFirst.getBuildingList());
+            Street streetFirst = realm.where(Street.class).equalTo("id", streetId).findFirst();
+            if (streetFirst != null && streetFirst.getBuildingList() != null) {
+                buildingList = realm.copyFromRealm(streetFirst.getBuildingList());
             }
             return buildingList;
         } finally {

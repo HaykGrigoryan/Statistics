@@ -5,6 +5,8 @@ package com.constantlab.statistics.utils;
  */
 
 public class ConstKeys {
+    public final static String PACKAGE_NAME = "com.constantlab.statistics";
+    public final static String REALM_NAME = PACKAGE_NAME + ".db.realm";
 
     public static final String KEY_LATITUDE = "key_latitude";
     public static final String KEY_LONGITUDE = "key_longitude";
@@ -17,6 +19,8 @@ public class ConstKeys {
     public static final String TAG_TASK_NAME = "TAG_TASK_NAME";
     public static final String TAG_BUILDING = "TAG_BUILDING";
     public static final String TAG_BUILDING_NAME = "TAG_BUILDING_NAME";
+    public static final String TAG_STREET = "TAG_STREET";
+    public static final String TAG_STREET_NAME = "TAG_STREET_NAME";
     public static final String TAG_ACTION = "TAG_ACTION";
 
 

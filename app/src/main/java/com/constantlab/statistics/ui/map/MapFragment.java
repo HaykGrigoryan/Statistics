@@ -63,7 +63,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         args.putInt(ConstKeys.KEY_MAP_ACTION, action.ordinal());
-        if (lat != null && lon != null) {
+        if (lat != null && !lat.isNaN() && lon != null && !lon.isNaN()) {
             args.putDouble(ConstKeys.KEY_LATITUDE, lat);
             args.putDouble(ConstKeys.KEY_LONGITUDE, lon);
         }
@@ -84,7 +84,9 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
         super.onCreate(savedInstanceState);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         if (getArguments() != null) {
-            mMapAction = MapAction.values()[getArguments().getInt(ConstKeys.TAG_TASK)];
+            mMapAction = MapAction.values()[getArguments().getInt(ConstKeys.KEY_MAP_ACTION)];
+            latitude = getArguments().getDouble(ConstKeys.KEY_LATITUDE, Double.NaN);
+            longitude = getArguments().getDouble(ConstKeys.KEY_LONGITUDE, Double.NaN);
         }
     }
 
@@ -124,7 +126,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
 
     @OnClick(R.id.tv_select)
     public void selectLocation() {
-        if (latitude != null && longitude != null) {
+        if (latitude != null && longitude != null && !latitude.isNaN() && !longitude.isNaN()) {
             Intent intent = new Intent();
             intent.putExtra(MapActivity.LATITUDE_TAG, latitude);
             intent.putExtra(MapActivity.LONGITUDE_TAG, longitude);
@@ -147,6 +149,13 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
+        if (latitude != null && !latitude.isNaN() && longitude != null && !longitude.isNaN()) {
+            LatLng latLng = new LatLng(latitude, longitude);
+            addMarker(latLng);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    latLng, DEFAULT_ZOOM));
+        }
     }
 
     private void getDeviceLocation() {
@@ -248,8 +257,12 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
             mMap.clear();
             latitude = latLng.latitude;
             longitude = latLng.longitude;
-            mMap.addMarker(new MarkerOptions().position(latLng));
+            addMarker(latLng);
         }
+    }
+
+    private void addMarker(LatLng latLng) {
+        mMap.addMarker(new MarkerOptions().position(latLng));
     }
 
     public enum MapAction {

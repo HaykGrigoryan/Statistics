@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Address;
+import com.constantlab.statistics.models.AddressStreet;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.BuildingStatus;
 import com.constantlab.statistics.models.BuildingType;
 import com.constantlab.statistics.models.Kato;
-import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.map.MapActivity;
@@ -227,17 +227,17 @@ public class EditBuildingFragment extends BaseFragment {
         }
     }
 
-    private void setupStreet(Street street) {
+    private void setupStreet(AddressStreet street) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<Street> realmResults = realm.where(Street.class).findAll();
-            List<Street> streetList = realm.copyFromRealm(realmResults);
+            RealmResults<AddressStreet> realmResults = realm.where(AddressStreet.class).findAll();
+            List<AddressStreet> streetList = realm.copyFromRealm(realmResults);
             int index = -1;
             if (street != null) {
                 index = streetList.indexOf(street);
             }
-            ArrayAdapter<Street> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, streetList);
+            ArrayAdapter<AddressStreet> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, streetList);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spStreet.setAdapter(arrayAdapter);
             if (index != -1)
@@ -335,7 +335,7 @@ public class EditBuildingFragment extends BaseFragment {
                     address.setAddressRu(etAddress.getText().toString().trim());
                     Kato kato = (Kato) spRegions.getSelectedItem();
                     address.setKato(kato);
-                    Street street = (Street) spStreet.getSelectedItem();
+                    AddressStreet street = (AddressStreet) spStreet.getSelectedItem();
                     address.setStreet(street);
                     StreetType streetType = (StreetType) spStreetType.getSelectedItem();
                     address.setStreetType(streetType);

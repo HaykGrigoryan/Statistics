@@ -1,12 +1,12 @@
 package com.constantlab.statistics.ui;
 
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Address;
+import com.constantlab.statistics.models.AddressStreet;
 import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.ApartmentType;
 import com.constantlab.statistics.models.Building;
@@ -24,7 +24,6 @@ import com.constantlab.statistics.ui.tasks.TasksFragment;
 import com.constantlab.statistics.utils.INavigation;
 import com.constantlab.statistics.utils.NotificationCenter;
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +56,6 @@ public class MainActivity extends BaseActivity implements INavigation {
         insertDummyContent();
 
         showTaskFragment(TasksFragment.newInstance(), false);
-        showFragment(SyncFragment.newInstance(), false);
         BottomBar bottomBar = findViewById(R.id.bottom_navigation);
         bottomBar.setOnTabSelectListener(tabId -> {
             switch (tabId) {
@@ -90,7 +88,7 @@ public class MainActivity extends BaseActivity implements INavigation {
 
     private void insertDummyContent() {
         insertStreetType();
-        insertStreets();
+        insertAddressStreets();
 //        insertHouseWalls();
         insertBuildingStatus();
         insertBuildingTypes();
@@ -98,6 +96,7 @@ public class MainActivity extends BaseActivity implements INavigation {
         insertKato();
         insertAddress();
         insertBuilding();
+        insertStreets();
         insertTasks();
     }
 
@@ -109,10 +108,10 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     BuildingType buildingType = new BuildingType();
                     buildingType.setId(1);
-                    buildingType.setType("Type 1");
+                    buildingType.setType("Тип 1");
                     realmObject.insertOrUpdate(buildingType);
                     buildingType.setId(2);
-                    buildingType.setType("Type 2");
+                    buildingType.setType("Тип 2");
                     realmObject.insert(buildingType);
                 });
             }
@@ -130,10 +129,10 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     BuildingStatus buildingStatus = new BuildingStatus();
                     buildingStatus.setId(1);
-                    buildingStatus.setStatus("Status 1");
+                    buildingStatus.setStatus("Статус 1");
                     realmObject.insertOrUpdate(buildingStatus);
                     buildingStatus.setId(2);
-                    buildingStatus.setStatus("Status 2");
+                    buildingStatus.setStatus("Статус 2");
                     realmObject.insert(buildingStatus);
                 });
             }
@@ -151,10 +150,10 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     ApartmentType apartmentType = new ApartmentType();
                     apartmentType.setId(1);
-                    apartmentType.setType("Apartment");
+                    apartmentType.setType("Квартира");
                     realmObject.insertOrUpdate(apartmentType);
                     apartmentType.setId(2);
-                    apartmentType.setType("Room");
+                    apartmentType.setType("Комната");
                     realmObject.insertOrUpdate(apartmentType);
                 });
             }
@@ -172,26 +171,52 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     Task task = new Task();
                     task.setId(1);
-                    RealmResults<Building> realmList = realmObject.where(Building.class).findAll();
-                    RealmList<Building> buildingRealmList = new RealmList<>();
-                    buildingRealmList.addAll(realmList);
-                    task.setBuildingList(buildingRealmList);
-                    task.setTotalBuildings(task.getBuildingList().size());
+                    RealmResults<Street> realmList = realmObject.where(Street.class).findAll();
+                    RealmList<Street> streetsRealmList = new RealmList<>();
+                    streetsRealmList.addAll(realmList);
+                    task.setStreetList(streetsRealmList);
+                    task.setTotalBuildings(task.getStreetList().size());
                     int totalApartments = 0;
                     int totalResidents = 0;
                     //Count Apartments
-                    for (Building building : task.getBuildingList()) {
-                        if (building.getApartmentList() != null) {
-                            totalApartments += building.getApartmentList().size();
-                            for (Apartment apartment : building.getApartmentList()) {
-                                totalResidents += apartment.getTotalInhabitants();
+                    for (Street street : task.getStreetList()) {
+                        for (Building building : street.getBuildingList()) {
+                            if (building.getApartmentList() != null) {
+                                totalApartments += building.getApartmentList().size();
+                                for (Apartment apartment : building.getApartmentList()) {
+                                    totalResidents += apartment.getTotalInhabitants();
+                                }
                             }
                         }
                     }
                     task.setTotalApartments(totalApartments);
                     task.setTotalResidents(totalResidents);
-                    task.setTaskName("Dummy Task 1");
+                    task.setTaskName("Зания 1");
                     realmObject.insert(task);
+                });
+            }
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+    }
+
+    private void insertStreets() {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            if (realm.where(Street.class).findAll().size() == 0) {
+                realm.executeTransaction(realmObject -> {
+                    Street street = new Street();
+                    street.setId(1);
+                    RealmResults<Building> realmList = realmObject.where(Building.class).findAll();
+                    RealmList<Building> buildingRealmList = new RealmList<>();
+                    buildingRealmList.addAll(realmList);
+                    street.setBuildingList(buildingRealmList);
+                    //Count Apartments
+
+                    street.setName("Иманова");
+                    realmObject.insert(street);
                 });
             }
         } finally {
@@ -219,8 +244,8 @@ public class MainActivity extends BaseActivity implements INavigation {
                     building.setLongitude(null);
                     building.setLongitude(null);
                     building.setMarkedOnMap(false);
-                    building.setTerritoryName("Dummy Territory");
-                    building.setOwnerName("Nikita Karachev");
+                    building.setTerritoryName("Пустая Теретория");
+                    building.setOwnerName("Никита Карачев");
                     BuildingType buildingType = realObject.where(BuildingType.class).findFirst();
                     building.setBuildingType(buildingType);
                     BuildingStatus buildingStatus = realObject.where(BuildingStatus.class).findFirst();
@@ -255,13 +280,13 @@ public class MainActivity extends BaseActivity implements INavigation {
                     Address address = new Address();
                     Kato kato = realmObject.where(Kato.class).findFirst();
                     address.setKato(kato);
-                    Street street = realmObject.where(Street.class).findFirst();
+                    AddressStreet street = realmObject.where(AddressStreet.class).findFirst();
                     address.setStreet(street);
                     StreetType streetType = realmObject.where(StreetType.class).findFirst();
                     address.setStreetType(streetType);
                     realmObject.insertOrUpdate(address);
                     address.setStreetType(streetType);
-                    street = realmObject.where(Street.class).equalTo("id", 2).findFirst();
+                    street = realmObject.where(AddressStreet.class).equalTo("id", 2).findFirst();
                     address.setStreet(street);
                     address.setKato(kato);
                     realmObject.insertOrUpdate(address);
@@ -315,20 +340,20 @@ public class MainActivity extends BaseActivity implements INavigation {
 //        }
 //    }
 
-    private void insertStreets() {
+    private void insertAddressStreets() {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            if (realm.where(Street.class).findAll().size() == 0) {
+            if (realm.where(AddressStreet.class).findAll().size() == 0) {
                 realm.executeTransaction(realmObject -> {
-                    Street street = new Street();
+                    AddressStreet street = new AddressStreet();
                     street.setId(1);
-                    street.setTitleRu("СИБИРСКАЯ");
+                    street.setTitleRu("Субурская");
                     street.setTitleKz("СИБИРСКАЯ");
                     realmObject.insertOrUpdate(street);
                     street.setId(2);
-                    street.setTitleRu("С.САМЕТОВА");
-                    street.setTitleKz("С.САМЕТОВА");
+                    street.setTitleRu("С.Саметова");
+                    street.setTitleKz("С.Саметова");
                     realmObject.insertOrUpdate(street);
                 });
             }

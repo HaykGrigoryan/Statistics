@@ -17,7 +17,7 @@ public class Task extends RealmObject implements Serializable {
     private Integer totalBuildings;
     private Integer totalApartments;
     private Integer totalResidents;
-    private RealmList<Building> buildingList;
+    private RealmList<Street> streetList;
 
     public Integer getTotalBuildings() {
         return totalBuildings;
@@ -43,12 +43,12 @@ public class Task extends RealmObject implements Serializable {
         this.totalResidents = totalResidents;
     }
 
-    public RealmList<Building> getBuildingList() {
-        return buildingList;
+    public RealmList<Street> getStreetList() {
+        return streetList;
     }
 
-    public void setBuildingList(RealmList<Building> buildingList) {
-        this.buildingList = buildingList;
+    public void setStreetList(RealmList<Street> streetList) {
+        this.streetList = streetList;
     }
 
     public Integer getId() {

@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Address;
+import com.constantlab.statistics.models.AddressStreet;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.BuildingStatus;
 import com.constantlab.statistics.models.BuildingType;
 import com.constantlab.statistics.models.Kato;
-import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseFragment;
@@ -182,9 +182,9 @@ public class AddBuildingFragment extends BaseFragment {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<Street> realmResults = realm.where(Street.class).findAll();
-            List<Street> streetList = realm.copyFromRealm(realmResults);
-            ArrayAdapter<Street> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, streetList);
+            RealmResults<AddressStreet> realmResults = realm.where(AddressStreet.class).findAll();
+            List<AddressStreet> streetList = realm.copyFromRealm(realmResults);
+            ArrayAdapter<AddressStreet> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, streetList);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spStreet.setAdapter(arrayAdapter);
         } finally {
@@ -289,7 +289,7 @@ public class AddBuildingFragment extends BaseFragment {
                 address.setAddressRu(etAddress.getText().toString().trim());
                 Kato kato = (Kato) spRegions.getSelectedItem();
                 address.setKato(kato);
-                Street street = (Street) spStreet.getSelectedItem();
+                AddressStreet street = (AddressStreet) spStreet.getSelectedItem();
                 address.setStreet(street);
                 StreetType streetType = (StreetType) spStreetType.getSelectedItem();
                 address.setStreetType(streetType);
@@ -306,12 +306,12 @@ public class AddBuildingFragment extends BaseFragment {
                 building.setLongitude(Double.valueOf(etLongitude.getText().toString().trim()));
                 building.setMarkedOnMap(true);
                 Task task = realmObject.where(Task.class).equalTo("id", taskId).findFirst();
-                RealmList<Building> buildingList = task.getBuildingList();
-                if (buildingList == null) {
-                    buildingList = new RealmList<>();
-                }
-                buildingList.add(building);
-                task.setTotalBuildings(task.getBuildingList().size());
+//                RealmList<Building> buildingList = task.getBuildingList();
+//                if (buildingList == null) {
+//                    buildingList = new RealmList<>();
+//                }
+//                buildingList.add(building);
+//                task.setTotalBuildings(task.getBuildingList().size());
                 realmObject.insertOrUpdate(task);
                 //To send id to previous activity
                 Intent intent = new Intent();

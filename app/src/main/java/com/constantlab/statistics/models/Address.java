@@ -7,17 +7,17 @@ import io.realm.RealmObject;
  */
 
 public class Address extends RealmObject {
-    private Street street;
+    private AddressStreet street;
     private StreetType streetType;
     private Kato kato;
     private String addressRu;
     private String addressKk;
 
-    public Street getStreet() {
+    public AddressStreet getStreet() {
         return street;
     }
 
-    public void setStreet(Street street) {
+    public void setStreet(AddressStreet street) {
         this.street = street;
     }
 
