@@ -19,16 +19,26 @@
         android:layout_above="@+id/bottom_navigation"
         android:visibility="gone" />
 
-    <com.roughike.bottombar.BottomBar
+    <!--<com.roughike.bottombar.BottomBar-->
+    <!--android:id="@+id/bottom_navigation"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/bottomBar_height"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--android:background="@color/colorPrimaryDark"-->
+    <!--app:bb_activeTabColor="@color/colorAccentSecondary"-->
+    <!--app:bb_inActiveTabColor="@android:color/white"-->
+    <!--app:bb_tabXmlResource="@xml/bottom_bars"-->
+    <!--app:bb_titleTextAppearance="@style/BottomBarText"/>-->
+
+    <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottomBar_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:background="@color/colorPrimaryDark"
-        app:bb_activeTabColor="@color/colorAccentSecondary"
-        app:bb_inActiveTabColor="@android:color/white"
-        app:bb_tabXmlResource="@xml/bottom_bars"
-        app:bb_titleTextAppearance="?android:attr/textAppearanceMedium"/>
+        app:itemBackground="@color/colorPrimaryDark"
+        app:itemIconTint="@drawable/tab_selector"
+        app:itemTextColor="@drawable/tab_selector"
+        app:menu="@menu/bottom_navigation_main" />
 
 </RelativeLayout>

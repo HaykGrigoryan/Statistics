@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="BottomBarText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
 </resources>

@@ -1,6 +1,9 @@
 package com.constantlab.statistics.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -56,22 +59,40 @@ public class MainActivity extends BaseActivity implements INavigation {
         insertDummyContent();
 
         showTaskFragment(TasksFragment.newInstance(), false);
-        BottomBar bottomBar = findViewById(R.id.bottom_navigation);
-        bottomBar.setOnTabSelectListener(tabId -> {
-            switch (tabId) {
-                case R.id.tab_tasks:
-                    showTaskContainer();
-                    break;
-                case R.id.tab_sync:
-                    showFragment(SyncFragment.newInstance(), false);
-                    hideTaskContainer();
-                    break;
-                case R.id.tab_map:
-                    showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
-                    hideTaskContainer();
-                    break;
-            }
-        });
+        showTaskContainer();
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.tab_tasks:
+                                showTaskContainer();
+                                break;
+                            case R.id.tab_sync:
+                                showFragment(SyncFragment.newInstance(), false);
+                                hideTaskContainer();
+                                break;
+                            case R.id.tab_map:
+                                showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
+                                hideTaskContainer();
+                                break;
+                        }
+//                        switch (item.getItemId()) {
+//                            case R.id.action_favorites:
+//
+//                            case R.id.action_schedules:
+//
+//                            case R.id.action_music:
+//
+//                        }
+                        return true;
+                    }
+                });
+//        bottomBar.setOnTabSelectListener(tabId -> {
+//
+//        });
 
         NotificationCenter.getInstance().addNavigationListener(this);
     }

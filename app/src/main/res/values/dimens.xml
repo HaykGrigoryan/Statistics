@@ -43,7 +43,7 @@
     <dimen name="text_medium_large">20sp</dimen>
     <dimen name="text_large">24sp</dimen>
 
-    <dimen name="bb_height">48dp</dimen>
+    <dimen name="bb_height">52dp</dimen>
 
     <dimen name="margin_small">10dp</dimen>
     <dimen name="margin_medium">15dp</dimen>
