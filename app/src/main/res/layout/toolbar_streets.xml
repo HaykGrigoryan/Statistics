@@ -32,6 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_map" />
+        app:srcCompat="@drawable/ic_map_nav" />
 
 </FrameLayout>

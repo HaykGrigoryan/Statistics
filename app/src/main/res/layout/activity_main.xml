@@ -28,6 +28,7 @@
         android:background="@color/colorPrimaryDark"
         app:bb_activeTabColor="@color/colorAccentSecondary"
         app:bb_inActiveTabColor="@android:color/white"
-        app:bb_tabXmlResource="@xml/bottom_bars" />
+        app:bb_tabXmlResource="@xml/bottom_bars"
+        app:bb_titleTextAppearance="?android:attr/textAppearanceMedium"/>
 
 </RelativeLayout>

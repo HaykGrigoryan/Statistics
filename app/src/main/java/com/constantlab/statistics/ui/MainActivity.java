@@ -191,7 +191,7 @@ public class MainActivity extends BaseActivity implements INavigation {
                     }
                     task.setTotalApartments(totalApartments);
                     task.setTotalResidents(totalResidents);
-                    task.setTaskName("Зания 1");
+                    task.setTaskName("Задания 1");
                     realmObject.insert(task);
                 });
             }

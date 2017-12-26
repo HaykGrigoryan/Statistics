@@ -176,8 +176,8 @@
                     android:drawablePadding="@dimen/padding_medium"
                     android:paddingEnd="@dimen/padding_large"
                     android:paddingStart="@dimen/padding_large"
-                    android:paddingTop="@dimen/btn_padding_left_right"
-                    android:paddingBottom="@dimen/btn_padding_left_right"
+                    android:paddingTop="@dimen/btn_padding_top_bottom_small"
+                    android:paddingBottom="@dimen/btn_padding_top_bottom_small"
 
                     android:text="@string/select_from_map"
                     android:textAllCaps="false"
@@ -248,15 +248,10 @@
                     android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_comment"
-
                     android:padding="@dimen/padding_large"
                     android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
 
-
-                    android:padding="16dp"
-                    android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
 
 
             <!--<LinearLayout-->

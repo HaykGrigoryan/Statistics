@@ -160,6 +160,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         updateLocationIndicator(object.getLatitude() != null && object.getLongitude() != null);
     }
 
+
     private void setupBuildingType(BuildingType buildingType) {
         Realm realm = null;
         try {
@@ -170,8 +171,8 @@ public class BuildingDetailsFragment extends BaseFragment {
             if (buildingType != null) {
                 index = buildingTypes.indexOf(buildingType);
             }
-            ArrayAdapter<BuildingType> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, buildingTypes);
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<BuildingType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, buildingTypes);
+            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spBuildingType.setAdapter(arrayAdapter);
             if (index != -1) {
                 spBuildingType.setSelection(index);

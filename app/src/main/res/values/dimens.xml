@@ -30,6 +30,9 @@
     <dimen name="btn_padding_top_bottom">50dp</dimen>
     <dimen name="btn_padding_left_right">25dp</dimen>
 
+    <dimen name="btn_padding_top_bottom_small">16dp</dimen>
+
+
     <dimen name="nav_bar_icon">24dp</dimen>
 
     <dimen name="text_super_ex_small">9sp</dimen>
@@ -39,6 +42,8 @@
     <dimen name="text_medium">18sp</dimen>
     <dimen name="text_medium_large">20sp</dimen>
     <dimen name="text_large">24sp</dimen>
+
+    <dimen name="bb_height">48dp</dimen>
 
     <dimen name="margin_small">10dp</dimen>
     <dimen name="margin_medium">15dp</dimen>
