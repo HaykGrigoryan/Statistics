@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:textSize="@dimen/text_medium"
     android:ellipsize="marquee"
-    android:textAlignment="inherit"/>
+    android:textAlignment="inherit"
+    />

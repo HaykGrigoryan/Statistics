@@ -229,7 +229,7 @@
                     android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_count_of_lives_study_etc"
-
+                    android:inputType="textNoSuggestions"
                     android:padding="@dimen/padding_large"
                     android:textSize="@dimen/text_small"
 
