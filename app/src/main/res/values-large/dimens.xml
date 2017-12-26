@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--fragment_login.xml-->
     <dimen name="tv_authorization_system_padding">30dp</dimen>
     <dimen name="tv_authorization_system_padding_medium">22dp</dimen>
@@ -18,6 +18,8 @@
     <!--activity_main.xml-->
     <dimen name="bottomBar_height">120dp</dimen>
     <dimen name="botomBar_img_size">58dp</dimen>
+
+    <dimen name="design_bottom_navigation_height" tools:override="true">56dp</dimen>
     <!--activity_main.xml-->
 
     <dimen name="toolbar_title">36sp</dimen>

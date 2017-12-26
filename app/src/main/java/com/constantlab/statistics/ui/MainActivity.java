@@ -2,9 +2,13 @@ package com.constantlab.statistics.ui;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.constantlab.statistics.R;
@@ -62,6 +66,7 @@ public class MainActivity extends BaseActivity implements INavigation {
         showTaskContainer();
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.bottom_navigation);
+        refreshBottomNavigationSize(bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -95,6 +100,26 @@ public class MainActivity extends BaseActivity implements INavigation {
 //        });
 
         NotificationCenter.getInstance().addNavigationListener(this);
+    }
+
+    private void refreshBottomNavigationSize(BottomNavigationView bottomNavigationView) {
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView)
+                bottomNavigationView.getChildAt(0);
+        for (int i = 0; i < menuView.getChildCount(); i++) {
+            final View iconView =
+                    menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
+            final ViewGroup.LayoutParams layoutParams =
+                    iconView.getLayoutParams();
+            final DisplayMetrics displayMetrics =
+                    getResources().getDisplayMetrics();
+            layoutParams.height = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
+//                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
+//                            displayMetrics);
+            layoutParams.width = (int)getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
+//                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
+//                            displayMetrics);
+            iconView.setLayoutParams(layoutParams);
+        }
     }
 
     private void showTaskContainer() {
