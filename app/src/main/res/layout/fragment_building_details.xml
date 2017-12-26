@@ -29,13 +29,13 @@
                     android:id="@+id/et_kato"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_kato"
                     android:inputType="textNoSuggestions"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView
@@ -43,23 +43,26 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/opensanslight"
-                android:padding="8dp"
+                android:padding="@dimen/padding_medium"
+                android:textSize="@dimen/text_small"
                 android:text="@string/label_street_type"
                 android:textColor="@color/colorAccentSecondary" />
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:background="@drawable/spinner_bg">
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:background="@drawable/spinner_bg"
+                >
 
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/sp_street_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/demo_list"
-                    android:padding="16dp" />
+                    android:padding="@dimen/padding_large"
+                    />
 
             </FrameLayout>
 
@@ -71,13 +74,13 @@
                     android:id="@+id/et_name_street"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_name_of_street"
                     android:inputType="textNoSuggestions"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -87,15 +90,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/opensanslight"
-                android:padding="8dp"
+                android:padding="@dimen/padding_medium"
                 android:text="@string/label_object_type"
+                android:textSize="@dimen/text_small"
                 android:textColor="@color/colorAccentSecondary" />
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
                 android:background="@drawable/spinner_bg">
 
                 <android.support.v7.widget.AppCompatSpinner
@@ -103,7 +107,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/demo_list"
-                    android:padding="16dp" />
+                    android:padding="@dimen/padding_large" />
 
             </FrameLayout>
 
@@ -112,15 +116,17 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/opensanslight"
-                android:padding="8dp"
+                android:padding="@dimen/padding_medium"
                 android:text="@string/label_building_status"
-                android:textColor="@color/colorAccentSecondary" />
+                android:textColor="@color/colorAccentSecondary"
+                android:textSize="@dimen/text_small"
+                />
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
                 android:background="@drawable/spinner_bg">
 
                 <android.support.v7.widget.AppCompatSpinner
@@ -128,7 +134,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/demo_list"
-                    android:padding="16dp" />
+                    android:padding="@dimen/padding_large" />
 
             </FrameLayout>
 
@@ -136,19 +142,19 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="@dimen/margin_medium">
 
                 <EditText
                     android:id="@+id/et_house"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_building_number"
                     android:inputType="textNoSuggestions"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
@@ -163,16 +169,21 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:layout_marginTop="@dimen/margin_medium"
                     android:background="@color/colorPrimary"
-                    android:drawablePadding="8dp"
-                    android:paddingEnd="32dp"
-                    android:paddingStart="32dp"
+                    android:drawablePadding="@dimen/padding_medium"
+                    android:paddingEnd="@dimen/padding_large"
+                    android:paddingStart="@dimen/padding_large"
+                    android:paddingTop="@dimen/btn_padding_left_right"
+                    android:paddingBottom="@dimen/btn_padding_left_right"
+
                     android:text="@string/select_from_map"
                     android:textAllCaps="false"
-                    android:textColor="#fcfcfe" />
+                    android:textColor="#fcfcfe"
+                    android:textSize="@dimen/text_ex_small"
+                    />
 
                 <TextView
                     android:id="@+id/locationIndicator"
@@ -180,11 +191,13 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginRight="@dimen/margin_medium"
                     android:text="@string/label_not_have_mark"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_ex_small"/>
 
             </RelativeLayout>
+
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -194,13 +207,13 @@
                     android:id="@+id/et_owner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_owner_or_organization_owner"
                     android:inputType="textNoSuggestions"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -212,14 +225,15 @@
                     android:id="@+id/et_count_of_living"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_count_of_lives_study_etc"
-                    android:lines="2"
-                    android:minLines="2"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small"
+
+                    />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -230,13 +244,13 @@
                     android:id="@+id/et_comment_in_add_building"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_comment"
 
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -254,13 +268,13 @@
                         android:id="@+id/et_territory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_medium"
                         android:fontFamily="@font/opensansregular"
                         android:hint="@string/hint_territory"
                         android:inputType="textNoSuggestions"
-                        android:padding="16dp"
-                        android:textSize="14sp" />
+                        android:padding="@dimen/padding_large"
+                        android:textSize="@dimen/text_small" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -271,13 +285,13 @@
                         android:id="@+id/et_total_flats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_medium"
                         android:fontFamily="@font/opensansregular"
                         android:hint="@string/hint_total_flats"
                         android:inputType="numberSigned"
-                        android:padding="16dp"
-                        android:textSize="14sp" />
+                        android:padding="@dimen/padding_large"
+                        android:textSize="@dimen/text_small" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -288,13 +302,13 @@
                         android:id="@+id/et_area"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_medium"
                         android:fontFamily="@font/opensansregular"
                         android:hint="@string/hint_area"
                         android:inputType="numberDecimal"
-                        android:padding="16dp"
-                        android:textSize="14sp" />
+                        android:padding="@dimen/padding_large"
+                        android:textSize="@dimen/text_small" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -305,13 +319,13 @@
                         android:id="@+id/et_floors"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_medium"
                         android:fontFamily="@font/opensansregular"
                         android:hint="@string/hint_floors"
                         android:inputType="numberDecimal"
-                        android:padding="16dp"
-                        android:textSize="14sp" />
+                        android:padding="@dimen/padding_large"
+                        android:textSize="@dimen/text_small" />
                 </android.support.design.widget.TextInputLayout>
 
                 <!--<TextView-->
@@ -343,10 +357,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:layout_marginTop="@dimen/margin_medium"
                     android:fontFamily="@font/opensansbold"
-                    android:padding="8dp"
+                    android:padding="@dimen/padding_medium"
                     android:text="@string/hint_address"
                     android:textAllCaps="true"
                     android:textColor="@color/text_primary" />
@@ -355,13 +369,13 @@
                     android:id="@+id/et_full_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_full_address"
                     android:inputType="textPostalAddress"
-                    android:padding="16dp"
-                    android:textSize="14sp" />
+                    android:padding="@dimen/padding_large"
+                    android:textSize="@dimen/text_small" />
 
 
                 <TextView
@@ -369,15 +383,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/opensanslight"
-                    android:padding="8dp"
+                    android:padding="@dimen/padding_medium"
                     android:text="@string/label_region"
                     android:textColor="@color/colorAccentSecondary" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:background="@drawable/spinner_bg">
 
                     <android.support.v7.widget.AppCompatSpinner
@@ -385,7 +399,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:entries="@array/demo_list"
-                        android:padding="16dp" />
+                        android:padding="@dimen/padding_large"
+                        />
 
                 </FrameLayout>
 
@@ -394,15 +409,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/opensanslight"
-                    android:padding="8dp"
+                    android:padding="@dimen/padding_medium"
                     android:text="@string/label_street"
                     android:textColor="@color/colorAccentSecondary" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:background="@drawable/spinner_bg">
 
                     <android.support.v7.widget.AppCompatSpinner
@@ -410,7 +425,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:entries="@array/demo_list"
-                        android:padding="16dp" />
+                        android:padding="@dimen/padding_large" />
 
                 </FrameLayout>
 
@@ -418,10 +433,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:layout_marginTop="@dimen/margin_medium"
                     android:fontFamily="@font/opensansbold"
-                    android:padding="8dp"
+                    android:padding="@dimen/padding_medium"
                     android:text="@string/label_location"
                     android:textAllCaps="true"
                     android:textColor="@color/text_primary" />
@@ -434,13 +449,13 @@
                         android:id="@+id/et_latitude"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_medium"
                         android:enabled="false"
                         android:fontFamily="@font/opensansregular"
                         android:hint="@string/hint_latitude"
-                        android:padding="16dp"
-                        android:textSize="14sp" />
+                        android:padding="@dimen/padding_large"
+                        android:textSize="@dimen/text_small" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -451,13 +466,13 @@
                         android:id="@+id/et_longitude"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_medium"
                         android:enabled="false"
                         android:fontFamily="@font/opensansregular"
                         android:hint="@string/hint_longitude"
-                        android:padding="16dp"
-                        android:textSize="14sp" />
+                        android:padding="@dimen/padding_large"
+                        android:textSize="@dimen/text_small" />
                 </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
@@ -469,15 +484,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
                 android:background="@color/colorPrimary"
-                android:paddingEnd="50dp"
-                android:paddingStart="50dp"
+                android:paddingEnd="@dimen/btn_padding_top_bottom"
+                android:paddingStart="@dimen/btn_padding_top_bottom"
+                android:paddingLeft="@dimen/btn_padding_left_right"
+                android:paddingRight="@dimen/btn_padding_left_right"
+                android:paddingTop="@dimen/padding_medium"
+                android:paddingBottom="@dimen/padding_medium"
                 android:text="@string/save"
                 android:textAllCaps="false"
                 android:textColor="#f7f7fb"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_small_medium"
+                tools:visibility="visible"
+                />
 
         </LinearLayout>
 

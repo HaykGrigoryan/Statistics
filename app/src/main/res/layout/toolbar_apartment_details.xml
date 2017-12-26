@@ -23,6 +23,6 @@
         android:text="@string/title_add_apartment"
         android:textAlignment="center"
         android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:textSize="@dimen/text_medium" />
 
 </RelativeLayout>
