@@ -28,7 +28,9 @@
                 android:paddingRight="@dimen/padding_small"
                 android:text="Task #1"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_medium" />
+                android:textSize="@dimen/text_medium"
+                android:textStyle="bold"
+                />
 
             <TextView
                 android:id="@+id/tv_date"
