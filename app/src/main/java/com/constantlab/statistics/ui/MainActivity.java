@@ -1,6 +1,7 @@
 package com.constantlab.statistics.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Address;
@@ -64,40 +66,32 @@ public class MainActivity extends BaseActivity implements INavigation {
 
         showTaskFragment(TasksFragment.newInstance(), false);
         showTaskContainer();
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-        refreshBottomNavigationSize(bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.tab_tasks:
-                                showTaskContainer();
-                                break;
-                            case R.id.tab_sync:
-                                showFragment(SyncFragment.newInstance(), false);
-                                hideTaskContainer();
-                                break;
-                            case R.id.tab_map:
-                                showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
-                                hideTaskContainer();
-                                break;
+        BottomBar bottomBar = findViewById(R.id.bottom_navigation);
+        bottomBar.setOnTabSelectListener(tabId -> {
+            switch (tabId) {
+                case R.id.tab_tasks:
+                    showTaskContainer();
+                    break;
+                case R.id.tab_sync:
+                    showFragment(SyncFragment.newInstance(), false);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideTaskContainer();
                         }
-//                        switch (item.getItemId()) {
-//                            case R.id.action_favorites:
-//
-//                            case R.id.action_schedules:
-//
-//                            case R.id.action_music:
-//
-//                        }
-                        return true;
-                    }
-                });
-//        bottomBar.setOnTabSelectListener(tabId -> {
-//
-//        });
+                    },100);
+                    break;
+                case R.id.tab_map:
+                    showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideTaskContainer();
+                        }
+                    },100);
+                    break;
+            }
+        });
 
         NotificationCenter.getInstance().addNavigationListener(this);
     }
