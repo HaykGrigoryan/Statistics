@@ -24,92 +24,32 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/tv_date"
-                android:paddingRight="@dimen/padding_small"
                 android:fontFamily="@font/opensanslight"
+                android:paddingRight="@dimen/padding_small"
+                android:text="Task #1"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_medium"
-                android:text="Task #1" />
+                android:textSize="@dimen/text_medium" />
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/opensanslight"
+                android:text="21.12.2017"
+                android:paddingLeft="@dimen/padding_medium"
+                android:paddingRight="@dimen/padding_medium"
                 android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_small"
-                android:text="21.12.2017"/>
+                android:layout_toLeftOf="@+id/btn_history"
+                android:textSize="@dimen/text_small" />
 
-            <!--<TextView-->
-            <!--android:id="@+id/tv_buildings_label"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@id/tv_task_name"-->
-            <!--android:fontFamily="@font/opensansregular"-->
-            <!--android:paddingBottom="8dp"-->
-            <!--android:paddingEnd="16dp"-->
-            <!--android:paddingStart="16dp"-->
-            <!--android:text="@string/buildings"-->
-            <!--android:textColor="@color/colorAccent" />-->
-
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_total_buildings"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignTop="@id/tv_buildings_label"-->
-            <!--android:layout_toEndOf="@id/tv_buildings_label"-->
-            <!--android:fontFamily="@font/opensansbold"-->
-            <!--android:textColor="@color/text_primary"-->
-            <!--tools:text="55" />-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_rooms_label"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@id/tv_buildings_label"-->
-            <!--android:fontFamily="@font/opensansregular"-->
-            <!--android:paddingBottom="8dp"-->
-            <!--android:paddingEnd="16dp"-->
-            <!--android:paddingStart="16dp"-->
-            <!--android:text="@string/apartments"-->
-            <!--android:textColor="@color/colorAccent" />-->
-
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_total_rooms"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignTop="@id/tv_rooms_label"-->
-            <!--android:layout_toEndOf="@id/tv_rooms_label"-->
-            <!--android:fontFamily="@font/opensansbold"-->
-            <!--android:textColor="@color/text_primary"-->
-            <!--tools:text="32" />-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_residents_label"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@id/tv_rooms_label"-->
-            <!--android:fontFamily="@font/opensansregular"-->
-            <!--android:paddingBottom="16dp"-->
-            <!--android:paddingEnd="16dp"-->
-            <!--android:paddingStart="16dp"-->
-            <!--android:text="@string/residents"-->
-            <!--android:textColor="@color/colorAccent" />-->
-
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_total_residents"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignTop="@id/tv_residents_label"-->
-            <!--android:layout_toEndOf="@id/tv_residents_label"-->
-            <!--android:fontFamily="@font/opensansbold"-->
-            <!--android:textColor="@color/text_primary"-->
-            <!--tools:text="120" />-->
-
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/btn_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_history" />
 
         </RelativeLayout>
 

@@ -23,6 +23,7 @@
 <!--activity_main.xml-->
 
     <dimen name="toolbar_title">18sp</dimen>
+    <dimen name="toolbar_title_small">14sp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="padding_small">5dp</dimen>
     <dimen name="padding_medium">10dp</dimen>

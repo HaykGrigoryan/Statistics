@@ -49,6 +49,7 @@
     <string name="label_area">Area</string>
     <string name="message_no_apartments">Нет Квартир в этом Здании</string>
     <string name="message_no_buildings">Нет Зданий</string>
+    <string name="message_no_history">Нет Изменений</string>
     <string name="message_no_streets">Нет Улиц</string>
     <string name="title_add_apartment">Добавить квартиру</string>
     <string name="hint_apartment_number">Номер квартиры</string>

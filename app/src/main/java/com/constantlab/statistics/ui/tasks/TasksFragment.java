@@ -20,6 +20,7 @@ import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.buildings.BuildingActivity;
 import com.constantlab.statistics.ui.buildings.BuildingsFragment;
+import com.constantlab.statistics.ui.history.HistoryFragment;
 import com.constantlab.statistics.ui.street.StreetFragment;
 import com.constantlab.statistics.utils.Actions;
 import com.constantlab.statistics.utils.NotificationCenter;
@@ -105,6 +106,11 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
 //        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.VIEW_BUILDINGS);
 //        intent.putExtra(BuildingActivity.TASK_TAG, task.getId());
 //        startActivityForResult(intent, REQUEST_BUILDINGS);
+    }
+
+    @Override
+    public void onTaskHistory(Task task, int position) {
+        NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
     }
 
     @Override

@@ -3,7 +3,10 @@ package com.constantlab.statistics.ui.customviews;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -23,7 +26,7 @@ public class TaskView extends FrameLayout {
     TextView tvTotalBuildings;
     TextView tvTotalApartments;
     TextView tvTotalResidents;
-
+    AppCompatImageView btnHistory;
     public TaskView(Context context) {
         super(context);
         init();
@@ -49,6 +52,7 @@ public class TaskView extends FrameLayout {
     private void init() {
         inflate(getContext(), R.layout.view_task, this);
         tvTaskName = findViewById(R.id.tv_task_name);
+        btnHistory = findViewById(R.id.btn_history);
 //        tvTotalBuildings = findViewById(R.id.tv_total_buildings);
 //        tvTotalApartments = findViewById(R.id.tv_total_rooms);
 //        tvTotalResidents = findViewById(R.id.tv_total_residents);
@@ -59,6 +63,10 @@ public class TaskView extends FrameLayout {
 //        tvTotalResidents.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalResidents()));
 //        tvTotalApartments.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalApartments()));
 //        tvTotalBuildings.setText(String.format(Locale.getDefault(), FORMAT, task.getTotalBuildings()));
+    }
+
+    public void setHistoryButtonListener(View.OnClickListener listener) {
+        btnHistory.setOnClickListener(listener);
     }
 
 }

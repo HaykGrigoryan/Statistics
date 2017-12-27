@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.ui.customviews.BuildingView;
 import com.constantlab.statistics.ui.customviews.TaskView;
 
 import java.util.List;
@@ -47,6 +48,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskHolder> 
                 interactionListener.onTaskSelected(mTaskList.get(holder.getAdapterPosition()), holder.getAdapterPosition());
             }
         });
+
+        ((TaskView) holder.itemView).setHistoryButtonListener(view1 -> {
+            if (interactionListener != null) {
+                interactionListener.onTaskHistory(mTaskList.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+            }
+        });
         return holder;
     }
 
@@ -69,6 +76,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskHolder> 
 
     public interface InteractionListener {
         void onTaskSelected(Task task, int position);
+
+        void onTaskHistory(Task task, int position);
     }
 
     static class TaskHolder extends RecyclerView.ViewHolder {
