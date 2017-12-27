@@ -17,9 +17,7 @@
 
     <!--activity_main.xml-->
     <dimen name="bottomBar_height">120dp</dimen>
-    <dimen name="botomBar_img_size">58dp</dimen>
-
-    <dimen name="design_bottom_navigation_height" tools:override="true">56dp</dimen>
+    <dimen name="botomBar_img_size">48dp</dimen>
     <!--activity_main.xml-->
 
     <dimen name="toolbar_title">36sp</dimen>
@@ -28,7 +26,7 @@
     <dimen name="padding_medium">18dp</dimen>
     <dimen name="padding_large">26dp</dimen>
     <dimen name="padding_ex_large">64dp</dimen>
-    <dimen name="bb_height">104dp</dimen>
+    <dimen name="bb_height">98dp</dimen>
     <dimen name="btn_padding_top_bottom">90dp</dimen>
     <dimen name="btn_padding_left_right">40dp</dimen>
 
