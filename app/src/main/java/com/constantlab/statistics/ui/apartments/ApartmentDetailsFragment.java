@@ -116,8 +116,8 @@ public class ApartmentDetailsFragment extends BaseFragment {
             if (apartmentType != null) {
                 index = apartmentTypes.indexOf(apartmentType);
             }
-            ArrayAdapter<ApartmentType> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, apartmentTypes);
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<ApartmentType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, apartmentTypes);
+            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spApartmentType.setAdapter(arrayAdapter);
             if (index != -1) {
                 spApartmentType.setSelection(index);

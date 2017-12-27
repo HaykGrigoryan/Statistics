@@ -216,8 +216,8 @@ public class BuildingDetailsFragment extends BaseFragment {
             if (buildingStatus != null) {
                 index = buildingStatuses.indexOf(buildingStatus);
             }
-            ArrayAdapter<BuildingStatus> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, buildingStatuses);
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<BuildingStatus> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, buildingStatuses);
+            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spBuildingStatus.setAdapter(arrayAdapter);
             if (index != -1) {
                 spBuildingStatus.setSelection(index);
@@ -238,8 +238,8 @@ public class BuildingDetailsFragment extends BaseFragment {
             if (streetType != null) {
                 index = streetTypeList.indexOf(streetType);
             }
-            ArrayAdapter<StreetType> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, streetTypeList);
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<StreetType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, streetTypeList);
+            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spStreetType.setAdapter(arrayAdapter);
             if (index != -1) {
                 spStreetType.setSelection(index);

@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/demo_list"
-                    android:padding="@dimen/padding_large" />
+                    android:padding="@dimen/padding_medium" />
 
             </FrameLayout>
 

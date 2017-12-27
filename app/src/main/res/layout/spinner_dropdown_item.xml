@@ -23,6 +23,6 @@
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_small"
-    android:textSize="@dimen/text_small_medium"
+    android:padding="@dimen/padding_medium"
+    android:textSize="@dimen/text_small"
     android:ellipsize="marquee"/>
