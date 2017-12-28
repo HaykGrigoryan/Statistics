@@ -56,7 +56,7 @@ public class ApartmentView extends RelativeLayout {
     }
 
     public void setData(Apartment apartment) {
-        tvApartmentNumber.setText(apartment.getApartmentNumber());
+        tvApartmentNumber.setText(getContext().getString(R.string.label_apt_no) + " " + apartment.getApartmentNumber());
 //        tvArea.setText(String.format(Locale.getDefault(), FORMAT, apartment.getAreaSquare()));
 //        tvTotalRooms.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalRooms()));
         if (apartment.getTotalInhabitants() != null)

@@ -153,18 +153,18 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
 //        intent.putExtra(ApartmentActivity.APARTMENT_TAG, apartment.getId());
 //        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ADD_APARTMENT && resultCode == Activity.RESULT_OK) {
-            mApartmentAdapter.clear();
-            showDummyData();
-            getActivity().setResult(Activity.RESULT_OK);
-        } else if (requestCode == REQUEST_EDIT_APARTMENT && resultCode == Activity.RESULT_OK) {
-            mApartmentAdapter.clear();
-            showDummyData();
-            getActivity().setResult(Activity.RESULT_OK);
-        }
-    }
+//
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_ADD_APARTMENT && resultCode == Activity.RESULT_OK) {
+//            mApartmentAdapter.clear();
+//            showDummyData();
+//            getActivity().setResult(Activity.RESULT_OK);
+//        } else if (requestCode == REQUEST_EDIT_APARTMENT && resultCode == Activity.RESULT_OK) {
+//            mApartmentAdapter.clear();
+//            showDummyData();
+//            getActivity().setResult(Activity.RESULT_OK);
+//        }
+//    }
 }

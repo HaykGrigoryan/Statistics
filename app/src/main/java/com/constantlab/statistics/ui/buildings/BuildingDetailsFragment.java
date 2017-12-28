@@ -26,6 +26,8 @@ import com.constantlab.statistics.ui.map.MapActivity;
 import com.constantlab.statistics.ui.map.MapFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -111,6 +113,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         if (buildingId != -1) {
             setStoredData();
         }
+        loadSpinnerContent();
         return view;
     }
 
@@ -152,12 +155,70 @@ public class BuildingDetailsFragment extends BaseFragment {
 //        setupHouseWall(object.getHouseWall());
         mSelectedLon = object.getLatitude();
         mSelectedLon = object.getLongitude();
-        setupBuildingStatus(object.getBuildingStatus());
-        setupBuildingType(object.getBuildingType());
+//        setupBuildingStatus(object.getBuildingStatus());
+//        setupBuildingType(object.getBuildingType());
         setupRegion(object.getAddress().getKato());
         setupStreet(object.getAddress().getStreet());
-        setupStreetType(object.getAddress().getStreetType());
+//        setupStreetType(object.getAddress().getStreetType());
         updateLocationIndicator(object.getLatitude() != null && object.getLongitude() != null);
+    }
+
+    private void loadSpinnerContent() {
+        loadBuildingType();
+        loadBuildingStatus();
+        loadStreetType();
+    }
+
+    private void loadBuildingType() {
+        List<BuildingType> types = new ArrayList<>();
+
+        ArrayList<String> arrayListBuildingType = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
+        int id = 1;
+        for (String name: arrayListBuildingType) {
+            BuildingType buildingType = new BuildingType();
+            buildingType.setId(id++);
+            buildingType.setType(name);
+            types.add(buildingType);
+        }
+        ArrayAdapter<BuildingType> arrayAdapterEditBl = new ArrayAdapter<BuildingType>(getContext(),R.layout.spinner_item,types);
+        arrayAdapterEditBl.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spBuildingType.setAdapter(arrayAdapterEditBl);
+    }
+
+    private void loadBuildingStatus() {
+        List<BuildingStatus> types = new ArrayList<>();
+
+        ArrayList<String> arrayListBuildingStatus = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
+        int id = 1;
+        for (String name: arrayListBuildingStatus) {
+            BuildingStatus buildingStatus = new BuildingStatus();
+            buildingStatus.setId(id++);
+            buildingStatus.setStatus(name);
+            types.add(buildingStatus);
+        }
+
+        ArrayAdapter<BuildingStatus> arrayAdapterEditSt = new ArrayAdapter<BuildingStatus>(getContext(),R.layout.spinner_item,types);
+        arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spBuildingStatus.setAdapter(arrayAdapterEditSt);
+    }
+
+    private void loadStreetType() {
+        List<StreetType> types = new ArrayList<>();
+
+        List<String> arrayListStreetTp = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
+
+        int id = 1;
+        for (String name: arrayListStreetTp) {
+            StreetType streetType = new StreetType();
+            streetType.setId(id++);
+            streetType.setTitleRu(name);
+            types.add(streetType);
+        }
+
+
+        ArrayAdapter<StreetType> arrayAdapterEditSt = new ArrayAdapter<StreetType>(getContext(),R.layout.spinner_item, types);
+        arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spStreetType.setAdapter(arrayAdapterEditSt);
     }
 
 

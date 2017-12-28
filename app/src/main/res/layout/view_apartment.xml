@@ -27,32 +27,17 @@
                 android:paddingStart="@dimen/padding_large"
                 android:paddingTop="@dimen/padding_medium">
 
-                <TextView
-                    android:id="@+id/tv_apartment_no_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:textStyle="bold"
-                    android:fontFamily="@font/opensansregular"
-                    android:gravity="center_vertical"
-                    android:text="@string/label_apt_no"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/text_medium_large" />
 
                 <TextView
                     android:id="@+id/tv_apartment_no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/tv_apartment_no_label"
-                    android:layout_alignTop="@id/tv_apartment_no_label"
-                    android:layout_toEndOf="@id/tv_apartment_no_label"
                     android:fontFamily="@font/opensansregular"
                     android:gravity="center_vertical"
-                    android:maxLines="1"
-                    android:paddingEnd="8dp"
-                    android:textStyle="bold"
-                    android:paddingStart="8dp"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:layout_toLeftOf="@+id/btn_edit"
                     android:text="102"
+
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_medium_large" />
 
@@ -60,8 +45,8 @@
                     android:id="@+id/btn_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerInParent="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
                     app:srcCompat="@drawable/ic_edit" />
             </RelativeLayout>
 

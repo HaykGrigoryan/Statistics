@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.ApartmentType;
+import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 
@@ -158,10 +159,10 @@ public class ApartmentDetailsFragment extends BaseFragment {
             etApartmentNumber.setError(getString(R.string.error_empty_field));
         }
 
-        if (etTotalRooms.getText().toString().isEmpty()) {
-            proceed = false;
-            etTotalRooms.setError(getString(R.string.error_empty_field));
-        }
+//        if (etTotalRooms.getText().toString().isEmpty()) {
+//            proceed = false;
+//            etTotalRooms.setError(getString(R.string.error_empty_field));
+//        }
 
 //        if (etArea.getText().toString().isEmpty()) {
 //            proceed = false;
@@ -183,20 +184,31 @@ public class ApartmentDetailsFragment extends BaseFragment {
         try {
             realm = Realm.getDefaultInstance();
             realm.executeTransaction(realmObject -> {
-
                 Apartment a = realmObject.where(Apartment.class).equalTo("id", apartmentId).findFirst();
+                Apartment apartment = null;
                 if (a != null) {
-                    Apartment apartment = realmObject.copyFromRealm(a);
-                    apartment.setTotalRooms(Integer.parseInt(etTotalRooms.getText().toString().trim()));
-                    apartment.setTotalInhabitants(Integer.parseInt(etResidents.getText().toString().trim()));
-                    apartment.setOwnerName(etOwner.getText().toString().trim());
-                    apartment.setComment(etComment.getText().toString().trim());
-                    ApartmentType apartmentType = (ApartmentType) spApartmentType.getSelectedItem();
-                    apartment.setApartmentType(apartmentType);
-//                    apartment.setAreaSquare(Integer.parseInt(etArea.getText().toString().trim()));
-                    apartment.setApartmentNumber(etApartmentNumber.getText().toString().trim());
-                    realmObject.insertOrUpdate(apartment);
+                    apartment = realmObject.copyFromRealm(a);
+                } else {
+                    apartment = new Apartment();
+                    Number currentIdNum = realmObject.where(Apartment.class).max("id");
+                    int nextId;
+                    if (currentIdNum == null) {
+                        nextId = 1;
+                    } else {
+                        nextId = currentIdNum.intValue() + 1;
+                    }
+                    apartment.setId(nextId);
                 }
+
+//                apartment.setTotalRooms(Integer.parseInt(etTotalRooms.getText().toString().trim()));
+                apartment.setTotalInhabitants(Integer.parseInt(etResidents.getText().toString().trim()));
+                apartment.setOwnerName(etOwner.getText().toString().trim());
+                apartment.setComment(etComment.getText().toString().trim());
+                apartment.setApartmentType((ApartmentType) spApartmentType.getSelectedItem());
+//                    apartment.setAreaSquare(Integer.parseInt(etArea.getText().toString().trim()));
+                apartment.setApartmentNumber(etApartmentNumber.getText().toString().trim());
+                realmObject.insertOrUpdate(apartment);
+
             });
         } finally {
             if (realm != null) {

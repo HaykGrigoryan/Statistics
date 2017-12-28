@@ -29,20 +29,21 @@
                 android:text="Task #1"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/text_medium"
-                android:textStyle="bold"
+
                 />
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:layout_alignBaseline="@+id/tv_task_name"
+                android:layout_alignBottom="@+id/tv_task_name"
+                android:layout_toStartOf="@+id/btn_history"
                 android:fontFamily="@font/opensanslight"
-                android:text="21.12.2017"
                 android:paddingLeft="@dimen/padding_medium"
                 android:paddingRight="@dimen/padding_medium"
+                android:text="21.12.2017"
                 android:textColor="@color/text_primary"
-                android:layout_toLeftOf="@+id/btn_history"
                 android:textSize="@dimen/text_small" />
 
             <android.support.v7.widget.AppCompatImageView
@@ -50,7 +51,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_history" />
 
         </RelativeLayout>

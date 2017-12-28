@@ -11,5 +11,7 @@
     <style name="BottomBarText" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">@dimen/text_super_ex_small</item>
     </style>
-
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

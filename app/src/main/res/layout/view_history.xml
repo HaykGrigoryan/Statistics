@@ -36,7 +36,6 @@
                     android:paddingRight="@dimen/padding_small"
                     android:text="Change #1"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:textStyle="bold"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_medium_large" />
             </RelativeLayout>

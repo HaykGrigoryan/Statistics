@@ -46,7 +46,6 @@
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/btn_edit"
                     android:paddingRight="@dimen/padding_small"
-                    android:textStyle="bold"
                     android:fontFamily="@font/opensanslight"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_medium_large"

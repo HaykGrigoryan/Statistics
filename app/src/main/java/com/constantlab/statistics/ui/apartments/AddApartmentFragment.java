@@ -74,13 +74,10 @@ public class AddApartmentFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_apartment, container, false);
         ButterKnife.bind(this, view);
-        setInitialData();
+        setApartmentTypes();
         return view;
     }
 
-    private void setInitialData() {
-        setApartmentTypes();
-    }
 
     private void setApartmentTypes() {
         Realm realm = null;
@@ -88,9 +85,11 @@ public class AddApartmentFragment extends BaseFragment {
             realm = Realm.getDefaultInstance();
             RealmResults<ApartmentType> realmResults = realm.where(ApartmentType.class).findAll();
             List<ApartmentType> apartmentTypes = realm.copyFromRealm(realmResults);
-            ArrayAdapter<ApartmentType> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, apartmentTypes);
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<ApartmentType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, apartmentTypes);
+            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spApartmentType.setAdapter(arrayAdapter);
+
+
         } finally {
             if (realm != null)
                 realm.close();

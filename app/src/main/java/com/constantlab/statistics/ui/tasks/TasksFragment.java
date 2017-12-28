@@ -145,6 +145,7 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
                     }
                     task.setTotalApartments(totalApartments);
                     task.setTotalResidents(totalResidents);
+
                 }
             });
         } finally {
