@@ -49,16 +49,12 @@ public class ApartmentView extends RelativeLayout {
     private void init() {
         inflate(getContext(), R.layout.view_apartment, this);
         tvApartmentNumber = findViewById(R.id.tv_apartment_no);
-//        tvTotalRooms = findViewById(R.id.tv_total_rooms);
         tvResidents = findViewById(R.id.tv_total_residents);
-//        tvArea = findViewById(R.id.tv_area);
         btnEdit = findViewById(R.id.btn_edit);
     }
 
     public void setData(Apartment apartment) {
         tvApartmentNumber.setText(getContext().getString(R.string.label_apt_no) + " " + apartment.getApartmentNumber());
-//        tvArea.setText(String.format(Locale.getDefault(), FORMAT, apartment.getAreaSquare()));
-//        tvTotalRooms.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalRooms()));
         if (apartment.getTotalInhabitants() != null)
             tvResidents.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalInhabitants()));
         else

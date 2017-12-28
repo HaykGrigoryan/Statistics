@@ -11,7 +11,6 @@ public class Address extends RealmObject {
     private StreetType streetType;
     private Kato kato;
     private String addressRu;
-    private String addressKk;
 
     public AddressStreet getStreet() {
         return street;
@@ -45,11 +44,4 @@ public class Address extends RealmObject {
         this.addressRu = addressRu;
     }
 
-    public String getAddressKk() {
-        return addressKk;
-    }
-
-    public void setAddressKk(String addressKk) {
-        this.addressKk = addressKk;
-    }
 }

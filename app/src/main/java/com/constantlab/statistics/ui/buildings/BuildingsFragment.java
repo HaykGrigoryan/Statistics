@@ -135,28 +135,16 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     @Override
     public void onEditBuilding(Building building, int adapterPosition) {
         NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(building.getId(), building.getDisplayAddress(getContext())));
-//        Intent intent = new Intent(getContext(), BuildingActivity.class);
-//        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.EDIT_BUILDING);
-//        intent.putExtra(BuildingActivity.BUILDING_TAG, building.getId());
-//        startActivityForResult(intent, REQUEST_EDIT_BUILDING);
     }
 
     @Override
     public void onBuildingDetail(Building building, int adapterPosition) {
         NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext())));
-//        Intent intent = new Intent(getContext(), ApartmentActivity.class);
-//        intent.putExtra(ApartmentActivity.BUILDING_TAG, building.getId());
-//        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.VIEW_APARTMENTS);
-//        startActivityForResult(intent, REQUEST_APARTMENTS);
     }
 
     @OnClick(R.id.iv_add)
     public void addBuilding() {
         NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null));
-//        Intent intent = new Intent(getContext(), BuildingActivity.class);
-//        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.ADD_BUILDING);
-//        intent.putExtra(BuildingActivity.TASK_TAG, taskId);
-//        startActivityForResult(intent, REQUEST_ADD_BUILDING);
     }
 
     @OnClick(R.id.iv_back)

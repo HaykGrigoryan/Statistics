@@ -28,6 +28,7 @@ public class FABAwareScrollingViewBehavior extends AppBarLayout.ScrollingViewBeh
     @Override
     public boolean onStartNestedScroll(final CoordinatorLayout coordinatorLayout, final View child,
                                        final View directTargetChild, final View target, final int nestedScrollAxes) {
+
         // Ensure we react to vertical scrolling
         return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL
                 || super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target, nestedScrollAxes);
@@ -39,6 +40,7 @@ public class FABAwareScrollingViewBehavior extends AppBarLayout.ScrollingViewBeh
                                final int dxUnconsumed, final int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
         if (dyConsumed > 0) {
+
             // User scrolled down -> hide the FAB
             List<View> dependencies = coordinatorLayout.getDependencies(child);
             for (View view : dependencies) {
@@ -47,6 +49,7 @@ public class FABAwareScrollingViewBehavior extends AppBarLayout.ScrollingViewBeh
                 }
             }
         } else if (dyConsumed < 0) {
+
             // User scrolled up -> show the FAB
             List<View> dependencies = coordinatorLayout.getDependencies(child);
             for (View view : dependencies) {

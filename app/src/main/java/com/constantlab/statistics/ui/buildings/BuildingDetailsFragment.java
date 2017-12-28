@@ -51,34 +51,14 @@ public class BuildingDetailsFragment extends BaseFragment {
     Button btnMap;
     @BindView(R.id.et_house)
     EditText etHouse;
-    //    @BindView(R.id.et_floors)
-//    EditText etFloors;
-//    @BindView(R.id.et_total_flats)
-//    EditText etTotalFlats;
-//    @BindView(R.id.et_area)
-//    EditText etArea;
     @BindView(R.id.sp_building_status)
     Spinner spBuildingStatus;
     @BindView(R.id.sp_building_type)
     Spinner spBuildingType;
     @BindView(R.id.et_owner)
     EditText etOwner;
-    //    @BindView(R.id.et_territory)
-//    EditText etTerritory;
-    //    @BindView(R.id.sp_house_wall)
-//    Spinner spHouseWall;
-//    @BindView(R.id.et_full_address)
-//    EditText etAddress;
-//    @BindView(R.id.sp_region)
-//    Spinner spRegions;
-//    @BindView(R.id.sp_street)
-//    Spinner spStreet;
     @BindView(R.id.sp_street_type)
     Spinner spStreetType;
-    //    @BindView(R.id.et_latitude)
-//    EditText etLatitude;
-//    @BindView(R.id.et_longitude)
-//    EditText etLongitude;
     @BindView(R.id.btn_save)
     Button btnSave;
     @BindView(R.id.locationIndicator)
@@ -142,24 +122,12 @@ public class BuildingDetailsFragment extends BaseFragment {
     }
 
     private void showData(Building object) {
-//        btnSave.setVisibility(View.GONE);
-//        etAddress.setText(object.getAddress().getAddressRu());
-//        etArea.setText(object.getAreaSq() != null ? String.format(Locale.getDefault(), "%f", object.getAreaSq()) : "");
-//        etLatitude.setText(object.getLatitude() != null ? String.format(Locale.getDefault(), "%f", object.getLatitude()) : "");
-//        etLongitude.setText(object.getLongitude() != null ? String.format(Locale.getDefault(), "%f", object.getLongitude()) : "");
-//        etFloors.setText(object.getFloorNumber() != null ? String.format(Locale.getDefault(), "%d", object.getFloorNumber()) : "");
         etHouse.setText(object.getHouseNumber() != null ? object.getHouseNumber() : "");
-//        etTotalFlats.setText(object.getTotalFlats() != null ? String.format(Locale.getDefault(), "%d", object.getTotalFlats()) : "");
         etOwner.setText(object.getOwnerName());
-//        etTerritory.setText(object.getTerritoryName());
-//        setupHouseWall(object.getHouseWall());
         mSelectedLon = object.getLatitude();
         mSelectedLon = object.getLongitude();
-//        setupBuildingStatus(object.getBuildingStatus());
-//        setupBuildingType(object.getBuildingType());
         setupRegion(object.getAddress().getKato());
         setupStreet(object.getAddress().getStreet());
-//        setupStreetType(object.getAddress().getStreetType());
         updateLocationIndicator(object.getLatitude() != null && object.getLongitude() != null);
     }
 
@@ -437,29 +405,16 @@ public class BuildingDetailsFragment extends BaseFragment {
                     }
                     building.setId(nextId);
                 }
-//                building.setAreaSq(Float.valueOf(etArea.getText().toString().trim()));
-//                building.setTotalFlats(Integer.valueOf(etTotalFlats.getText().toString().trim()));
                 building.setHouseNumber(etHouse.getText().toString().trim());
-//                building.setFloorNumber(Integer.valueOf(etFloors.getText().toString().trim()));
                 Address address = building.getAddress();
-//                address.setAddressRu(etAddress.getText().toString().trim());
-//                Kato kato = (Kato) spRegions.getSelectedItem();
-//                address.setKato(kato);
-//                AddressStreet street = (AddressStreet) spStreet.getSelectedItem();
-//                address.setStreet(street);
                 StreetType streetType = (StreetType) spStreetType.getSelectedItem();
                 address.setStreetType(streetType);
                 building.setAddress(address);
-//                    HouseWall houseWall = (HouseWall) spHouseWall.getSelectedItem();
-//                    building.setHouseWall(houseWall);
                 BuildingType buildingType = (BuildingType) spBuildingType.getSelectedItem();
                 building.setBuildingType(buildingType);
                 BuildingStatus buildingStatus = (BuildingStatus) spBuildingStatus.getSelectedItem();
                 building.setBuildingStatus(buildingStatus);
                 building.setOwnerName(etOwner.getText().toString().trim());
-//                building.setTerritoryName(etTerritory.getText().toString().trim());
-//                building.setLatitude(Double.valueOf(etLatitude.getText().toString().trim()));
-//                building.setLongitude(Double.valueOf(etLongitude.getText().toString().trim()));
                 building.setLatitude(mSelectedLat);
                 building.setLongitude(mSelectedLon);
                 realmObject.insertOrUpdate(building);
@@ -468,7 +423,6 @@ public class BuildingDetailsFragment extends BaseFragment {
             if (realm != null)
                 realm.close();
         }
-//        getActivity().setResult(Activity.RESULT_OK);
         getActivity().onBackPressed();
     }
 
@@ -481,8 +435,6 @@ public class BuildingDetailsFragment extends BaseFragment {
             double latitude = data.getExtras().getDouble(MapActivity.LATITUDE_TAG);
             double longitude = data.getExtras().getDouble(MapActivity.LONGITUDE_TAG);
             if (isAdded()) {
-//                etLatitude.setText(String.format(Locale.getDefault(), "%f", latitude));
-//                etLongitude.setText(String.format(Locale.getDefault(), "%f", longitude));
                 mSelectedLat = latitude;
                 mSelectedLon = longitude;
                 updateLocationIndicator(true);

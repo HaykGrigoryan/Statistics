@@ -218,6 +218,7 @@ public class MainActivity extends BaseActivity implements INavigation {
                     task.setTotalBuildings(task.getStreetList().size());
                     int totalApartments = 0;
                     int totalResidents = 0;
+
                     //Count Apartments
                     for (Street street : task.getStreetList()) {
                         for (Building building : street.getBuildingList()) {
@@ -253,8 +254,8 @@ public class MainActivity extends BaseActivity implements INavigation {
                     RealmList<Building> buildingRealmList = new RealmList<>();
                     buildingRealmList.addAll(realmList);
                     street.setBuildingList(buildingRealmList);
-                    //Count Apartments
 
+                    //Count Apartments
                     street.setName("Иманова");
                     realmObject.insert(street);
                 });
@@ -273,8 +274,6 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realObject -> {
                     Building building = new Building();
                     building.setId(1);
-//                    HouseWall houseWall = realObject.where(HouseWall.class).findFirst();
-//                    building.setHouseWall(houseWall);
                     Address address = realObject.where(Address.class).findFirst();
                     building.setAddress(address);
                     building.setHouseNumber("11");
@@ -296,7 +295,6 @@ public class MainActivity extends BaseActivity implements INavigation {
                     ApartmentType apartmentType = realObject.where(ApartmentType.class).findFirst();
                     apartment.setApartmentType(apartmentType);
                     apartment.setOwnerName("Yerzhan Ryskaliyev");
-//                    apartment.setAreaSquare(85);
                     apartment.setTotalInhabitants(3);
                     apartment.setTotalRooms(4);
                     RealmList<Apartment> apartments = new RealmList<>();
@@ -356,29 +354,6 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.close();
         }
     }
-
-//    private void insertHouseWalls() {
-//        Realm realm = null;
-//        try {
-//            realm = Realm.getDefaultInstance();
-//            if (realm.where(HouseWall.class).findAll().size() == 0) {
-//                realm.executeTransaction(realmObject -> {
-//                    HouseWall houseWall = new HouseWall();
-//                    houseWall.setId(1);
-//                    houseWall.setTitleRu("Саман");
-//                    houseWall.setTitleKz("Саман");
-//                    realmObject.insertOrUpdate(houseWall);
-//                    houseWall.setId(2);
-//                    houseWall.setTitleRu("Крупнопанельный");
-//                    houseWall.setTitleKz("Ірі панельді");
-//                    realmObject.insertOrUpdate(houseWall);
-//                });
-//            }
-//        } finally {
-//            if (realm != null)
-//                realm.close();
-//        }
-//    }
 
     private void insertAddressStreets() {
         Realm realm = null;

@@ -46,8 +46,6 @@ public class AddApartmentFragment extends BaseFragment {
     @BindView(R.id.sp_apartment_type)
     Spinner spApartmentType;
 
-    //    @BindView(R.id.et_area)
-//    EditText etArea;
     @BindView(R.id.et_residents)
     EditText etResidents;
     @BindView(R.id.tv_save)
@@ -100,7 +98,6 @@ public class AddApartmentFragment extends BaseFragment {
     @OnClick(R.id.tv_save)
     public void save() {
         etApartmentNumber.setError(null);
-//        etArea.setError(null);
         etResidents.setError(null);
         etTotalRooms.setError(null);
         boolean proceed = true;
@@ -119,11 +116,6 @@ public class AddApartmentFragment extends BaseFragment {
             proceed = false;
             etOwner.setError(getString(R.string.error_empty_field));
         }
-//
-//        if (etArea.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etArea.setError(getString(R.string.error_empty_field));
-//        }
 
         if (etResidents.getText().toString().isEmpty()) {
             proceed = false;
@@ -156,7 +148,6 @@ public class AddApartmentFragment extends BaseFragment {
                 apartment.setComment(etComment.getText().toString().trim());
                 ApartmentType apartmentType = (ApartmentType) spApartmentType.getSelectedItem();
                 apartment.setApartmentType(apartmentType);
-//                apartment.setAreaSquare(Integer.parseInt(etArea.getText().toString().trim()));
                 apartment.setApartmentNumber(etApartmentNumber.getText().toString().trim());
 
                 Building building = realmObject.where(Building.class).equalTo("id", buildingId).findFirst();

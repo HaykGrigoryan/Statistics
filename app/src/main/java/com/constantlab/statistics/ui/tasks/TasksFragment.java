@@ -102,10 +102,6 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
     @Override
     public void onTaskSelected(Task task, int position) {
         NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
-//        Intent intent = new Intent(getContext(), BuildingActivity.class);
-//        intent.putExtra(BuildingActivity.ACTION_TAG, Actions.VIEW_BUILDINGS);
-//        intent.putExtra(BuildingActivity.TASK_TAG, task.getId());
-//        startActivityForResult(intent, REQUEST_BUILDINGS);
     }
 
     @Override
@@ -132,6 +128,7 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
                 for (Task task : realmResults) {
                     int totalApartments = 0;
                     int totalResidents = 0;
+
                     //Count Apartments
                     for (Street street: task.getStreetList()) {
                         for (Building building : street.getBuildingList()) {

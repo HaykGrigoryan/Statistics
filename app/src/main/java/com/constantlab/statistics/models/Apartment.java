@@ -18,7 +18,6 @@ public class Apartment extends RealmObject {
     private Integer totalRooms;
     private Integer totalInhabitants;
     private ApartmentType apartmentType;
-    //    private Integer areaSquare;
     private String ownerName;
     private String comment;
 
@@ -81,12 +80,4 @@ public class Apartment extends RealmObject {
     public String getDisplayName(Context context) {
         return context.getString(R.string.label_apt_no) + " " + getApartmentNumber();
     }
-//    public Integer getAreaSquare() {
-//        return areaSquare;
-//    }
-//
-//    public void setAreaSquare(Integer areaSquare) {
-//        this.areaSquare = areaSquare;
-//    }
-
 }

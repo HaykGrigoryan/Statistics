@@ -17,7 +17,6 @@ public class Building extends RealmObject {
     @PrimaryKey
     private Integer id;
     private Address address;
-    //    private HouseWall houseWall;
     private String houseNumber;
     private String territoryName;
     private BuildingStatus buildingStatus;
@@ -90,13 +89,6 @@ public class Building extends RealmObject {
     public String getDisplayAddress(Context context) {
         return context.getString(R.string.label_street_short) + " " + getAddress().getStreet().getTitleRu() + " " + context.getString(R.string.label_bld_short) + " " + getHouseNumber();
     }
-//    public HouseWall getHouseWall() {
-//        return houseWall;
-//    }
-//
-//    public void setHouseWall(HouseWall houseWall) {
-//        this.houseWall = houseWall;
-//    }
 
     public String getHouseNumber() {
         return houseNumber;

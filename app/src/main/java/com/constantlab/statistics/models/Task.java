@@ -19,24 +19,12 @@ public class Task extends RealmObject implements Serializable {
     private Integer totalResidents;
     private RealmList<Street> streetList;
 
-    public Integer getTotalBuildings() {
-        return totalBuildings;
-    }
-
     public void setTotalBuildings(Integer totalBuildings) {
         this.totalBuildings = totalBuildings;
     }
 
-    public Integer getTotalApartments() {
-        return totalApartments;
-    }
-
     public void setTotalApartments(Integer totalApartments) {
         this.totalApartments = totalApartments;
-    }
-
-    public Integer getTotalResidents() {
-        return totalResidents;
     }
 
     public void setTotalResidents(Integer totalResidents) {
@@ -58,7 +46,6 @@ public class Task extends RealmObject implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
 
     public String getTaskName() {
         return taskName;

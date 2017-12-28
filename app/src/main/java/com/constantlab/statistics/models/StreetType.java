@@ -36,16 +36,8 @@ public class StreetType extends RealmObject {
         this.id = id;
     }
 
-    public String getTitleRu() {
-        return titleRu;
-    }
-
     public void setTitleRu(String titleRu) {
         this.titleRu = titleRu;
-    }
-
-    public String getTitleKk() {
-        return titleKk;
     }
 
     public void setTitleKk(String titleKk) {

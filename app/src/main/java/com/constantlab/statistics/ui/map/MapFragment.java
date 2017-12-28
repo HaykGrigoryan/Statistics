@@ -266,6 +266,6 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     }
 
     public enum MapAction {
-        VIEW, PICK_LOCATION;
+        VIEW, PICK_LOCATION
     }
 }

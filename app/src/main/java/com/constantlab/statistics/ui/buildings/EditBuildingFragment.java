@@ -58,8 +58,6 @@ public class EditBuildingFragment extends BaseFragment {
     EditText etOwner;
     @BindView(R.id.et_territory)
     EditText etTerritory;
-    //    @BindView(R.id.sp_house_wall)
-//    Spinner spHouseWall;
     @BindView(R.id.et_full_address)
     EditText etAddress;
     @BindView(R.id.sp_region)
@@ -130,7 +128,6 @@ public class EditBuildingFragment extends BaseFragment {
         etTotalFlats.setText(object.getTotalFlats() != null ? String.format(Locale.getDefault(), "%d", object.getTotalFlats()) : "");
         etOwner.setText(object.getOwnerName());
         etTerritory.setText(object.getTerritoryName());
-//        setupHouseWall(object.getHouseWall());
         setupBuildingStatus(object.getBuildingStatus());
         setupBuildingType(object.getBuildingType());
         setupRegion(object.getAddress().getKato());
@@ -248,27 +245,6 @@ public class EditBuildingFragment extends BaseFragment {
         }
     }
 
-//    private void setupHouseWall(HouseWall houseWall) {
-//        Realm realm = null;
-//        try {
-//            realm = Realm.getDefaultInstance();
-//            RealmResults<HouseWall> realmResults = realm.where(HouseWall.class).findAll();
-//            List<HouseWall> houseWalls = realm.copyFromRealm(realmResults);
-//            int index = -1;
-//            if (houseWall != null) {
-//                index = houseWalls.indexOf(houseWall);
-//            }
-//            ArrayAdapter<HouseWall> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, houseWalls);
-//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spHouseWall.setAdapter(arrayAdapter);
-//            if (index != -1)
-//                spHouseWall.setSelection(index);
-//        } finally {
-//            if (realm != null)
-//                realm.close();
-//        }
-//    }
-
 
     @OnClick(R.id.btn_map)
     public void gotoMaps() {
@@ -340,8 +316,6 @@ public class EditBuildingFragment extends BaseFragment {
                     StreetType streetType = (StreetType) spStreetType.getSelectedItem();
                     address.setStreetType(streetType);
                     building.setAddress(address);
-//                    HouseWall houseWall = (HouseWall) spHouseWall.getSelectedItem();
-//                    building.setHouseWall(houseWall);
                     BuildingType buildingType = (BuildingType) spBuildingType.getSelectedItem();
                     building.setBuildingType(buildingType);
                     BuildingStatus buildingStatus = (BuildingStatus) spBuildingStatus.getSelectedItem();

@@ -20,10 +20,6 @@ public class BuildingStatus extends RealmObject {
         this.id = id;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public void setStatus(String status) {
         this.status = status;
     }

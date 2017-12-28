@@ -48,8 +48,7 @@ public class ApartmentDetailsFragment extends BaseFragment {
     EditText etOwner;
     @BindView(R.id.sp_apartment_type)
     Spinner spApartmentType;
-    //    @BindView(R.id.et_area)
-//    EditText etArea;
+
     @BindView(R.id.et_residents)
     EditText etResidents;
 
@@ -134,7 +133,6 @@ public class ApartmentDetailsFragment extends BaseFragment {
         etOwner.setText(object.getOwnerName());
         etComment.setText(object.getComment() != null ? object.getComment() : "");
         setApartmentTypes(object.getApartmentType());
-//        etArea.setText(object.getAreaSquare() != null ? String.format(Locale.getDefault(), "%d", object.getAreaSquare()) : "");
         etResidents.setText(object.getTotalInhabitants() != null ? String.format(Locale.getDefault(), "%d", object.getTotalInhabitants()) : "");
         etTotalRooms.setText(object.getTotalRooms() != null ? String.format(Locale.getDefault(), "%d", object.getTotalRooms()) : "");
     }
@@ -149,7 +147,6 @@ public class ApartmentDetailsFragment extends BaseFragment {
     @OnClick(R.id.btn_save)
     public void save() {
         etApartmentNumber.setError(null);
-//        etArea.setError(null);
         etResidents.setError(null);
         etTotalRooms.setError(null);
         boolean proceed = true;
@@ -158,16 +155,6 @@ public class ApartmentDetailsFragment extends BaseFragment {
             proceed = false;
             etApartmentNumber.setError(getString(R.string.error_empty_field));
         }
-
-//        if (etTotalRooms.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etTotalRooms.setError(getString(R.string.error_empty_field));
-//        }
-
-//        if (etArea.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etArea.setError(getString(R.string.error_empty_field));
-//        }
 
         if (etResidents.getText().toString().isEmpty()) {
             proceed = false;
@@ -200,12 +187,10 @@ public class ApartmentDetailsFragment extends BaseFragment {
                     apartment.setId(nextId);
                 }
 
-//                apartment.setTotalRooms(Integer.parseInt(etTotalRooms.getText().toString().trim()));
                 apartment.setTotalInhabitants(Integer.parseInt(etResidents.getText().toString().trim()));
                 apartment.setOwnerName(etOwner.getText().toString().trim());
                 apartment.setComment(etComment.getText().toString().trim());
                 apartment.setApartmentType((ApartmentType) spApartmentType.getSelectedItem());
-//                    apartment.setAreaSquare(Integer.parseInt(etArea.getText().toString().trim()));
                 apartment.setApartmentNumber(etApartmentNumber.getText().toString().trim());
                 realmObject.insertOrUpdate(apartment);
 

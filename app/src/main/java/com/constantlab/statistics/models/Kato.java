@@ -36,16 +36,8 @@ public class Kato extends RealmObject {
         this.id = id;
     }
 
-    public String getNameRu() {
-        return nameRu;
-    }
-
     public void setNameRu(String nameRu) {
         this.nameRu = nameRu;
-    }
-
-    public String getNameKz() {
-        return nameKz;
     }
 
     public void setNameKz(String nameKz) {

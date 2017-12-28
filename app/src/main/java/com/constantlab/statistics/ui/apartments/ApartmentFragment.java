@@ -132,10 +132,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     @OnClick(R.id.iv_add)
     public void addApartment() {
         NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(-1, null));
-//        Intent intent = new Intent(getContext(), ApartmentActivity.class);
-//        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.ADD_APARTMENT);
-//        intent.putExtra(ApartmentActivity.BUILDING_TAG, buildingId);
-//        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
+
     }
 
     @OnClick(R.id.iv_back)
@@ -148,23 +145,5 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     @Override
     public void onEditApartment(Apartment apartment, int adapterPosition) {
         NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(apartment.getId(), apartment.getDisplayName(getContext())));
-//        Intent intent = new Intent(getContext(), ApartmentActivity.class);
-//        intent.putExtra(ApartmentActivity.ACTION_TAG, Actions.EDIT_APARTMENT);
-//        intent.putExtra(ApartmentActivity.APARTMENT_TAG, apartment.getId());
-//        startActivityForResult(intent, REQUEST_ADD_APARTMENT);
     }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_ADD_APARTMENT && resultCode == Activity.RESULT_OK) {
-//            mApartmentAdapter.clear();
-//            showDummyData();
-//            getActivity().setResult(Activity.RESULT_OK);
-//        } else if (requestCode == REQUEST_EDIT_APARTMENT && resultCode == Activity.RESULT_OK) {
-//            mApartmentAdapter.clear();
-//            showDummyData();
-//            getActivity().setResult(Activity.RESULT_OK);
-//        }
-//    }
 }

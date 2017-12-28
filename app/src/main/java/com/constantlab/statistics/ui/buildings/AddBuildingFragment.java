@@ -61,9 +61,6 @@ public class AddBuildingFragment extends BaseFragment {
     EditText etOwner;
     @BindView(R.id.et_territory)
     EditText etTerritory;
-
-    //    @BindView(R.id.sp_house_wall)
-//    Spinner spHouseWall;
     @BindView(R.id.et_full_address)
     EditText etAddress;
     @BindView(R.id.sp_region)
@@ -111,7 +108,6 @@ public class AddBuildingFragment extends BaseFragment {
         tvSave.setVisibility(View.GONE);
         btnNext.setVisibility(View.VISIBLE);
         setupBuildingStatus();
-//        setupHouseWall();
         setupBuildingType();
         setupStreet();
         setupStreetType();
@@ -192,21 +188,6 @@ public class AddBuildingFragment extends BaseFragment {
                 realm.close();
         }
     }
-
-//    private void setupHouseWall() {
-//        Realm realm = null;
-//        try {
-//            realm = Realm.getDefaultInstance();
-//            RealmResults<HouseWall> realmResults = realm.where(HouseWall.class).findAll();
-//            List<HouseWall> houseWalls = realm.copyFromRealm(realmResults);
-//            ArrayAdapter<HouseWall> arrayAdapter = new ArrayAdapter<HouseWall>(getContext(), android.R.layout.simple_spinner_item, houseWalls);
-//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spHouseWall.setAdapter(arrayAdapter);
-//        } finally {
-//            if (realm != null)
-//                realm.close();
-//        }
-//    }
 
     @OnClick(R.id.btn_map)
     public void gotoMaps() {
@@ -300,19 +281,12 @@ public class AddBuildingFragment extends BaseFragment {
                 building.setBuildingStatus(buildingStatus);
                 building.setOwnerName(etOwner.getText().toString().trim());
                 building.setTerritoryName(etTerritory.getText().toString().trim());
-//                HouseWall houseWall = (HouseWall) spHouseWall.getSelectedItem();
-//                building.setHouseWall(houseWall);
                 building.setLatitude(Double.valueOf(etLatitude.getText().toString().trim()));
                 building.setLongitude(Double.valueOf(etLongitude.getText().toString().trim()));
                 building.setMarkedOnMap(true);
                 Task task = realmObject.where(Task.class).equalTo("id", taskId).findFirst();
-//                RealmList<Building> buildingList = task.getBuildingList();
-//                if (buildingList == null) {
-//                    buildingList = new RealmList<>();
-//                }
-//                buildingList.add(building);
-//                task.setTotalBuildings(task.getBuildingList().size());
                 realmObject.insertOrUpdate(task);
+
                 //To send id to previous activity
                 Intent intent = new Intent();
                 intent.putExtra(ConstKeys.TAG_BUILDING, nextId);

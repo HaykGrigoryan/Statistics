@@ -44,8 +44,6 @@ public class EditApartmentFragment extends BaseFragment {
     EditText etOwner;
     @BindView(R.id.sp_apartment_type)
     Spinner spApartmentType;
-    //    @BindView(R.id.et_area)
-//    EditText etArea;
     @BindView(R.id.et_residents)
     EditText etResidents;
     @BindView(R.id.tv_save)
@@ -119,7 +117,6 @@ public class EditApartmentFragment extends BaseFragment {
         etOwner.setText(object.getOwnerName());
         etComment.setText(object.getComment() != null ? object.getComment() : "");
         setApartmentTypes(object.getApartmentType());
-//        etArea.setText(object.getAreaSquare() != null ? String.format(Locale.getDefault(), "%d", object.getAreaSquare()) : "");
         etResidents.setText(object.getTotalInhabitants() != null ? String.format(Locale.getDefault(), "%d", object.getTotalInhabitants()) : "");
         etTotalRooms.setText(object.getTotalRooms() != null ? String.format(Locale.getDefault(), "%d", object.getTotalRooms()) : "");
     }
@@ -142,11 +139,6 @@ public class EditApartmentFragment extends BaseFragment {
             proceed = false;
             etTotalRooms.setError(getString(R.string.error_empty_field));
         }
-
-//        if (etArea.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etArea.setError(getString(R.string.error_empty_field));
-//        }
 
         if (etResidents.getText().toString().isEmpty()) {
             proceed = false;
@@ -173,7 +165,6 @@ public class EditApartmentFragment extends BaseFragment {
                     apartment.setComment(etComment.getText().toString().trim());
                     ApartmentType apartmentType = (ApartmentType) spApartmentType.getSelectedItem();
                     apartment.setApartmentType(apartmentType);
-//                    apartment.setAreaSquare(Integer.parseInt(etArea.getText().toString().trim()));
                     apartment.setApartmentNumber(etApartmentNumber.getText().toString().trim());
                     realmObject.insertOrUpdate(apartment);
                 }

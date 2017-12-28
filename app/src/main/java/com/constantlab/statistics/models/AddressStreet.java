@@ -44,9 +44,7 @@ public class AddressStreet extends RealmObject {
         this.titleRu = titleRu;
     }
 
-    public String getTitleKz() {
-        return titleKz;
-    }
+
 
     public void setTitleKz(String titleKz) {
         this.titleKz = titleKz;

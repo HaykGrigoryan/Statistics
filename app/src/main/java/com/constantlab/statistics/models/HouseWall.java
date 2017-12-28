@@ -10,7 +10,6 @@ import io.realm.annotations.PrimaryKey;
 public class HouseWall extends RealmObject {
     @PrimaryKey
     private Integer id;
-    private String titleKz;
     private String titleRu;
 
     public Integer getId() {
@@ -19,22 +18,6 @@ public class HouseWall extends RealmObject {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getTitleKz() {
-        return titleKz;
-    }
-
-    public void setTitleKz(String titleKz) {
-        this.titleKz = titleKz;
-    }
-
-    public String getTitleRu() {
-        return titleRu;
-    }
-
-    public void setTitleRu(String titleRu) {
-        this.titleRu = titleRu;
     }
 
     @Override

@@ -35,10 +35,6 @@ public class ApartmentType extends RealmObject {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
-    }
-
     public void setType(String type) {
         this.type = type;
     }
