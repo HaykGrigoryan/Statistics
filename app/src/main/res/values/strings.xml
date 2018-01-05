@@ -47,12 +47,16 @@
     <string name="label_apartment_no">Apartment No</string>
     <string name="label_rooms">Rooms</string>
     <string name="label_area">Area</string>
+    <string name="label_cancel">Отмена</string>
     <string name="message_no_apartments">Нет Квартир в этом Здании</string>
+    <string name="message_no_tasks">Нет Заданий</string>
     <string name="message_no_buildings">Нет Зданий</string>
     <string name="message_no_history">Нет Изменений</string>
     <string name="message_no_streets">Нет Улиц</string>
     <string name="title_add_apartment">Добавить квартиру</string>
+    <string name="title_add_street">Добавить улицу</string>
     <string name="hint_apartment_number">Номер квартиры</string>
+    <string name="hint_street_name">Имя улицы</string>
     <string name="hint_total_rooms">Total Rooms</string>
     <string name="hint_total_residents">Количество проживаюших</string>
     <string name="label_apartment_type">Тип Апартамента</string>
@@ -73,7 +77,11 @@
     <string name="label_not_have_mark">Не отмечено на карте</string>
     <string name="hint_count_of_lives_study_etc">Число проживающих учашихся в школах интернатах, число мест в больницах, санаториях, гостиницах, домах отдыха, и т.п.</string>
 
-
+    <string name="message_wrong_credentials">Неправильные данные</string>
+    <string name="message_wrong_key">Неправильные ключ</string>
+    <string name="message_connection_problem">Проблема соединения</string>
+    <string name="message_success_sync_from_server">Удачная синхронизация с сервером</string>
+    <string name="message_success_sync_to_server">Удачная отправка изменений</string>
     <string-array name="demo_list">
         <item>Bricks</item>
         <item>Concrete</item>
@@ -85,8 +93,15 @@
     <string name="label_last_sync">Дата последней синхронизации: 21.12.2017</string>
     <string name="label_get_task">Получить задание</string>
     <string name="label_send">Отправить</string>
+    <string name="label_logout">Выйти</string>
+    <string name="label_ok">ОК</string>
+    <string name="label_continue">Продолжить</string>
     <string name="label_apt_no">кв.</string>
     <string name="label_street_short">ул.</string>
     <string name="label_bld_short">д.</string>
     <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
+    
+    <string name="dialog_title_attention">Внимание</string>
+    <string name="dialog_logout_confirmation">Вы уверены?</string>
+    <string name="dialog_not_all_sync_note">Не все изменение отправлены на сервер. Вы уверены что хотите продолжить? Изменение будут патераны.</string>
 </resources>

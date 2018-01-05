@@ -13,9 +13,11 @@ public class NotificationCenter {
     private static NotificationCenter _instance;
 
     private List<INavigation> mNavigations;
+    private List<ISync> mSyncs;
 
     private NotificationCenter() {
         mNavigations = new ArrayList<>();
+        mSyncs = new ArrayList<>();
     }
 
     public static NotificationCenter getInstance() {
@@ -35,6 +37,27 @@ public class NotificationCenter {
     public void notifyOpenPage(BaseFragment fragment) {
         for (INavigation navigation : mNavigations) {
             navigation.openPage(fragment);
+        }
+    }
+
+
+    public void addSyncListener(ISync sync) {
+        mSyncs.add(sync);
+    }
+
+    public void removeSyncListener(ISync sync) {
+        mSyncs.remove(sync);
+    }
+
+    public void notifyOnSyncFromServer() {
+        for (ISync sync : mSyncs) {
+            sync.onSyncFromServer();
+        }
+    }
+
+    public void notifyOnSyncToServer() {
+        for (ISync sync : mSyncs) {
+            sync.onSyncToServer();
         }
     }
 }

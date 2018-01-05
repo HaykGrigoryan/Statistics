@@ -1,0 +1,17 @@
+[
+  {
+    "type_id": 1,
+    "description": "Улица",
+    "ref_type": 0
+  },
+  {
+    "type_id": 2,
+    "description": "Дом",
+    "ref_type": 0
+  },
+  {
+    "type_id": 3,
+    "description": "Квартира",
+    "ref_type": 0
+  }
+]

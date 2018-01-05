@@ -23,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class NetworkModule {
 
-    private static final String BASE_URL = "https://api.ctogram.kz:9090";
+    private static final String BASE_URL = "http://5.63.159.121/api/";
 
     @Provides
     @Singleton

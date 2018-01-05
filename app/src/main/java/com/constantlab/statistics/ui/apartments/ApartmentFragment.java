@@ -38,6 +38,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     private static final int REQUEST_ADD_APARTMENT = 89;
     private static final int REQUEST_EDIT_APARTMENT = 90;
     Integer buildingId;
+    Integer taskId;
     String buildingName;
     @BindView(R.id.rv_apartments)
     RecyclerView rvApartments;
@@ -54,10 +55,11 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
     private ApartmentAdapter mApartmentAdapter;
 
 
-    public static ApartmentFragment newInstance(Integer buildingId, String buildingName) {
+    public static ApartmentFragment newInstance(Integer buildingId, String buildingName, int taskId) {
         ApartmentFragment fragment = new ApartmentFragment();
         Bundle args = new Bundle();
         args.putInt(ConstKeys.TAG_BUILDING, buildingId);
+        args.putInt(ConstKeys.TAG_TASK, taskId);
         args.putString(ConstKeys.TAG_BUILDING_NAME, buildingName);
         fragment.setArguments(args);
         return fragment;
@@ -68,6 +70,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
+            taskId = getArguments().getInt(ConstKeys.TAG_TASK);
             buildingName = getArguments().getString(ConstKeys.TAG_BUILDING_NAME);
         }
         mApartmentAdapter = new ApartmentAdapter();
@@ -107,10 +110,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Building building = realm.where(Building.class).equalTo("id", buildingId).findFirst();
-            if (building != null && building.getApartmentList() != null) {
-                apartmentList = realm.copyFromRealm(building.getApartmentList());
-            }
+            apartmentList = realm.copyFromRealm(realm.where(Apartment.class).equalTo("building_id", buildingId).equalTo("task_id", taskId).findAll());
             return apartmentList;
         } finally {
             if (realm != null)
@@ -131,7 +131,7 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
 
     @OnClick(R.id.iv_add)
     public void addApartment() {
-        NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(-1, null));
+        NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(-1, null, buildingId, taskId));
 
     }
 
@@ -144,6 +144,6 @@ public class ApartmentFragment extends BaseFragment implements ApartmentAdapter.
 
     @Override
     public void onEditApartment(Apartment apartment, int adapterPosition) {
-        NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(apartment.getId(), apartment.getDisplayName(getContext())));
+        NotificationCenter.getInstance().notifyOpenPage(ApartmentDetailsFragment.newInstance(apartment.getId(), apartment.getDisplayName(getContext()), buildingId, taskId));
     }
 }

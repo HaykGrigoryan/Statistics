@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.Task;
@@ -43,6 +44,7 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     private static final int REQUEST_EDIT_BUILDING = 24;
     private static final int REQUEST_APARTMENTS = 34;
     Integer streetId;
+    Integer taskId;
     String streetName;
     @BindView(R.id.rv_buildings)
     RecyclerView rvBuildings;
@@ -58,10 +60,11 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     private BuildingsAdapter mBuildingsAdapter;
 
-    public static BuildingsFragment newInstance(Integer streetId, String streetName) {
+    public static BuildingsFragment newInstance(Integer streetId, String streetName, int taskId) {
         BuildingsFragment fragment = new BuildingsFragment();
         Bundle args = new Bundle();
         args.putInt(ConstKeys.TAG_STREET, streetId);
+        args.putInt(ConstKeys.TAG_TASK, taskId);
         args.putString(ConstKeys.TAG_STREET_NAME, streetName);
         fragment.setArguments(args);
         return fragment;
@@ -72,6 +75,7 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             streetId = getArguments().getInt(ConstKeys.TAG_STREET);
+            taskId = getArguments().getInt(ConstKeys.TAG_TASK);
             streetName = getArguments().getString(ConstKeys.TAG_STREET_NAME);
         }
         mBuildingsAdapter = new BuildingsAdapter();
@@ -83,7 +87,7 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         View view = inflater.inflate(R.layout.fragment_buildings, container, false);
         ButterKnife.bind(this, view);
         setupRecyclerView();
-        showDummyData();
+        showData();
 
         return view;
     }
@@ -96,8 +100,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         }
     }
 
-    private void showDummyData() {
-        List<Building> buildingList = getDummyBuildingList();
+    private void showData() {
+        List<Building> buildingList = getBuildingList();
         if (buildingList != null && buildingList.size() > 0) {
             mBuildingsAdapter.setInteractionListener(this);
             mBuildingsAdapter.setBuildingList(buildingList);
@@ -106,15 +110,12 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         }
     }
 
-    private List<Building> getDummyBuildingList() {
+    private List<Building> getBuildingList() {
         List<Building> buildingList = null;
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Street streetFirst = realm.where(Street.class).equalTo("id", streetId).findFirst();
-            if (streetFirst != null && streetFirst.getBuildingList() != null) {
-                buildingList = realm.copyFromRealm(streetFirst.getBuildingList());
-            }
+            buildingList = realm.copyFromRealm(realm.where(Building.class).equalTo("street_id", streetId).equalTo("task_id", taskId).findAll());
             return buildingList;
         } finally {
             if (realm != null)
@@ -134,17 +135,17 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     @Override
     public void onEditBuilding(Building building, int adapterPosition) {
-        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(building.getId(), building.getDisplayAddress(getContext())));
+        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(building.getId(), building.getDisplayAddress(getContext()), streetId));
     }
 
     @Override
     public void onBuildingDetail(Building building, int adapterPosition) {
-        NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext())));
+        NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext()),building.getTaskId()));
     }
 
     @OnClick(R.id.iv_add)
     public void addBuilding() {
-        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null));
+        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null, streetId));
     }
 
     @OnClick(R.id.iv_back)
@@ -160,7 +161,7 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ADD_BUILDING && resultCode == Activity.RESULT_OK) {
             mBuildingsAdapter.clear();
-            showDummyData();
+            showData();
             Integer buildingId = data.getExtras().getInt(ConstKeys.TAG_BUILDING);
             Intent intent = new Intent(getContext(), ApartmentActivity.class);
             intent.putExtra(ConstKeys.TAG_BUILDING, buildingId);
@@ -169,11 +170,11 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
             getActivity().setResult(Activity.RESULT_OK);
         } else if (requestCode == REQUEST_EDIT_BUILDING && resultCode == Activity.RESULT_OK) {
             mBuildingsAdapter.clear();
-            showDummyData();
+            showData();
             getActivity().setResult(Activity.RESULT_OK);
         } else if (requestCode == REQUEST_APARTMENTS && resultCode == Activity.RESULT_OK) {
             mBuildingsAdapter.clear();
-            showDummyData();
+            showData();
             getActivity().setResult(Activity.RESULT_OK);
         }
     }

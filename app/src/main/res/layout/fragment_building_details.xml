@@ -31,6 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_medium"
                     android:layout_marginStart="@dimen/margin_medium"
+                    android:enabled="false"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_kato"
                     android:inputType="textNoSuggestions"
@@ -74,6 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_medium"
                     android:layout_marginStart="@dimen/margin_medium"
+                    android:enabled="false"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_name_of_street"
                     android:inputType="textNoSuggestions"
@@ -220,10 +222,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_medium"
+
                     android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_count_of_lives_study_etc"
-                    android:inputType="textNoSuggestions"
+                    android:inputType="number"
                     android:padding="@dimen/padding_large"
                     android:textSize="@dimen/text_small"
 
@@ -235,7 +238,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/et_comment_in_add_building"
+                    android:id="@+id/et_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_medium"

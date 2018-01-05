@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.History;
+import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 
 /**
  * Created by Hayk on 27/12/2017.
@@ -69,7 +71,7 @@ public class HistoryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, view);
         setupRecyclerView();
-        showDummyData();
+        showHistoryData();
         return view;
     }
 
@@ -81,8 +83,8 @@ public class HistoryFragment extends BaseFragment {
         }
     }
 
-    private void showDummyData() {
-        List<History> historyList = getDummyHistoryList();
+    private void showHistoryData() {
+        List<History> historyList = getHistoryList();
         if (historyList != null && historyList.size() > 0) {
             mHistoryAdapter.setHistoryList(historyList);
         } else {
@@ -90,15 +92,17 @@ public class HistoryFragment extends BaseFragment {
         }
     }
 
-    private List<History> getDummyHistoryList() {
-        List<History> historyList = new ArrayList<>();
-        History history = new History();
-        history.setTitle("Добавлено здание");
-        history.setMessage("улиц Иманова");
+    private List<History> getHistoryList() {
+        Realm realm = null;
 
+        try {
+            realm = Realm.getDefaultInstance();
+            return realm.copyFromRealm(realm.where(History.class).equalTo("task_id", taskId).findAll());
 
-        historyList.add(history);
-        return historyList;
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
     }
 
     private void setupRecyclerView() {

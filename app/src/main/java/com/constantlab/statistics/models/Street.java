@@ -3,7 +3,11 @@ package com.constantlab.statistics.models;
 import android.content.Context;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.network.model.StreetItem;
 
+import java.util.List;
+
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -13,11 +17,14 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class Street extends RealmObject {
-
     @PrimaryKey
+    private Integer local_id;
     private Integer id;
     private String name;
-    private RealmList<Building> buildingList;
+    private Integer streetTypeCode;
+    private Integer task_id;
+    private String kato;
+    private boolean isNew;
 
     public Integer getId() {
         return id;
@@ -35,37 +42,111 @@ public class Street extends RealmObject {
         this.name = name;
     }
 
-    public RealmList<Building> getBuildingList() {
-        return buildingList;
-    }
-
-    public void setBuildingList(RealmList<Building> buildingList) {
-        this.buildingList = buildingList;
-    }
-
     public int getBuidingsCount() {
-        return buildingList.size();
+        Realm realm = null;
+        int buildingCount = 0;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            List<Building> buildings = realm.where(Building.class).equalTo("street_id", id).equalTo("task_id", task_id).findAll();
+            buildingCount = buildings.size();
+
+            return buildingCount;
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
     }
 
     public int getApartmentCount() {
-        int count = 0;
-        for (Building building : buildingList) {
-            count += building.getApartmentList().size();
+        Realm realm = null;
+        int apartmentCount = 0;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            List<Building> buildings = realm.where(Building.class).equalTo("street_id", id).equalTo("task_id", task_id).findAll();
+            for (Building building : buildings) {
+                List<Apartment> apartments = realm.where(Apartment.class).equalTo("building_id", building.getId()).equalTo("task_id", task_id).findAll();
+                apartmentCount += apartments.size();
+            }
+
+            return apartmentCount;
+        } finally {
+            if (realm != null)
+                realm.close();
         }
-        return count;
     }
 
     public int getResidentsCount() {
-        int count = 0;
-        for (Building building : buildingList) {
-            for (Apartment apartment : building.getApartmentList()) {
-                count += apartment.getTotalInhabitants();
+        Realm realm = null;
+        int residentsCount = 0;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            List<Building> buildings = realm.where(Building.class).equalTo("street_id", id).equalTo("task_id", task_id).findAll();
+            for (Building building : buildings) {
+                List<Apartment> apartments = realm.where(Apartment.class).equalTo("building_id", building.getId()).equalTo("task_id", task_id).findAll();
+                for (Apartment apartment : apartments) {
+                    residentsCount += apartment.getTotalInhabitants();
+                }
             }
+
+            return residentsCount;
+        } finally {
+            if (realm != null)
+                realm.close();
         }
-        return count;
     }
 
     public String getDisplayName(Context context) {
         return context.getString(R.string.label_street_short) + " " + name;
+    }
+
+    public Integer getStreetTypeCode() {
+        return streetTypeCode == null ? 0 : streetTypeCode;
+    }
+
+    public void setStreetTypeCode(Integer streetTypeCode) {
+        this.streetTypeCode = streetTypeCode;
+    }
+
+    public Integer getTaskId() {
+        return task_id;
+    }
+
+    public void setTaskId(Integer taskId) {
+        this.task_id = taskId;
+    }
+
+    public static Street getStreet(StreetItem item) {
+        Street street = new Street();
+        street.setId(item.getId());
+        street.setName(item.getTitle());
+        street.setStreetTypeCode(item.getStreetTypeCode());
+        return street;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
+    }
+
+    public Integer getLocalId() {
+        return local_id;
+    }
+
+    public void setLocalId(Integer local_id) {
+        this.local_id = local_id;
+    }
+
+    public String getKato() {
+        return kato == null ? "" : kato;
+    }
+
+    public void setKato(String kato) {
+        this.kato = kato;
     }
 }

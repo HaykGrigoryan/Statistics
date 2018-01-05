@@ -37,14 +37,15 @@ public class BuildingActivity extends BaseActivity {
             action = extra.getInt(ConstKeys.TAG_ACTION);
             if (action == Actions.VIEW_BUILDINGS) {
                 Integer taskId = extra.getInt(ConstKeys.TAG_TASK);
-                showFragment(BuildingsFragment.newInstance(taskId, "Task"), false);
-            } else if (action == Actions.ADD_BUILDING) {
-                Integer taskId = extra.getInt(ConstKeys.TAG_TASK);
-                showFragment(AddBuildingFragment.newInstance(taskId), false);
-            } else if (action == Actions.EDIT_BUILDING) {
-                Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
-                showFragment(EditBuildingFragment.newInstance(buildingId), false);
+//                showFragment(BuildingsFragment.newInstance(taskId, "Task"), false);
             }
+//            else if (action == Actions.ADD_BUILDING) {
+//                Integer taskId = extra.getInt(ConstKeys.TAG_TASK);
+//                showFragment(AddBuildingFragment.newInstance(taskId), false);
+//            } else if (action == Actions.EDIT_BUILDING) {
+//                Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
+//                showFragment(EditBuildingFragment.newInstance(buildingId), false);
+//            }
         }
     }
 }

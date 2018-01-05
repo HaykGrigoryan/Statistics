@@ -31,8 +31,9 @@
         android:layout_centerInParent="true"
         android:fontFamily="@font/opensansregular"
         android:gravity="center_horizontal"
-        android:padding="16dp"
+        android:padding="@dimen/padding_large"
         android:text="@string/message_no_history"
+        android:textSize="@dimen/text_medium_large"
         android:visibility="invisible"
         tools:visibility="visible" />
 

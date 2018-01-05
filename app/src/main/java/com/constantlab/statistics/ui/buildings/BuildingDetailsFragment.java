@@ -14,17 +14,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.constantlab.statistics.R;
-import com.constantlab.statistics.models.Address;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.BuildingStatus;
 import com.constantlab.statistics.models.BuildingType;
-import com.constantlab.statistics.models.Kato;
-import com.constantlab.statistics.models.AddressStreet;
+import com.constantlab.statistics.models.History;
+import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
+import com.constantlab.statistics.models.TempNewData;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.map.MapActivity;
 import com.constantlab.statistics.ui.map.MapFragment;
 import com.constantlab.statistics.utils.ConstKeys;
+import com.constantlab.statistics.utils.GsonUtils;
+import com.constantlab.statistics.utils.HistoryManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +36,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by Hayk on 26/12/2017.
@@ -45,8 +46,7 @@ public class BuildingDetailsFragment extends BaseFragment {
 
     Integer buildingId;
     String buildingName;
-
-    Building mBuilding;
+    Integer streetId;
     @BindView(R.id.btn_map)
     Button btnMap;
     @BindView(R.id.et_house)
@@ -57,8 +57,16 @@ public class BuildingDetailsFragment extends BaseFragment {
     Spinner spBuildingType;
     @BindView(R.id.et_owner)
     EditText etOwner;
+    @BindView(R.id.et_count_of_living)
+    EditText etLivingCount;
+    @BindView(R.id.et_kato)
+    EditText etKato;
     @BindView(R.id.sp_street_type)
     Spinner spStreetType;
+    @BindView(R.id.et_name_street)
+    TextView etStreetName;
+    @BindView(R.id.et_comment)
+    TextView etComment;
     @BindView(R.id.btn_save)
     Button btnSave;
     @BindView(R.id.locationIndicator)
@@ -66,11 +74,15 @@ public class BuildingDetailsFragment extends BaseFragment {
     @BindView(R.id.title)
     TextView mTitle;
     Double mSelectedLat, mSelectedLon;
+    private Street mStreet;
 
-    public static BuildingDetailsFragment newInstance(Integer buildingId, String buildingName) {
+    private Building mBuilding;
+
+    public static BuildingDetailsFragment newInstance(Integer buildingId, String buildingName, Integer streetId) {
         BuildingDetailsFragment fragment = new BuildingDetailsFragment();
         Bundle args = new Bundle();
         args.putInt(ConstKeys.TAG_BUILDING, buildingId);
+        args.putInt(ConstKeys.TAG_STREET, streetId);
         args.putString(ConstKeys.TAG_BUILDING_NAME, buildingName);
         fragment.setArguments(args);
         return fragment;
@@ -79,10 +91,31 @@ public class BuildingDetailsFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStreetType = new ArrayList<>();
+        mBuildingTypes = new ArrayList<>();
         if (getArguments() != null) {
             buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
+            streetId = getArguments().getInt(ConstKeys.TAG_STREET);
             buildingName = getArguments().getString(ConstKeys.TAG_BUILDING_NAME);
+            mStreet = getStreet();
         }
+    }
+
+    private Street getStreet() {
+        Realm realm = null;
+        Street street = new Street();
+        try {
+            realm = Realm.getDefaultInstance();
+            street = realm.where(Street.class).equalTo("id", streetId).findFirst();
+            if (street != null) {
+                street = realm.copyFromRealm(street);
+            }
+        } finally {
+            if (realm != null) {
+                realm.close();
+            }
+        }
+        return street;
     }
 
     @Nullable
@@ -90,10 +123,11 @@ public class BuildingDetailsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_building_details, container, false);
         ButterKnife.bind(this, view);
+        loadStaticContent();
         if (buildingId != -1) {
             setStoredData();
         }
-        loadSpinnerContent();
+
         return view;
     }
 
@@ -109,9 +143,9 @@ public class BuildingDetailsFragment extends BaseFragment {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Building building = realm.where(Building.class).equalTo("id", buildingId).findFirst();
-            if (building != null) {
-                mBuilding = realm.copyFromRealm(building);
+            mBuilding = realm.where(Building.class).equalTo("id", buildingId).findFirst();
+            if (mBuilding != null) {
+                mBuilding = realm.copyFromRealm(mBuilding);
                 showData(mBuilding);
             }
         } finally {
@@ -122,33 +156,32 @@ public class BuildingDetailsFragment extends BaseFragment {
     }
 
     private void showData(Building object) {
-        etHouse.setText(object.getHouseNumber() != null ? object.getHouseNumber() : "");
+        etHouse.setText(object.getHouseNumber() != null ? object.getHouseNumber() + "" : "");
         etOwner.setText(object.getOwnerName());
+        etComment.setText(object.getComment());
         mSelectedLon = object.getLatitude();
         mSelectedLon = object.getLongitude();
-        setupRegion(object.getAddress().getKato());
-        setupStreet(object.getAddress().getStreet());
+        etKato.setText(object.getKato());
+        spBuildingType.setSelection(BuildingType.getIndex(mBuildingTypes, object.getBuildingType()));
+        etLivingCount.setText(String.valueOf(object.getTemporaryInhabitants()));
+        mSelectedLat = object.getLatitude();
+        mSelectedLon = object.getLongitude();
         updateLocationIndicator(object.getLatitude() != null && object.getLongitude() != null);
     }
 
-    private void loadSpinnerContent() {
+    private void loadStaticContent() {
         loadBuildingType();
         loadBuildingStatus();
         loadStreetType();
+        etStreetName.setText(mStreet.getDisplayName(getContext()));
     }
 
-    private void loadBuildingType() {
-        List<BuildingType> types = new ArrayList<>();
+    private List<BuildingType> mBuildingTypes;
 
-        ArrayList<String> arrayListBuildingType = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
-        int id = 1;
-        for (String name: arrayListBuildingType) {
-            BuildingType buildingType = new BuildingType();
-            buildingType.setId(id++);
-            buildingType.setType(name);
-            types.add(buildingType);
-        }
-        ArrayAdapter<BuildingType> arrayAdapterEditBl = new ArrayAdapter<BuildingType>(getContext(),R.layout.spinner_item,types);
+    private void loadBuildingType() {
+        mBuildingTypes = GsonUtils.getBuildingTypeData(getContext());
+
+        ArrayAdapter<BuildingType> arrayAdapterEditBl = new ArrayAdapter<BuildingType>(getContext(), R.layout.spinner_item, mBuildingTypes);
         arrayAdapterEditBl.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spBuildingType.setAdapter(arrayAdapterEditBl);
     }
@@ -158,169 +191,29 @@ public class BuildingDetailsFragment extends BaseFragment {
 
         ArrayList<String> arrayListBuildingStatus = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
         int id = 1;
-        for (String name: arrayListBuildingStatus) {
+        for (String name : arrayListBuildingStatus) {
             BuildingStatus buildingStatus = new BuildingStatus();
             buildingStatus.setId(id++);
             buildingStatus.setStatus(name);
             types.add(buildingStatus);
         }
 
-        ArrayAdapter<BuildingStatus> arrayAdapterEditSt = new ArrayAdapter<BuildingStatus>(getContext(),R.layout.spinner_item,types);
+        ArrayAdapter<BuildingStatus> arrayAdapterEditSt = new ArrayAdapter<BuildingStatus>(getContext(), R.layout.spinner_item, types);
         arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spBuildingStatus.setAdapter(arrayAdapterEditSt);
     }
 
+    private List<StreetType> mStreetType;
+
     private void loadStreetType() {
-        List<StreetType> types = new ArrayList<>();
+        mStreetType = GsonUtils.getStreetTypeData(getContext());
 
-        List<String> arrayListStreetTp = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
-
-        int id = 1;
-        for (String name: arrayListStreetTp) {
-            StreetType streetType = new StreetType();
-            streetType.setId(id++);
-            streetType.setTitleRu(name);
-            types.add(streetType);
-        }
-
-
-        ArrayAdapter<StreetType> arrayAdapterEditSt = new ArrayAdapter<StreetType>(getContext(),R.layout.spinner_item, types);
+        ArrayAdapter<StreetType> arrayAdapterEditSt = new ArrayAdapter<StreetType>(getContext(), R.layout.spinner_item, mStreetType);
         arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spStreetType.setAdapter(arrayAdapterEditSt);
+        spStreetType.setEnabled(false);
+        spStreetType.setSelection(StreetType.getIndex(mStreetType, mStreet.getStreetTypeCode()));
     }
-
-
-    private void setupBuildingType(BuildingType buildingType) {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            RealmResults<BuildingType> realmResults = realm.where(BuildingType.class).findAll();
-            List<BuildingType> buildingTypes = realm.copyFromRealm(realmResults);
-            int index = -1;
-            if (buildingType != null) {
-                index = buildingTypes.indexOf(buildingType);
-            }
-            ArrayAdapter<BuildingType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, buildingTypes);
-            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-            spBuildingType.setAdapter(arrayAdapter);
-            if (index != -1) {
-                spBuildingType.setSelection(index);
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-
-    private void setupRegion(Kato kato) {
-//        Realm realm = null;
-//        try {
-//            realm = Realm.getDefaultInstance();
-//            RealmResults<Kato> realmResults = realm.where(Kato.class).findAll();
-//            List<Kato> katoList = realm.copyFromRealm(realmResults);
-//            int index = -1;
-//            if (kato != null) {
-//                index = katoList.indexOf(kato);
-//            }
-//            ArrayAdapter<Kato> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, katoList);
-//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spRegions.setAdapter(arrayAdapter);
-//            if (index != -1) {
-//                spRegions.setSelection(index);
-//            }
-//        } finally {
-//            if (realm != null)
-//                realm.close();
-//        }
-    }
-
-    private void setupBuildingStatus(BuildingStatus buildingStatus) {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            RealmResults<BuildingStatus> realmResults = realm.where(BuildingStatus.class).findAll();
-            List<BuildingStatus> buildingStatuses = realm.copyFromRealm(realmResults);
-            int index = -1;
-            if (buildingStatus != null) {
-                index = buildingStatuses.indexOf(buildingStatus);
-            }
-            ArrayAdapter<BuildingStatus> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, buildingStatuses);
-            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-            spBuildingStatus.setAdapter(arrayAdapter);
-            if (index != -1) {
-                spBuildingStatus.setSelection(index);
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void setupStreetType(StreetType streetType) {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            RealmResults<StreetType> realmResults = realm.where(StreetType.class).findAll();
-            List<StreetType> streetTypeList = realm.copyFromRealm(realmResults);
-            int index = -1;
-            if (streetType != null) {
-                index = streetTypeList.indexOf(streetType);
-            }
-            ArrayAdapter<StreetType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, streetTypeList);
-            arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-            spStreetType.setAdapter(arrayAdapter);
-            if (index != -1) {
-                spStreetType.setSelection(index);
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void setupStreet(AddressStreet street) {
-//        Realm realm = null;
-//        try {
-//            realm = Realm.getDefaultInstance();
-//            RealmResults<AddressStreet> realmResults = realm.where(AddressStreet.class).findAll();
-//            List<AddressStreet> streetList = realm.copyFromRealm(realmResults);
-//            int index = -1;
-//            if (street != null) {
-//                index = streetList.indexOf(street);
-//            }
-//            ArrayAdapter<AddressStreet> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, streetList);
-//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spStreet.setAdapter(arrayAdapter);
-//            if (index != -1)
-//                spStreet.setSelection(index);
-//        } finally {
-//            if (realm != null)
-//                realm.close();
-//        }
-    }
-
-//    private void setupHouseWall(HouseWall houseWall) {
-//        Realm realm = null;
-//        try {
-//            realm = Realm.getDefaultInstance();
-//            RealmResults<HouseWall> realmResults = realm.where(HouseWall.class).findAll();
-//            List<HouseWall> houseWalls = realm.copyFromRealm(realmResults);
-//            int index = -1;
-//            if (houseWall != null) {
-//                index = houseWalls.indexOf(houseWall);
-//            }
-//            ArrayAdapter<HouseWall> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, houseWalls);
-//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            spHouseWall.setAdapter(arrayAdapter);
-//            if (index != -1)
-//                spHouseWall.setSelection(index);
-//        } finally {
-//            if (realm != null)
-//                realm.close();
-//        }
-//    }
-
 
     @OnClick(R.id.btn_map)
     public void gotoMaps() {
@@ -387,10 +280,11 @@ public class BuildingDetailsFragment extends BaseFragment {
 
     private void saveDataToDatabase() {
         Realm realm = null;
+        Integer taskId = mStreet.getTaskId();
         try {
             realm = Realm.getDefaultInstance();
             realm.executeTransaction(realmObject -> {
-                Building b = realmObject.where(Building.class).equalTo("id", buildingId).findFirst();
+                Building b = realmObject.where(Building.class).equalTo("id", buildingId).equalTo("task_id", taskId).findFirst();
                 Building building = null;
                 if (b != null) {
                     building = realmObject.copyFromRealm(b);
@@ -404,26 +298,78 @@ public class BuildingDetailsFragment extends BaseFragment {
                         nextId = currentIdNum.intValue() + 1;
                     }
                     building.setId(nextId);
+
+                    Number currentLocalIdNum = realmObject.where(Building.class).max("local_id");
+                    int nextLocalId;
+                    if (currentLocalIdNum == null) {
+                        nextLocalId = 1;
+                    } else {
+                        nextLocalId = currentLocalIdNum.intValue() + 1;
+                    }
+                    building.setLocalId(nextLocalId);
+
+                    building.setStreetId(streetId);
+                    building.setTaskId(taskId);
+                    building.setNew(true);
+
                 }
-                building.setHouseNumber(etHouse.getText().toString().trim());
-                Address address = building.getAddress();
+                building.setHouseNumber(etHouse.getText().toString());
                 StreetType streetType = (StreetType) spStreetType.getSelectedItem();
-                address.setStreetType(streetType);
-                building.setAddress(address);
+                building.setStreetType(streetType.getId());
                 BuildingType buildingType = (BuildingType) spBuildingType.getSelectedItem();
-                building.setBuildingType(buildingType);
+                building.setBuildingType(buildingType.getId());
                 BuildingStatus buildingStatus = (BuildingStatus) spBuildingStatus.getSelectedItem();
                 building.setBuildingStatus(buildingStatus);
                 building.setOwnerName(etOwner.getText().toString().trim());
                 building.setLatitude(mSelectedLat);
+                Integer tempInhabitants = Integer.valueOf(etLivingCount.getText().toString());
+                building.setTemporaryInhabitants(tempInhabitants);
                 building.setLongitude(mSelectedLon);
+                building.setComment(etComment.getText().toString());
+                building.setKato(etKato.getText().toString());
                 realmObject.insertOrUpdate(building);
+
+                if (!building.isNew()) {
+                    if (mBuilding.getBuildingType() != buildingType.getId()) {
+                        addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), building.getId(), realmObject);
+                    }
+
+                    if (building.getOwnerName() != null && (!mBuilding.getOwnerName().equals(building.getOwnerName()))) {
+                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), building.getId(), realmObject);
+                    }
+
+                    if (building.getComment() != null && !building.getComment().equals("") && !mBuilding.getComment().equals(building.getComment())) {
+                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), building.getId(), realmObject);
+                    }
+
+                    if (building.getHouseNumber() != null && !building.getHouseNumber().equals("") && !mBuilding.getHouseNumber().equals(building.getHouseNumber())) {
+                        addHistory(mStreet.getTaskId(), 15, new TempNewData(building.getHouseNumber()), building.getId(), realmObject);
+                    }
+
+                    if (!etLivingCount.getText().toString().equals("") && tempInhabitants != mBuilding.getTemporaryInhabitants()) {
+                        addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), building.getId(), realmObject);
+                    }
+
+                    if (mSelectedLat != null && !mSelectedLon.isNaN() && mSelectedLon != null && !mSelectedLon.isNaN() && mSelectedLat != mBuilding.getLatitude() && mSelectedLon != mBuilding.getLongitude()) {
+                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), building.getId(), realmObject);
+                    }
+                }
             });
         } finally {
             if (realm != null)
                 realm.close();
         }
         getActivity().onBackPressed();
+    }
+
+    private void addHistory(int taskId, int changeType, TempNewData newData, int buildingId, Realm realm) {
+        History history = new History();
+        history.setTaskId(taskId);
+        history.setChangeType(changeType);
+        history.setNewData(newData);
+        history.setObjectId(buildingId);
+        history.setObjectType(2);
+        HistoryManager.getInstance().addOrUpdateHistory(history, realm);
     }
 
     @Override

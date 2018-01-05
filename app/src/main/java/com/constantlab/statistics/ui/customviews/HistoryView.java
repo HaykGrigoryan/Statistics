@@ -23,7 +23,8 @@ import java.util.Locale;
 public class HistoryView extends RelativeLayout {
     private static final String FORMAT = "%d";
     private static final String ZERO = "0";
-    TextView historyName, historyMessage;
+    TextView historyName, historyAddress, historyMessage;
+    AppCompatImageView icCheck;
 
     public HistoryView(Context context) {
         super(context);
@@ -51,10 +52,14 @@ public class HistoryView extends RelativeLayout {
         inflate(getContext(), R.layout.view_history, this);
         historyName = findViewById(R.id.tv_history_name);
         historyMessage = findViewById(R.id.tv_history_message);
+        historyAddress = findViewById(R.id.tv_history_address);
+        icCheck = findViewById(R.id.ic_check);
     }
 
     public void setData(History history) {
-        historyName.setText(history.getTitle());
-        historyMessage.setText(history.getMessage());
+        historyName.setText(history.getTitle(getContext()));
+        historyMessage.setText(history.getMessage(getContext()));
+        historyAddress.setText(history.getAddress(getContext()));
+        icCheck.setVisibility(history.isSynced() ? VISIBLE : GONE);
     }
 }

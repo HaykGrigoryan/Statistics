@@ -28,6 +28,7 @@ import com.constantlab.statistics.utils.Actions;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.NotificationCenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -106,14 +107,15 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
     }
 
     private List<Street> getDummyStreetList() {
-        List<Street> streetList = null;
+        List<Street> streetList = new ArrayList<>();
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Task taskFirst = realm.where(Task.class).equalTo("id", taskId).findFirst();
-            if (taskFirst != null && taskFirst.getStreetList() != null) {
-                streetList = realm.copyFromRealm(taskFirst.getStreetList());
-            }
+            streetList = realm.copyFromRealm(realm.where(Street.class).equalTo("task_id", taskId).findAll());
+//            Task taskFirst = realm.where(Task.class).equalTo("task_id", taskId).findFirst();
+//            if (taskFirst != null && taskFirst.getStreetList() != null) {
+//                streetList = realm.copyFromRealm(taskFirst.getStreetList());
+//            }
             return streetList;
         } finally {
             if (realm != null)
@@ -136,6 +138,11 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
 //        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null));
     }
 
+    @OnClick(R.id.iv_add)
+    public void addStreet() {
+        NotificationCenter.getInstance().notifyOpenPage(StreetDetailsFragment.newInstance(-1, null, taskId));
+    }
+
     @OnClick(R.id.iv_back)
     public void back() {
         if (getActivity() != null) {
@@ -145,6 +152,11 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
 
     @Override
     public void onStreetDetail(Street street, int adapterPosition) {
-        NotificationCenter.getInstance().notifyOpenPage(BuildingsFragment.newInstance(street.getId(), street.getDisplayName(getContext())));
+        NotificationCenter.getInstance().notifyOpenPage(BuildingsFragment.newInstance(street.getId(), street.getDisplayName(getContext()),street.getTaskId()));
+    }
+
+    @Override
+    public void onEditStreet(Street street, int adapterPosition) {
+        NotificationCenter.getInstance().notifyOpenPage(StreetDetailsFragment.newInstance(street.getId(), street.getDisplayName(getContext()), taskId));
     }
 }

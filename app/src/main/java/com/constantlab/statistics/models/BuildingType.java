@@ -1,5 +1,11 @@
 package com.constantlab.statistics.models;
 
+import android.content.Context;
+
+import com.constantlab.statistics.utils.GsonUtils;
+
+import java.util.List;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,7 +16,7 @@ import io.realm.annotations.PrimaryKey;
 public class BuildingType extends RealmObject {
     @PrimaryKey
     private Integer id;
-    private String type;
+    private String name;
 
     public Integer getId() {
         return id;
@@ -20,9 +26,6 @@ public class BuildingType extends RealmObject {
         this.id = id;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -39,8 +42,35 @@ public class BuildingType extends RealmObject {
         return id.hashCode();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
-        return type;
+        return name;
+    }
+
+    public static int getIndex(List<BuildingType> items, int id) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public static String getDescriptionById(Context context, int id) {
+        List<BuildingType> items = GsonUtils.getBuildingTypeData(context);
+        for (BuildingType buildingType : items) {
+            if (buildingType.getId() == id) {
+                return buildingType.getName();
+            }
+        }
+        return "";
     }
 }

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.models.Apartment;
@@ -43,7 +44,8 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
     RecyclerView rvTasks;
     @BindView(R.id.pb_tasks)
     ProgressBar pbTasks;
-
+    @BindView(R.id.tv_no_tasks)
+    TextView tvNoTasks;
     private TasksAdapter mTaskAdapter;
 
     public static TasksFragment newInstance() {
@@ -62,20 +64,27 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
         View view = inflater.inflate(R.layout.fragment_tasks, container, false);
         ButterKnife.bind(this, view);
         setupRecyclerView();
-        if (mTaskAdapter.isEmpty()) {
-            mTaskAdapter.setInteractionListener(this);
-            showDummyData();
-        }
+//        if (mTaskAdapter.isEmpty()) {
+//            mTaskAdapter.setInteractionListener(this);
+        refreshData();
+//            showDummyData();
+//        }
         return view;
     }
 
-    private void showDummyData() {
-        refreshCount();
-        List<Task> taskList = getDummyTaskList();
-        mTaskAdapter.setTaskList(taskList);
+    private void refreshData() {
+//        refreshCount();
+        List<Task> taskList = getTaskList();
+        if (taskList != null && taskList.size() > 0) {
+            tvNoTasks.setVisibility(View.INVISIBLE);
+            mTaskAdapter.setTaskList(taskList);
+            mTaskAdapter.setInteractionListener(this);
+        } else {
+            tvNoTasks.setVisibility(View.VISIBLE);
+        }
     }
 
-    private List<Task> getDummyTaskList() {
+    private List<Task> getTaskList() {
         List<Task> taskList;
         Realm realm = null;
         try {
@@ -101,54 +110,54 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
 
     @Override
     public void onTaskSelected(Task task, int position) {
-        NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
+        NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getTaskId(), task.getName()));//Actions.VIEW_BUILDINGS
     }
 
     @Override
     public void onTaskHistory(Task task, int position) {
-        NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getId(), task.getTaskName()));//Actions.VIEW_BUILDINGS
+        NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getTaskId(), task.getName()));//Actions.VIEW_BUILDINGS
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_BUILDINGS && resultCode == Activity.RESULT_OK) {
-            refreshCount();
+//            refreshCount();
             mTaskAdapter.clear();
-            showDummyData();
+//            showDummyData();
         }
     }
 
-    private void refreshCount() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            realm.executeTransaction(realmObject -> {
-                RealmResults<Task> realmResults = realmObject.where(Task.class).findAll();
-                for (Task task : realmResults) {
-                    int totalApartments = 0;
-                    int totalResidents = 0;
-
-                    //Count Apartments
-                    for (Street street: task.getStreetList()) {
-                        for (Building building : street.getBuildingList()) {
-                            if (building.getApartmentList() != null) {
-                                totalApartments += building.getApartmentList().size();
-                                for (Apartment apartment : building.getApartmentList()) {
-                                    totalResidents += apartment.getTotalInhabitants();
-                                }
-                            }
-                        }
-                    }
-                    task.setTotalApartments(totalApartments);
-                    task.setTotalResidents(totalResidents);
-
-                }
-            });
-        } finally {
-            if (realm != null) {
-                realm.close();
-            }
-        }
-    }
+//    private void refreshCount() {
+//        Realm realm = null;
+//        try {
+//            realm = Realm.getDefaultInstance();
+//            realm.executeTransaction(realmObject -> {
+//                RealmResults<Task> realmResults = realmObject.where(Task.class).findAll();
+//                for (Task task : realmResults) {
+//                    int totalApartments = 0;
+//                    int totalResidents = 0;
+//
+//                    //Count Apartments
+//                    for (Street street : task.getStreetList()) {
+//                        for (Building building : street.getBuildingList()) {
+//                            if (building.getApartmentList() != null) {
+//                                totalApartments += building.getApartmentList().size();
+//                                for (Apartment apartment : building.getApartmentList()) {
+//                                    totalResidents += apartment.getTotalInhabitants();
+//                                }
+//                            }
+//                        }
+//                    }
+//                    task.setTotalApartments(totalApartments);
+//                    task.setTotalResidents(totalResidents);
+//
+//                }
+//            });
+//        } finally {
+//            if (realm != null) {
+//                realm.close();
+//            }
+//        }
+//    }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-<!--fragment_login.xml-->
+    <!--fragment_login.xml-->
     <dimen name="tv_authorization_system_padding">16dp</dimen>
     <dimen name="tv_authorization_system_padding_medium">12dp</dimen>
     <dimen name="tv_authorization_system_padding_small">8dp</dimen>
@@ -13,14 +13,14 @@
     <dimen name="et_login_password_text_size">14sp</dimen>
     <dimen name="btn_margin">16dp</dimen>
     <dimen name="btn_text_size">18sp</dimen>
-<!--fragment_login.xml-->
+    <!--fragment_login.xml-->
 
-<!--activity_main.xml-->
+    <!--activity_main.xml-->
     <dimen name="bottomBar_height">60dp</dimen>
     <dimen name="botomBar_img_size">24dp</dimen>
 
     <dimen name="design_bottom_navigation_height" tools:override="true">24dp</dimen>
-<!--activity_main.xml-->
+    <!--activity_main.xml-->
 
     <dimen name="toolbar_title">18sp</dimen>
     <dimen name="toolbar_title_small">14sp</dimen>

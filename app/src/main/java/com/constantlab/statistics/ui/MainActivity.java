@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import com.constantlab.statistics.ui.map.MapFragment;
 import com.constantlab.statistics.ui.sync.SyncFragment;
 import com.constantlab.statistics.ui.tasks.TasksFragment;
 import com.constantlab.statistics.utils.INavigation;
+import com.constantlab.statistics.utils.ISync;
 import com.constantlab.statistics.utils.NotificationCenter;
 import com.roughike.bottombar.BottomBar;
 
@@ -40,7 +42,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-public class MainActivity extends BaseActivity implements INavigation {
+public class MainActivity extends BaseActivity implements INavigation, ISync {
     @BindView(R.id.fragment_container)
     FrameLayout mFragmentContainer;
 
@@ -62,7 +64,7 @@ public class MainActivity extends BaseActivity implements INavigation {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        insertDummyContent();
+//        insertDummyContent();
 
         showTaskFragment(TasksFragment.newInstance(), false);
         showTaskContainer();
@@ -94,6 +96,7 @@ public class MainActivity extends BaseActivity implements INavigation {
         });
 
         NotificationCenter.getInstance().addNavigationListener(this);
+        NotificationCenter.getInstance().addSyncListener(this);
     }
 
     private void refreshBottomNavigationSize(BottomNavigationView bottomNavigationView) {
@@ -148,10 +151,10 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     BuildingType buildingType = new BuildingType();
                     buildingType.setId(1);
-                    buildingType.setType("Тип 1");
+                    buildingType.setName("Тип 1");
                     realmObject.insertOrUpdate(buildingType);
                     buildingType.setId(2);
-                    buildingType.setType("Тип 2");
+                    buildingType.setName("Тип 2");
                     realmObject.insert(buildingType);
                 });
             }
@@ -190,10 +193,10 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     ApartmentType apartmentType = new ApartmentType();
                     apartmentType.setId(1);
-                    apartmentType.setType("Квартира");
+                    apartmentType.setName("Квартира");
                     realmObject.insertOrUpdate(apartmentType);
                     apartmentType.setId(2);
-                    apartmentType.setType("Комната");
+                    apartmentType.setName("Комната");
                     realmObject.insertOrUpdate(apartmentType);
                 });
             }
@@ -210,7 +213,7 @@ public class MainActivity extends BaseActivity implements INavigation {
             if (realm.where(Task.class).findAll().size() == 0) {
                 realm.executeTransaction(realmObject -> {
                     Task task = new Task();
-                    task.setId(1);
+                    task.setTaskId(1);
                     RealmResults<Street> realmList = realmObject.where(Street.class).findAll();
                     RealmList<Street> streetsRealmList = new RealmList<>();
                     streetsRealmList.addAll(realmList);
@@ -219,20 +222,20 @@ public class MainActivity extends BaseActivity implements INavigation {
                     int totalApartments = 0;
                     int totalResidents = 0;
 
-                    //Count Apartments
-                    for (Street street : task.getStreetList()) {
-                        for (Building building : street.getBuildingList()) {
-                            if (building.getApartmentList() != null) {
-                                totalApartments += building.getApartmentList().size();
-                                for (Apartment apartment : building.getApartmentList()) {
-                                    totalResidents += apartment.getTotalInhabitants();
-                                }
-                            }
-                        }
-                    }
-                    task.setTotalApartments(totalApartments);
-                    task.setTotalResidents(totalResidents);
-                    task.setTaskName("Задания 1");
+//                    //Count Apartments
+//                    for (Street street : task.getStreetList()) {
+//                        for (Building building : street.getBuildingList()) {
+//                            if (building.getApartmentList() != null) {
+//                                totalApartments += building.getApartmentList().size();
+//                                for (Apartment apartment : building.getApartmentList()) {
+//                                    totalResidents += apartment.getTotalInhabitants();
+//                                }
+//                            }
+//                        }
+//                    }
+//                    task.setTotalApartments(totalApartments);
+//                    task.setTotalResidents(totalResidents);
+                    task.setName("Задания 1");
                     realmObject.insert(task);
                 });
             }
@@ -253,7 +256,7 @@ public class MainActivity extends BaseActivity implements INavigation {
                     RealmResults<Building> realmList = realmObject.where(Building.class).findAll();
                     RealmList<Building> buildingRealmList = new RealmList<>();
                     buildingRealmList.addAll(realmList);
-                    street.setBuildingList(buildingRealmList);
+//                    street.setBuildingList(buildingRealmList);
 
                     //Count Apartments
                     street.setName("Иманова");
@@ -274,32 +277,29 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realObject -> {
                     Building building = new Building();
                     building.setId(1);
-                    Address address = realObject.where(Address.class).findFirst();
-                    building.setAddress(address);
-                    building.setHouseNumber("11");
-                    building.setFloorNumber(1);
-                    building.setTotalFlats(100);
-                    building.setAreaSq(85.0f);
+//                    Address address = realObject.where(Address.class).findFirst();
+//                    building.setAddress(address);
+//                    building.setHouseNumber("11");
+//                    building.setFloorNumber(1);
+//                    building.setTotalFlats(100);
+//                    building.setAreaSq(85.0f);
                     building.setLongitude(null);
                     building.setLongitude(null);
-                    building.setMarkedOnMap(false);
-                    building.setTerritoryName("Пустая Теретория");
                     building.setOwnerName("Никита Карачев");
                     BuildingType buildingType = realObject.where(BuildingType.class).findFirst();
-                    building.setBuildingType(buildingType);
+//                    building.setBuildingType(buildingType);
                     BuildingStatus buildingStatus = realObject.where(BuildingStatus.class).findFirst();
                     building.setBuildingStatus(buildingStatus);
                     Apartment apartment = new Apartment();
                     apartment.setId(1);
-                    apartment.setApartmentNumber("1");
+//                    apartment.setApartmentNumber("1");
                     ApartmentType apartmentType = realObject.where(ApartmentType.class).findFirst();
-                    apartment.setApartmentType(apartmentType);
+//                    apartment.setApartmentType(apartmentType);
                     apartment.setOwnerName("Yerzhan Ryskaliyev");
                     apartment.setTotalInhabitants(3);
-                    apartment.setTotalRooms(4);
                     RealmList<Apartment> apartments = new RealmList<>();
                     apartments.add(apartment);
-                    building.setApartmentList(apartments);
+//                    building.setApartmentList(apartments);
                     realObject.insert(building);
                 });
             }
@@ -386,8 +386,7 @@ public class MainActivity extends BaseActivity implements INavigation {
                 realm.executeTransaction(realmObject -> {
                     StreetType streetType = new StreetType();
                     streetType.setId(1);
-                    streetType.setTitleRu("УЛИЦА");
-                    streetType.setTitleKk("УЛИЦА");
+                    streetType.setName("УЛИЦА");
                     realmObject.insert(streetType);
                 });
             }
@@ -401,10 +400,29 @@ public class MainActivity extends BaseActivity implements INavigation {
     protected void onDestroy() {
         super.onDestroy();
         NotificationCenter.getInstance().removeNavigationListener(this);
+        NotificationCenter.getInstance().removeSyncListener(this);
     }
 
     @Override
     public void openPage(BaseFragment fragment) {
         showTaskFragment(fragment, true);
+    }
+
+    @Override
+    public void onSyncFromServer() {
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
+        showTaskFragment(TasksFragment.newInstance(), false);
+    }
+
+    @Override
+    public void onSyncToServer() {
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
+        showTaskFragment(TasksFragment.newInstance(), false);
     }
 }

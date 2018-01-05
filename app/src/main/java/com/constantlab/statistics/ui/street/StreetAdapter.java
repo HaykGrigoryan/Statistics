@@ -3,7 +3,9 @@ package com.constantlab.statistics.ui.street;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.Street;
+import com.constantlab.statistics.ui.customviews.BuildingView;
 import com.constantlab.statistics.ui.customviews.StreetView;
 
 import java.util.List;
@@ -35,6 +37,11 @@ public class StreetAdapter extends RecyclerView.Adapter<StreetAdapter.StreetHold
     public StreetAdapter.StreetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         StreetView view = new StreetView(parent.getContext());
         StreetAdapter.StreetHolder holder = new StreetAdapter.StreetHolder(view);
+        ((StreetView) holder.itemView).setEditButtonListener(view1 -> {
+            if (interactionListener != null) {
+                interactionListener.onEditStreet(streetList.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+            }
+        });
         holder.itemView.setOnClickListener(view12 -> {
             if (interactionListener != null) {
                 interactionListener.onStreetDetail(streetList.get(holder.getAdapterPosition()), holder.getAdapterPosition());
@@ -64,6 +71,7 @@ public class StreetAdapter extends RecyclerView.Adapter<StreetAdapter.StreetHold
 
     interface InteractionListener {
         void onStreetDetail(Street street, int adapterPosition);
+        void onEditStreet(Street street, int adapterPosition);
     }
 
     static class StreetHolder extends RecyclerView.ViewHolder {

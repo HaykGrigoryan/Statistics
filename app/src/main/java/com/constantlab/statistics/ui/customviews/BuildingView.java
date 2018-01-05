@@ -59,15 +59,9 @@ public class BuildingView extends RelativeLayout {
     public void setData(Building building) {
         buildingName.setText(building.getDisplayAddress(getContext()));
         apartmentsCount
-                .setText(building.getApartmentList() != null ? String.format(Locale.getDefault(), FORMAT, building.getApartmentList().size()) : ZERO);
-        int residents = 0;
-        if (building.getApartmentList() != null && building.getApartmentList().size() > 0) {
-            for (Apartment apartment : building.getApartmentList()) {
-                if (apartment.getTotalInhabitants() != null) {
-                    residents += apartment.getTotalInhabitants();
-                }
-            }
-        }
+                .setText(building.getApartmentCount() != null ? String.format(Locale.getDefault(), FORMAT, building.getApartmentCount()) : ZERO);
+        int residents = building.getApartmentInhabitantsCount();
+        
         if (residents == 0) {
             residentsCount.setText(ZERO);
         } else {

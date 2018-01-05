@@ -1,0 +1,82 @@
+[
+  {
+    "type_id": 1,
+    "description": "Добавление улицы",
+    "ref_type": 1
+  },
+  {
+    "type_id": 2,
+    "description": "Добавление дома",
+    "ref_type": 1
+  },
+  {
+    "type_id": 3,
+    "description": "Добавление квартиры",
+    "ref_type": 1
+  },
+  {
+    "type_id": 4,
+    "description": "Переименование улицы",
+    "ref_type": 1
+  },
+  {
+    "type_id": 5,
+    "description": "Определение типа объекта",
+    "ref_type": 1
+  },
+  {
+    "type_id": 6,
+    "description": "Определение статуса объекта",
+    "ref_type": 1
+  },
+  {
+    "type_id": 7,
+    "description": "Определение учреждения\/домовладельца - собственника",
+    "ref_type": 1
+  },
+  {
+    "type_id": 8,
+    "description": "Определение числа временно проживающих",
+    "ref_type": 1
+  },
+  {
+    "type_id": 9,
+    "description": "Определение числа проживающих",
+    "ref_type": 1
+  },
+  {
+    "type_id": 10,
+    "description": "Новое примечание",
+    "ref_type": 1
+  },
+  {
+    "type_id": 11,
+    "description": "Наличие объекта на карте",
+    "ref_type": 1
+  },
+  {
+    "type_id": 12,
+    "description": "Добавление дома на временной улице",
+    "ref_type": 1
+  },
+  {
+    "type_id": 13,
+    "description": "Добавление квартиры во временном доме на временной улице",
+    "ref_type": 1
+  },
+  {
+    "type_id": 14,
+    "description": "Изменение координат объекта",
+    "ref_type": 1
+  },
+  {
+    "type_id": 15,
+    "description": "Изменение номера дома",
+    "ref_type": 1
+  },
+  {
+    "type_id": 16,
+    "description": "Изменение номера квартиры",
+    "ref_type": 1
+  }
+]

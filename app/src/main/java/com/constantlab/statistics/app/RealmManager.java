@@ -2,12 +2,20 @@ package com.constantlab.statistics.app;
 
 import android.content.Context;
 
+import com.constantlab.statistics.models.Apartment;
+import com.constantlab.statistics.models.Building;
+import com.constantlab.statistics.models.History;
+import com.constantlab.statistics.models.Street;
+import com.constantlab.statistics.models.StreetType;
+import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.utils.ConstKeys;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 import io.realm.Sort;
 
 
@@ -48,5 +56,29 @@ public class RealmManager {
             init(context);
         }
         return Realm.getDefaultInstance();
+    }
+
+    public void clearLocalData() {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            RealmResults<Task> tasks = realm.where(Task.class).findAll();
+            RealmResults<Street> streets = realm.where(Street.class).findAll();
+            RealmResults<Building> buildings = realm.where(Building.class).findAll();
+            RealmResults<Apartment> apartments = realm.where(Apartment.class).findAll();
+            RealmResults<History> histories = realm.where(History.class).findAll();
+            realm.executeTransaction(realmObject -> {
+                tasks.deleteAllFromRealm();
+                streets.deleteAllFromRealm();
+                buildings.deleteAllFromRealm();
+                apartments.deleteAllFromRealm();
+                histories.deleteAllFromRealm();
+            });
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
     }
 }

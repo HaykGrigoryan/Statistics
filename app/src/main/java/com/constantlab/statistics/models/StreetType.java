@@ -1,5 +1,11 @@
 package com.constantlab.statistics.models;
 
+import android.content.Context;
+
+import com.constantlab.statistics.utils.GsonUtils;
+
+import java.util.List;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,8 +16,7 @@ import io.realm.annotations.PrimaryKey;
 public class StreetType extends RealmObject {
     @PrimaryKey
     private Integer id;
-    private String titleRu;
-    private String titleKk;
+    private String name;
 
     @Override
     public boolean equals(Object o) {
@@ -36,16 +41,35 @@ public class StreetType extends RealmObject {
         this.id = id;
     }
 
-    public void setTitleRu(String titleRu) {
-        this.titleRu = titleRu;
+    public String getName() {
+        return name;
     }
 
-    public void setTitleKk(String titleKk) {
-        this.titleKk = titleKk;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return titleRu;
+        return name;
+    }
+
+    public static int getIndex(List<StreetType> items, int id) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public static String getDescriptionById(Context context, int id) {
+        List<StreetType> items = GsonUtils.getStreetTypeData(context);
+        for (StreetType streetType : items) {
+            if (streetType.getId() == id) {
+                return streetType.getName();
+            }
+        }
+        return "";
     }
 }

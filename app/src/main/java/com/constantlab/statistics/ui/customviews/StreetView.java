@@ -54,6 +54,7 @@ public class StreetView extends RelativeLayout {
         buidingsCount = findViewById(R.id.tv_buildings);
         apartmentsCount = findViewById(R.id.tv_apartments);
         residentsCount = findViewById(R.id.tv_total_residents);
+        btnEdit = findViewById(R.id.btn_edit);
     }
 
     public void setData(Street street) {
@@ -65,5 +66,9 @@ public class StreetView extends RelativeLayout {
         residentsCount
                 .setText(String.format(Locale.getDefault(), FORMAT, street.getResidentsCount()));
 
+    }
+
+    public void setEditButtonListener(View.OnClickListener listener) {
+        btnEdit.setOnClickListener(listener);
     }
 }

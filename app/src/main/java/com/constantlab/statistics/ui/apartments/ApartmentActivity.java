@@ -37,13 +37,7 @@ public class ApartmentActivity extends BaseActivity {
             action = extra.getInt(ConstKeys.TAG_ACTION);
             if (action == Actions.VIEW_APARTMENTS) {
                 Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
-                showFragment(ApartmentFragment.newInstance(buildingId, ""), false);
-            } else if (action == Actions.ADD_APARTMENT) {
-                Integer buildingId = extra.getInt(ConstKeys.TAG_BUILDING);
-                showFragment(AddApartmentFragment.newInstance(buildingId), false);
-            } else if (action == Actions.EDIT_APARTMENT) {
-                Integer apartmentId = extra.getInt(ConstKeys.TAG_APARTMENT);
-                showFragment(EditApartmentFragment.newInstance(apartmentId), false);
+//                showFragment(ApartmentFragment.newInstance(buildingId, ""), false);
             }
         }
     }

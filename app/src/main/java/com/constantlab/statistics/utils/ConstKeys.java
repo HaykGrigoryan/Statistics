@@ -27,4 +27,9 @@ public class ConstKeys {
     public static final String TAG_APARTMENT = "TAG_APARTMENT";
     public static final String TAG_APARTMENT_NAME = "TAG_APARTMENT_NAME";
 
+
+
+    public static final String KEY_APP_SHARED_PREFERENCES = PACKAGE_NAME + "_KEY_APP_SHARED_PREFERENCES";
+    public static final String KEY_USER_KEY = PACKAGE_NAME + "_KEY_USER_KEY";
+
 }

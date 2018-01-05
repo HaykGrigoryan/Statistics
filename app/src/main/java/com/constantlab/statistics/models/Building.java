@@ -3,7 +3,11 @@ package com.constantlab.statistics.models;
 import android.content.Context;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.network.model.BuildingItem;
 
+import java.util.List;
+
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -15,35 +19,29 @@ import io.realm.annotations.PrimaryKey;
 public class Building extends RealmObject {
 
     @PrimaryKey
+    private Integer local_id;
     private Integer id;
-    private Address address;
     private String houseNumber;
-    private String territoryName;
     private BuildingStatus buildingStatus;
-    private BuildingType buildingType;
-    private Boolean markedOnMap;
+    private Integer buildingType;
     private String ownerName;
-    private Integer floorNumber;
-    private Integer totalFlats;
     private Double latitude;
     private Double longitude;
-    private Float areaSq;
-    private RealmList<Apartment> apartmentList;
+    private Integer street_id;
+    private String kato;
+    private String streetName;
+    private String comment;
+    private Integer temporaryInhabitants;
+    private Integer streetType;
+    private boolean isNew;
+    private Integer task_id;
 
-    public BuildingType getBuildingType() {
-        return buildingType;
+    public Integer getBuildingType() {
+        return buildingType == null ? 0 : buildingType;
     }
 
-    public void setBuildingType(BuildingType buildingType) {
+    public void setBuildingType(Integer buildingType) {
         this.buildingType = buildingType;
-    }
-
-    public String getTerritoryName() {
-        return territoryName;
-    }
-
-    public void setTerritoryName(String territoryName) {
-        this.territoryName = territoryName;
     }
 
     public BuildingStatus getBuildingStatus() {
@@ -54,16 +52,8 @@ public class Building extends RealmObject {
         this.buildingStatus = buildingStatus;
     }
 
-    public Boolean getMarkedOnMap() {
-        return markedOnMap;
-    }
-
-    public void setMarkedOnMap(Boolean markedOnMap) {
-        this.markedOnMap = markedOnMap;
-    }
-
     public String getOwnerName() {
-        return ownerName;
+        return ownerName == null ? "" : ownerName;
     }
 
     public void setOwnerName(String ownerName) {
@@ -78,40 +68,16 @@ public class Building extends RealmObject {
         this.id = id;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
     public String getDisplayAddress(Context context) {
-        return context.getString(R.string.label_street_short) + " " + getAddress().getStreet().getTitleRu() + " " + context.getString(R.string.label_bld_short) + " " + getHouseNumber();
+        return context.getString(R.string.label_street_short) + " " + getStreetName() + " " + context.getString(R.string.label_bld_short) + " " + getHouseNumber();
     }
 
     public String getHouseNumber() {
-        return houseNumber;
+        return houseNumber == null ? "" : houseNumber;
     }
 
     public void setHouseNumber(String houseNumber) {
         this.houseNumber = houseNumber;
-    }
-
-    public Integer getFloorNumber() {
-        return floorNumber;
-    }
-
-    public void setFloorNumber(Integer floorNumber) {
-        this.floorNumber = floorNumber;
-    }
-
-    public Integer getTotalFlats() {
-        return totalFlats;
-    }
-
-    public void setTotalFlats(Integer totalFlats) {
-        this.totalFlats = totalFlats;
     }
 
     public Double getLatitude() {
@@ -130,20 +96,129 @@ public class Building extends RealmObject {
         this.longitude = longitude;
     }
 
-    public Float getAreaSq() {
-        return areaSq;
+    public Integer getStreetId() {
+        return street_id;
     }
 
-    public void setAreaSq(Float areaSq) {
-        this.areaSq = areaSq;
+    public void setStreetId(Integer streetId) {
+        this.street_id = streetId;
     }
 
-    public RealmList<Apartment> getApartmentList() {
-        return apartmentList;
+    public Integer getTaskId() {
+        return task_id;
     }
 
-    public void setApartmentList(RealmList<Apartment> apartmentList) {
-        this.apartmentList = apartmentList;
+    public void setTaskId(Integer task_id) {
+        this.task_id = task_id;
     }
 
+    public String getKato() {
+        return kato == null ? "" : kato;
+    }
+
+    public void setKato(String kato) {
+        this.kato = kato;
+    }
+
+    public Integer getTemporaryInhabitants() {
+        return temporaryInhabitants == null ? 0 : temporaryInhabitants;
+    }
+
+    public void setTemporaryInhabitants(Integer temporaryInhabitants) {
+        this.temporaryInhabitants = temporaryInhabitants;
+    }
+
+    public String getStreetName() {
+        String street = streetName;
+        if (street == null) {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                street = realm.where(Street.class).equalTo("id", street_id).findFirst().getName();
+                return street;
+            } finally {
+                if (realm != null)
+                    realm.close();
+            }
+        }
+        return street;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+
+    public Integer getStreetType() {
+        return streetType;
+    }
+
+    public void setStreetType(Integer streetType) {
+        this.streetType = streetType;
+    }
+
+    public static Building getBuilding(BuildingItem item) {
+        Building building = new Building();
+        building.setId(item.getId());
+        building.setHouseNumber(item.getBuildingNumber());
+        building.setBuildingType(item.getBuildingType());
+        return building;
+    }
+
+    public Integer getApartmentCount() {
+        Realm realm = null;
+        int apartmentCount = 0;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            List<Apartment> apartments = realm.where(Apartment.class).equalTo("building_id", id).equalTo("task_id", task_id).findAll();
+            apartmentCount = apartments.size();
+
+            return apartmentCount;
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+    }
+
+    public Integer getApartmentInhabitantsCount() {
+        Realm realm = null;
+        int inhabitantsCount = 0;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            List<Apartment> apartments = realm.where(Apartment.class).equalTo("building_id", id).equalTo("task_id", task_id).findAll();
+            for (Apartment apartment : apartments) {
+                inhabitantsCount += apartment.getTotalInhabitants();
+            }
+
+            return inhabitantsCount;
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
+    }
+
+    public Integer getLocalId() {
+        return local_id;
+    }
+
+    public void setLocalId(Integer local_id) {
+        this.local_id = local_id;
+    }
+
+    public String getComment() {
+        return comment == null ? "" : comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }

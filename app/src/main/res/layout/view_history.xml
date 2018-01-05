@@ -32,24 +32,46 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_toLeftOf="@+id/ic_check"
                     android:fontFamily="@font/opensanslight"
                     android:paddingRight="@dimen/padding_small"
                     android:text="Change #1"
-                    android:layout_marginTop="@dimen/margin_small"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/text_medium_large" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/ic_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    app:srcCompat="@drawable/ic_check" />
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_history_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout_history_name"
+                android:fontFamily="@font/opensansregular"
+                android:paddingBottom="@dimen/padding_medium"
+                android:paddingEnd="@dimen/padding_large"
+                android:paddingStart="@dimen/padding_large"
+                android:text="@string/label_apartments"
+                android:textColor="@color/text_gray_1"
+                android:textSize="@dimen/text_ex_small" />
 
             <TextView
                 android:id="@+id/tv_history_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/layout_history_name"
+                android:layout_below="@id/tv_history_address"
                 android:fontFamily="@font/opensansregular"
+                android:paddingBottom="@dimen/padding_medium"
                 android:paddingEnd="@dimen/padding_large"
                 android:paddingStart="@dimen/padding_large"
                 android:text="@string/label_apartments"
-                android:paddingBottom="@dimen/padding_medium"
                 android:textColor="@color/text_gray_1"
                 android:textSize="@dimen/text_ex_small" />
 
