@@ -113,6 +113,11 @@ public class TaskItem {
         @SerializedName("cato")
         @Expose
         protected String kato;
+
+        @SerializedName("geo")
+        @Expose
+        protected List<GeoItem> geoItems;
+
         public List<StreetItem> getStreetItems() {
             return streetItems;
         }
@@ -127,6 +132,14 @@ public class TaskItem {
 
         public void setKato(String kato) {
             this.kato = kato;
+        }
+
+        public List<GeoItem> getGeoItems() {
+            return geoItems;
+        }
+
+        public void setGeoItems(List<GeoItem> geoItems) {
+            this.geoItems = geoItems;
         }
     }
 }

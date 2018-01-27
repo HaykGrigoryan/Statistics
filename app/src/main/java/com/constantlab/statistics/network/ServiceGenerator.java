@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -82,7 +83,7 @@ public class ServiceGenerator {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient client = httpClient.addInterceptor(interceptor).sslSocketFactory(sslSocketFactory).build();
+        OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(1, TimeUnit.HOURS).writeTimeout(1,TimeUnit.HOURS).sslSocketFactory(sslSocketFactory).build();
 
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);

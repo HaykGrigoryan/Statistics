@@ -40,7 +40,7 @@
     <string name="label_map">Карта</string>
     <string name="label_select">Выбрать</string>
     <string name="select_location">Please Select Location</string>
-    <string name="error_empty_field">Field cannot be empty</string>
+    <string name="error_empty_field">Поле не может быть пустым</string>
     <string name="error_select_location">Select Location From Map</string>
     <string name="hint_floors">Floors</string>
     <string name="title_apartments">Apartments</string>
@@ -53,10 +53,13 @@
     <string name="message_no_buildings">Нет Зданий</string>
     <string name="message_no_history">Нет Изменений</string>
     <string name="message_no_streets">Нет Улиц</string>
+    <string name="message_location_required">Указание местоположения объекта обязательно</string>
     <string name="title_add_apartment">Добавить квартиру</string>
     <string name="title_add_street">Добавить улицу</string>
     <string name="hint_apartment_number">Номер квартиры</string>
     <string name="hint_street_name">Имя улицы</string>
+    <string name="hint_street_new_name">Новое название</string>
+    <string name="hint_search">Поиск</string>
     <string name="hint_total_rooms">Total Rooms</string>
     <string name="hint_total_residents">Количество проживаюших</string>
     <string name="label_apartment_type">Тип Апартамента</string>
@@ -87,13 +90,21 @@
         <item>Concrete</item>
     </string-array>
 
+    <string-array name="map_type_list">
+        <item>Sattelite</item>
+        <item>Normal</item>
+    </string-array>
+    <string name="map_type_satellite">Спутник</string>
+    <string name="map_type_normal">Нормальный</string>
+
 
     <string name="label_sync_from_server">Синхронизация с сервера</string>
     <string name="label_sync_to_server">Отправить изменения на сервер</string>
-    <string name="label_last_sync">Дата последней синхронизации: 21.12.2017</string>
+    <string name="label_last_sync">Дата последней синхронизации: %1$s</string>
     <string name="label_get_task">Получить задание</string>
     <string name="label_send">Отправить</string>
     <string name="label_logout">Выйти</string>
+    <string name="label_sync">Синхронизировать</string>
     <string name="label_ok">ОК</string>
     <string name="label_continue">Продолжить</string>
     <string name="label_apt_no">кв.</string>
@@ -102,6 +113,11 @@
     <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
     
     <string name="dialog_title_attention">Внимание</string>
+    <string name="dialog_title_warning">Предупреждение</string>
     <string name="dialog_logout_confirmation">Вы уверены?</string>
-    <string name="dialog_not_all_sync_note">Не все изменение отправлены на сервер. Вы уверены что хотите продолжить? Изменение будут патераны.</string>
+    <string name="dialog_duplicate_apartment_number">Квартира с этим номером уже существует.</string>
+    <string name="dialog_duplicate_building_number">Дом с этим номером уже существует.</string>
+    <string name="dialog_duplicate_street_name">Улица с этим именем уже существует.</string>
+    <string name="dialog_logut_without_sync_message">Есть не синхронизированные данные. Вы хотите выйти без синхронизации?</string>
+    <string name="dialog_not_all_sync_note">Не все изменения отправлены на сервер. Вы уверены что хотите продолжить? Изменения будут потеряны.</string>
 </resources>

@@ -140,7 +140,9 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
 
     @Override
     public void onBuildingDetail(Building building, int adapterPosition) {
-        NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext()),building.getTaskId()));
+        if (!Building.isStatusInactive(building.getBuildingStatus()) && !Building.isTypeSpetialInstitution(building.getBuildingType()) && !Building.isTypeClosedInstitution(building.getBuildingType())) {
+            NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext()), building.getTaskId()));
+        }
     }
 
     @OnClick(R.id.iv_add)

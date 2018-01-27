@@ -46,9 +46,9 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/opensanslight"
                 android:padding="@dimen/padding_medium"
-                android:textSize="@dimen/text_small"
                 android:text="@string/label_object_type"
-                android:textColor="@color/colorAccentSecondary" />
+                android:textColor="@color/colorAccentSecondary"
+                android:textSize="@dimen/text_small" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -126,16 +126,14 @@
                 android:layout_marginBottom="@dimen/padding_ex_large"
                 android:layout_marginTop="@dimen/padding_ex_large"
                 android:background="@color/colorPrimary"
+                android:paddingBottom="@dimen/padding_medium"
                 android:paddingEnd="@dimen/btn_padding_top_bottom"
                 android:paddingStart="@dimen/btn_padding_top_bottom"
-                android:paddingBottom="@dimen/padding_medium"
                 android:paddingTop="@dimen/padding_medium"
                 android:text="@string/btn_text_save"
                 android:textAllCaps="false"
                 android:textColor="#eff0f8"
-                android:textSize="@dimen/text_small_medium"
-
-                />
+                android:textSize="@dimen/text_small_medium" />
 
         </LinearLayout>
     </ScrollView>

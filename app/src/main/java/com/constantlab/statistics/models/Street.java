@@ -5,6 +5,7 @@ import android.content.Context;
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.network.model.StreetItem;
 
+import java.util.Comparator;
 import java.util.List;
 
 import io.realm.Realm;
@@ -21,9 +22,11 @@ public class Street extends RealmObject {
     private Integer local_id;
     private Integer id;
     private String name;
+    private String originalName;
     private Integer streetTypeCode;
     private Integer task_id;
     private String kato;
+    private Integer historyId;
     private boolean isNew;
 
     public Integer getId() {
@@ -35,11 +38,19 @@ public class Street extends RealmObject {
     }
 
     public String getName() {
-        return name;
+        return name == null ? "" : name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOriginalName() {
+        return originalName == null ? "" : originalName;
+    }
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
     }
 
     public int getBuidingsCount() {
@@ -99,7 +110,7 @@ public class Street extends RealmObject {
     }
 
     public String getDisplayName(Context context) {
-        return context.getString(R.string.label_street_short) + " " + name;
+        return context.getString(R.string.label_street_short) + " " + getName();
     }
 
     public Integer getStreetTypeCode() {
@@ -122,6 +133,7 @@ public class Street extends RealmObject {
         Street street = new Street();
         street.setId(item.getId());
         street.setName(item.getTitle());
+        street.setOriginalName(item.getTitle());
         street.setStreetTypeCode(item.getStreetTypeCode());
         return street;
     }
@@ -148,5 +160,21 @@ public class Street extends RealmObject {
 
     public void setKato(String kato) {
         this.kato = kato;
+    }
+
+    public Integer getHistoryId() {
+        return historyId;
+    }
+
+    public void setHistoryId(Integer historyId) {
+        this.historyId = historyId;
+    }
+
+    public static Comparator<Street> getAscComparator() {
+        return (street, t1) -> street.getName().compareTo(t1.getName());
+    }
+
+    public static Comparator<Street> getDescComparator() {
+        return (street, t1) -> t1.getName().compareTo(street.getName());
     }
 }

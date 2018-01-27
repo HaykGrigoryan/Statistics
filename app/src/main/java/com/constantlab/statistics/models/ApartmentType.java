@@ -63,13 +63,13 @@ public class ApartmentType extends RealmObject {
         return 0;
     }
 
-    public static String getDescriptionById(Context context, int id) {
-        List<ApartmentType> items = GsonUtils.getApartmentTypeData(context);
-        for (ApartmentType apartmentType : items) {
-            if (apartmentType.getId() == id) {
-                return apartmentType.getName();
-            }
-        }
-        return "";
-    }
+//    public static String getDescriptionById(Context context, int id) {
+//        List<ApartmentType> items = GsonUtils.getApartmentTypeData(context);
+//        for (ApartmentType apartmentType : items) {
+//            if (apartmentType.getId() == id) {
+//                return apartmentType.getName();
+//            }
+//        }
+//        return "";
+//    }
 }

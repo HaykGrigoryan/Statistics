@@ -1,8 +1,10 @@
 package com.constantlab.statistics.models;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.network.Constants;
 import com.constantlab.statistics.network.model.BuildingItem;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class Building extends RealmObject {
     private Integer local_id;
     private Integer id;
     private String houseNumber;
-    private BuildingStatus buildingStatus;
+    private Integer buildingStatus;
     private Integer buildingType;
     private String ownerName;
     private Double latitude;
@@ -35,6 +37,7 @@ public class Building extends RealmObject {
     private Integer streetType;
     private boolean isNew;
     private Integer task_id;
+    private Integer historyId;
 
     public Integer getBuildingType() {
         return buildingType == null ? 0 : buildingType;
@@ -44,11 +47,11 @@ public class Building extends RealmObject {
         this.buildingType = buildingType;
     }
 
-    public BuildingStatus getBuildingStatus() {
-        return buildingStatus;
+    public Integer getBuildingStatus() {
+        return buildingStatus == null ? 0 : buildingStatus;
     }
 
-    public void setBuildingStatus(BuildingStatus buildingStatus) {
+    public void setBuildingStatus(Integer buildingStatus) {
         this.buildingStatus = buildingStatus;
     }
 
@@ -118,6 +121,14 @@ public class Building extends RealmObject {
 
     public void setKato(String kato) {
         this.kato = kato;
+    }
+
+    public Integer getHistoryId() {
+        return historyId;
+    }
+
+    public void setHistoryId(Integer historyId) {
+        this.historyId = historyId;
     }
 
     public Integer getTemporaryInhabitants() {
@@ -220,5 +231,32 @@ public class Building extends RealmObject {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public static boolean isTypeClosedInstitution(Integer buildingType) {
+        for (Integer type : Constants.BUILDING_TYPE_CLOSED_INSTITUTIONS) {
+            if (type.equals(buildingType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isTypeSpetialInstitution(Integer buildingType) {
+        for (Integer type : Constants.BUILDING_TYPE_SPECIAL_INSTITUTIONS) {
+            if (type.equals(buildingType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isStatusInactive(Integer buildingType) {
+        for (Integer type : Constants.BUILDING_STATUS_INACTIVE) {
+            if (type.equals(buildingType)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

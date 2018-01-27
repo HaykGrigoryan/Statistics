@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.Sort;
 
 /**
  * Created by Hayk on 27/12/2017.
@@ -97,7 +98,7 @@ public class HistoryFragment extends BaseFragment {
 
         try {
             realm = Realm.getDefaultInstance();
-            return realm.copyFromRealm(realm.where(History.class).equalTo("task_id", taskId).findAll());
+            return realm.copyFromRealm(realm.where(History.class).equalTo("task_id", taskId).equalTo("inactive", false).sort("synced", Sort.ASCENDING).findAll());
 
         } finally {
             if (realm != null)

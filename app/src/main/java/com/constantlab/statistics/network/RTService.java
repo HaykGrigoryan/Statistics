@@ -1,7 +1,11 @@
 package com.constantlab.statistics.network;
 
-import com.constantlab.statistics.models.History;
+import com.constantlab.statistics.models.ApartmentType;
+import com.constantlab.statistics.models.BuildingStatus;
+import com.constantlab.statistics.models.BuildingType;
+import com.constantlab.statistics.models.ChangeType;
 import com.constantlab.statistics.models.HistoryForSend;
+import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
 import com.constantlab.statistics.network.model.BasicSingleDataResponse;
 import com.constantlab.statistics.network.model.LoginKey;
@@ -28,6 +32,26 @@ public interface RTService {
     @FormUrlEncoded
     @POST("get_task_list")
     Call<BasicMultipleDataResponse<TaskItem>> getTaskList(@Field("key") String key);
+
+    @FormUrlEncoded
+    @POST("get_reference")
+    Call<BasicMultipleDataResponse<StreetType>> getStreetTypes(@Field("key") String key, @Field("ref_type") String refType);
+
+    @FormUrlEncoded
+    @POST("get_reference")
+    Call<BasicMultipleDataResponse<ChangeType>> getChangeTypes(@Field("key") String key, @Field("ref_type") String refType);
+
+    @FormUrlEncoded
+    @POST("get_reference")
+    Call<BasicMultipleDataResponse<BuildingType>> getBuildingTypes(@Field("key") String key, @Field("ref_type") String refType);
+
+    @FormUrlEncoded
+    @POST("get_reference")
+    Call<BasicMultipleDataResponse<BuildingStatus>> getBuildingStatusTypes(@Field("key") String key, @Field("ref_type") String refType);
+
+    @FormUrlEncoded
+    @POST("get_reference")
+    Call<BasicMultipleDataResponse<ApartmentType>> getApartmentTypes(@Field("key") String key, @Field("ref_type") String refType);
 
     @FormUrlEncoded
     @POST("add_changes")

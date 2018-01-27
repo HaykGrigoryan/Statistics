@@ -1,5 +1,6 @@
 package com.constantlab.statistics.ui;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,7 +12,9 @@ import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.constantlab.statistics.R;
@@ -48,7 +51,9 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
 
     @BindView(R.id.task_container)
     FrameLayout mTaskContainer;
-
+    @BindView(R.id.mainContainer)
+    RelativeLayout mContentView;
+    BottomBar bottomBar;
     @Override
     protected int getFragmentContainerId() {
         return R.id.fragment_container;
@@ -68,7 +73,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
 
         showTaskFragment(TasksFragment.newInstance(), false);
         showTaskContainer();
-        BottomBar bottomBar = findViewById(R.id.bottom_navigation);
+        bottomBar = findViewById(R.id.bottom_navigation);
         bottomBar.setOnTabSelectListener(tabId -> {
             switch (tabId) {
                 case R.id.tab_tasks:
@@ -97,6 +102,33 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
 
         NotificationCenter.getInstance().addNavigationListener(this);
         NotificationCenter.getInstance().addSyncListener(this);
+
+        mContentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                Rect r = new Rect();
+                mContentView.getWindowVisibleDisplayFrame(r);
+                int screenHeight = mContentView.getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    bottomBar.setVisibility(View.GONE);
+                }
+                else {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            bottomBar.setVisibility(View.VISIBLE);
+                        }
+                    },10);
+
+                }
+            }
+        });
     }
 
     private void refreshBottomNavigationSize(BottomNavigationView bottomNavigationView) {
@@ -217,8 +249,8 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
                     RealmResults<Street> realmList = realmObject.where(Street.class).findAll();
                     RealmList<Street> streetsRealmList = new RealmList<>();
                     streetsRealmList.addAll(realmList);
-                    task.setStreetList(streetsRealmList);
-                    task.setTotalBuildings(task.getStreetList().size());
+//                    task.setStreetList(streetsRealmList);
+//                    task.setTotalBuildings(task.getStreetList().size());
                     int totalApartments = 0;
                     int totalResidents = 0;
 
@@ -289,7 +321,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
                     BuildingType buildingType = realObject.where(BuildingType.class).findFirst();
 //                    building.setBuildingType(buildingType);
                     BuildingStatus buildingStatus = realObject.where(BuildingStatus.class).findFirst();
-                    building.setBuildingStatus(buildingStatus);
+//                    building.setBuildingStatus(buildingStatus);
                     Apartment apartment = new Apartment();
                     apartment.setId(1);
 //                    apartment.setApartmentNumber("1");

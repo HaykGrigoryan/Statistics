@@ -2,6 +2,7 @@ package com.constantlab.statistics.models;
 
 import android.content.Context;
 
+import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.utils.GsonUtils;
 
 import java.util.List;
@@ -63,13 +64,16 @@ public class StreetType extends RealmObject {
         return 0;
     }
 
-    public static String getDescriptionById(Context context, int id) {
-        List<StreetType> items = GsonUtils.getStreetTypeData(context);
-        for (StreetType streetType : items) {
-            if (streetType.getId() == id) {
-                return streetType.getName();
-            }
-        }
-        return "";
+    public static String getDescriptionById(int id) {
+        return RealmManager.getInstance().getStreetTypeNameById(id);
+//        List<StreetType> items = GsonUtils.getStreetTypeData(context);
+//        for (StreetType streetType : items) {
+//            if (streetType.getId() == id) {
+//                return streetType.getName();
+//            }
+//        }
+//        return "";
     }
+
+
 }

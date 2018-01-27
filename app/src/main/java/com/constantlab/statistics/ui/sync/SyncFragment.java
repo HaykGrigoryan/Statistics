@@ -9,31 +9,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.models.Apartment;
+import com.constantlab.statistics.models.ApartmentType;
 import com.constantlab.statistics.models.Building;
+import com.constantlab.statistics.models.BuildingStatus;
+import com.constantlab.statistics.models.BuildingType;
+import com.constantlab.statistics.models.ChangeType;
+import com.constantlab.statistics.models.GeoPolygon;
 import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.models.HistoryForSend;
 import com.constantlab.statistics.models.Street;
+import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.network.Constants;
 import com.constantlab.statistics.network.RTService;
 import com.constantlab.statistics.network.ServiceGenerator;
 import com.constantlab.statistics.network.model.ApartmentItem;
 import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
 import com.constantlab.statistics.network.model.BasicSingleDataResponse;
 import com.constantlab.statistics.network.model.BuildingItem;
+import com.constantlab.statistics.network.model.GeoItem;
 import com.constantlab.statistics.network.model.LoginKey;
 import com.constantlab.statistics.network.model.StreetItem;
 import com.constantlab.statistics.network.model.TaskItem;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.login.LoginActivity;
+import com.constantlab.statistics.utils.ConstKeys;
+import com.constantlab.statistics.utils.DateUtils;
 import com.constantlab.statistics.utils.NotificationCenter;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
 import com.google.gson.Gson;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,6 +66,11 @@ import retrofit2.Response;
 public class SyncFragment extends BaseFragment {
     @BindView(R.id.pb_sync)
     ProgressBar pbSync;
+    @BindView(R.id.last_sync_to_server)
+    TextView mLastSyncToServer;
+
+    @BindView(R.id.last_sync_from_server)
+    TextView mLastSyncFromServer;
 
     public static SyncFragment newInstance() {
         return new SyncFragment();
@@ -71,10 +89,18 @@ public class SyncFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateLastSyncToServerTime();
+        updateLastSyncFromServerTime();
+    }
+
     @OnClick(R.id.btn_sync_with_server)
     public void getDataFromServer() {
-        if (History.getNotSyncedHistory().size() == 0) {
-            syncData();
+        if (History.getNotSyncedHistories().size() == 0) {
+            loadData();
+//            syncData();
         } else {
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(getContext());
@@ -83,13 +109,14 @@ public class SyncFragment extends BaseFragment {
             builder.setPositiveButton(getString(R.string.label_continue), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    syncData();
+                    loadData();
                 }
             });
             builder.setNegativeButton(getString(R.string.label_cancel), null);
             builder.show();
         }
     }
+
 
     private void syncData() {
         RTService rtService = ServiceGenerator.createService(RTService.class);
@@ -98,10 +125,11 @@ public class SyncFragment extends BaseFragment {
         call.enqueue(new Callback<BasicMultipleDataResponse<TaskItem>>() {
             @Override
             public void onResponse(Call<BasicMultipleDataResponse<TaskItem>> call, Response<BasicMultipleDataResponse<TaskItem>> response) {
-                if (response.body().isSuccess()) {
-                    RealmManager.getInstance().clearLocalData();
+                if (response.code() == 200 && response.body().isSuccess()) {
                     insertTasks(response.body().getData());
                     NotificationCenter.getInstance().notifyOnSyncFromServer();
+                    SharedPreferencesManager.getInstance().setLastSyncFromServer(getContext(), Calendar.getInstance().getTimeInMillis());
+                    updateLastSyncFromServerTime();
                     Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_from_server), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
@@ -121,72 +149,151 @@ public class SyncFragment extends BaseFragment {
 
     @OnClick(R.id.btn_logout)
     public void logout() {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(getContext());
-        builder.setTitle(getString(R.string.dialog_title_attention));
-        builder.setMessage(getString(R.string.dialog_logout_confirmation));
-        builder.setPositiveButton(getString(R.string.label_logout), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                SharedPreferencesManager.getInstance().setKey(getContext(), null);
-                RealmManager.getInstance().clearLocalData();
-                getActivity().finish();
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-            }
-        });
-        builder.setNegativeButton(getString(R.string.label_cancel), null);
-        builder.show();
+        if (History.getNotSyncedHistories().size() == 0) {
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(getContext());
+            builder.setTitle(getString(R.string.dialog_title_attention));
+            builder.setMessage(getString(R.string.dialog_logout_confirmation));
+            builder.setPositiveButton(getString(R.string.label_logout), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    SharedPreferencesManager.getInstance().setKey(getContext(), null);
+                    SharedPreferencesManager.getInstance().clearSyncTimeInfo(getContext());
+                    RealmManager.getInstance().clearLocalData();
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                }
+            });
+            builder.setNegativeButton(getString(R.string.label_cancel), null);
+            builder.show();
+        } else {
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(getContext());
+            builder.setTitle(getString(R.string.dialog_title_warning));
+            builder.setMessage(getString(R.string.dialog_logut_without_sync_message));
+            builder.setPositiveButton(getString(R.string.label_sync), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    sendHistoryToServer();
+                }
+            }).setNegativeButton(getString(R.string.label_logout), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    SharedPreferencesManager.getInstance().setKey(getContext(), null);
+                    RealmManager.getInstance().clearLocalData();
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                }
+            });
+            builder.show();
+        }
 
     }
 
-    private int tempSyncCount = 0;
+    private void updateLastSyncToServerTime() {
+        String date = "";
+        long timeInMillis = SharedPreferencesManager.getInstance().getLastSyncToServer(getContext());
+        if (timeInMillis != -1) {
+            date = DateUtils.getSyncDate(timeInMillis);
+        }
+
+        mLastSyncToServer.setText(getResources().getString(R.string.label_last_sync, date));
+    }
+
+    private void updateLastSyncFromServerTime() {
+        String date = "";
+        long timeInMillis = SharedPreferencesManager.getInstance().getLastSyncFromServer(getContext());
+        if (timeInMillis != -1) {
+            date = DateUtils.getSyncDate(timeInMillis);
+        }
+
+        mLastSyncFromServer.setText(getResources().getString(R.string.label_last_sync, date));
+    }
 
     @OnClick(R.id.btn_sync_to_server)
     public void sendHistoryToServer() {
-        tempSyncCount = 0;
-        List<History> historyList = History.getNotSyncedHistory();
-        final int syncItemsCount = historyList.size();
-        for (History history : historyList) {
+        History history = History.getNotSyncedHistory();
+        if (history != null) {
             final HistoryForSend historyForSend = HistoryForSend.getForSend(history);
-            historyForSend.setKey(SharedPreferencesManager.getInstance().getKey(getContext()));
-            RTService rtService = ServiceGenerator.createService(RTService.class);
-//            Call<BasicSingleDataResponse<String>> call = rtService.addChanges(SharedPreferencesManager.getInstance().getKey(getContext()),
-//                    history.getTaskId(), history.getObjectType(), history.getObjectId(), history.getChangeType(), history.getNewData());
-            Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(historyForSend);
-            Gson gson = new Gson();
-            gson.toJson(historyForSend);
-            loading(true);
+            performSendHistory(historyForSend);
+        } else {
+            SharedPreferencesManager.getInstance().setLastSyncToServer(getContext(), Calendar.getInstance().getTimeInMillis());
+            updateLastSyncToServerTime();
+            Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
+            loading(false);
+        }
+    }
 
-            call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
-                @Override
-                public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
-                    historyForSend.setHistorySynced(history);
-                    tempSyncCount++;
-                    if (tempSyncCount == syncItemsCount) {
-                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
-                        loading(false);
-                        NotificationCenter.getInstance().notifyOnSyncToServer();
-                    }
-
-//                    if (response.body().isSuccessNestedStatus()) {
-//                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-//                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<BasicSingleDataResponse<String>> call, Throwable t) {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
+    private void performSendHistory(HistoryForSend historyForSend) {
+        loading(true);
+        historyForSend.setKey(SharedPreferencesManager.getInstance().getKey(getContext()));
+        RTService rtService = ServiceGenerator.createService(RTService.class);
+        Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(historyForSend);
+        call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
+            @Override
+            public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
+                if (response.body().isSuccessNestedStatus()) {
+                    History history = historyForSend.setHistorySynced();
+                    history.updateReferenceHisrories(getContext(), response.body().getTempId());
+                    sendHistoryToServer();
+                } else {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
                     loading(false);
                 }
-            });
-        }
+            }
 
-
+            @Override
+            public void onFailure(Call<BasicSingleDataResponse<String>> call, Throwable t) {
+                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+                loading(false);
+            }
+        });
     }
+
+//    public void sendHistoryToServer() {
+//        tempSyncCount = 0;
+//        List<History> historyList = History.getNotSyncedHistories();
+//        final int syncItemsCount = historyList.size();
+//        for (History history : historyList) {
+//            final HistoryForSend historyForSend = HistoryForSend.getForSend(history);
+//            historyForSend.setKey(SharedPreferencesManager.getInstance().getKey(getContext()));
+//            RTService rtService = ServiceGenerator.createService(RTService.class);
+////            Call<BasicSingleDataResponse<String>> call = rtService.addChanges(SharedPreferencesManager.getInstance().getKey(getContext()),
+////                    history.getTaskId(), history.getObjectType(), history.getObjectId(), history.getChangeType(), history.getNewData());
+//            Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(historyForSend);
+//            Gson gson = new Gson();
+//            gson.toJson(historyForSend);
+//            loading(true);
+//
+//            call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
+//                @Override
+//                public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
+//                    historyForSend.setHistorySynced(history);
+//                    tempSyncCount++;
+//                    if (tempSyncCount == syncItemsCount) {
+//                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
+//                        loading(false);
+//                        NotificationCenter.getInstance().notifyOnSyncToServer();
+//                    }
+//
+////                    if (response.body().isSuccessNestedStatus()) {
+////                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
+////                    } else {
+////                        Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
+////                    }
+//
+//                }
+//
+//                @Override
+//                public void onFailure(Call<BasicSingleDataResponse<String>> call, Throwable t) {
+//                    Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+//
+//                    loading(false);
+//                }
+//            });
+//        }
+//    }
+
 
     private void loading(boolean show) {
         pbSync.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -202,6 +309,21 @@ public class SyncFragment extends BaseFragment {
                         Task task = Task.getTask(taskItem);
                         task.setKato(taskItem.getDetails().getKato());
                         realmObject.insert(task);
+                        if (taskItem.getDetails() != null) {
+                            for (GeoItem geoItem : taskItem.getDetails().getGeoItems()) {
+                                GeoPolygon polygon = GeoPolygon.getGeoPolygon(task.getTaskId(), geoItem);
+                                Number currentIdNum = realmObject.where(GeoPolygon.class).max("local_id");
+                                int nextId;
+                                if (currentIdNum == null) {
+                                    nextId = 1;
+                                } else {
+                                    nextId = currentIdNum.intValue() + 1;
+                                }
+                                polygon.setLocalId(nextId);
+                                realmObject.insert(polygon);
+                            }
+                        }
+
                         for (StreetItem streetItem : taskItem.getDetails().getStreetItems()) {
                             Street street = Street.getStreet(streetItem);
                             street.setTaskId(taskItem.getTaskId());
@@ -263,5 +385,135 @@ public class SyncFragment extends BaseFragment {
                 realm.close();
         }
     }
+
+
+    private void loadChangeTypes() {
+        RTService rtService = ServiceGenerator.createService(RTService.class);
+        Call<BasicMultipleDataResponse<ChangeType>> call = rtService.getChangeTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_CHANGE_TYPE);
+        call.enqueue(new Callback<BasicMultipleDataResponse<ChangeType>>() {
+            @Override
+            public void onResponse(Call<BasicMultipleDataResponse<ChangeType>> call, Response<BasicMultipleDataResponse<ChangeType>> response) {
+                if (response.body().isSuccessNestedStatus()) {
+                    RealmManager.getInstance().clearLocalData();
+                    RealmManager.getInstance().insertTypes(response.body().getData());
+                    loadStreetTypes();
+                } else {
+                    loading(false);
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicMultipleDataResponse<ChangeType>> call, Throwable t) {
+                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+
+                loading(false);
+            }
+        });
+    }
+
+    private void loadStreetTypes() {
+        RTService rtService = ServiceGenerator.createService(RTService.class);
+        Call<BasicMultipleDataResponse<StreetType>> call = rtService.getStreetTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_STREET_TYPE);
+        call.enqueue(new Callback<BasicMultipleDataResponse<StreetType>>() {
+            @Override
+            public void onResponse(Call<BasicMultipleDataResponse<StreetType>> call, Response<BasicMultipleDataResponse<StreetType>> response) {
+                if (response.body().isSuccessNestedStatus()) {
+                    RealmManager.getInstance().insertTypes(response.body().getData());
+                    loadBuildingTypes();
+                } else {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
+                    loading(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicMultipleDataResponse<StreetType>> call, Throwable t) {
+                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+
+                loading(false);
+            }
+        });
+    }
+
+    private void loadBuildingTypes() {
+        RTService rtService = ServiceGenerator.createService(RTService.class);
+        Call<BasicMultipleDataResponse<BuildingType>> call = rtService.getBuildingTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_BUILDING_TYPE);
+        call.enqueue(new Callback<BasicMultipleDataResponse<BuildingType>>() {
+            @Override
+            public void onResponse(Call<BasicMultipleDataResponse<BuildingType>> call, Response<BasicMultipleDataResponse<BuildingType>> response) {
+                if (response.body().isSuccessNestedStatus()) {
+                    RealmManager.getInstance().insertTypes(response.body().getData());
+                    loadBuildingStatusTypes();
+                } else {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
+                    loading(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicMultipleDataResponse<BuildingType>> call, Throwable t) {
+                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+
+                loading(false);
+            }
+        });
+    }
+
+    private void loadBuildingStatusTypes() {
+        RTService rtService = ServiceGenerator.createService(RTService.class);
+        Call<BasicMultipleDataResponse<BuildingStatus>> call = rtService.getBuildingStatusTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_BUILDING_STATUS);
+
+        call.enqueue(new Callback<BasicMultipleDataResponse<BuildingStatus>>() {
+            @Override
+            public void onResponse(Call<BasicMultipleDataResponse<BuildingStatus>> call, Response<BasicMultipleDataResponse<BuildingStatus>> response) {
+                if (response.body().isSuccessNestedStatus()) {
+                    RealmManager.getInstance().insertTypes(response.body().getData());
+                    loadApartmentTypes();
+                } else {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
+                    loading(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicMultipleDataResponse<BuildingStatus>> call, Throwable t) {
+                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+
+                loading(false);
+            }
+        });
+    }
+
+    private void loadApartmentTypes() {
+        RTService rtService = ServiceGenerator.createService(RTService.class);
+        Call<BasicMultipleDataResponse<ApartmentType>> call = rtService.getApartmentTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_APARTMENT_TYPE);
+
+        call.enqueue(new Callback<BasicMultipleDataResponse<ApartmentType>>() {
+            @Override
+            public void onResponse(Call<BasicMultipleDataResponse<ApartmentType>> call, Response<BasicMultipleDataResponse<ApartmentType>> response) {
+                if (response.body().isSuccessNestedStatus()) {
+                    RealmManager.getInstance().insertTypes(response.body().getData());
+                    syncData();
+                } else {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
+                    loading(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicMultipleDataResponse<ApartmentType>> call, Throwable t) {
+                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+
+                loading(false);
+            }
+        });
+    }
+
+    private void loadData() {
+        loading(true);
+        loadChangeTypes();
+    }
+
 
 }

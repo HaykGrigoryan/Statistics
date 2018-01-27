@@ -1,11 +1,13 @@
 package com.constantlab.statistics.models;
 
+import com.constantlab.statistics.network.model.GeoItem;
 import com.constantlab.statistics.network.model.TaskItem;
 import com.constantlab.statistics.utils.DateUtils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -24,30 +26,6 @@ public class Task extends RealmObject implements Serializable {
     private String comment;
     private String status_description;
     private String kato;
-    private Integer totalBuildings;
-    private Integer totalApartments;
-    private Integer totalResidents;
-    private RealmList<Street> streetList;
-
-    public void setTotalBuildings(Integer totalBuildings) {
-        this.totalBuildings = totalBuildings;
-    }
-
-    public void setTotalApartments(Integer totalApartments) {
-        this.totalApartments = totalApartments;
-    }
-
-    public void setTotalResidents(Integer totalResidents) {
-        this.totalResidents = totalResidents;
-    }
-
-    public RealmList<Street> getStreetList() {
-        return streetList;
-    }
-
-    public void setStreetList(RealmList<Street> streetList) {
-        this.streetList = streetList;
-    }
 
     public Integer getTaskId() {
         return task_id;

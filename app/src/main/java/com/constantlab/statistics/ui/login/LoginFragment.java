@@ -54,7 +54,6 @@ public class LoginFragment extends BaseFragment {
         }
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,8 +66,8 @@ public class LoginFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         pbLogin.setIndeterminate(true);
-        etUsername.setText("asd@asd.ru");
-        etPassword.setText("b8&M1|b1:");
+//        etUsername.setText("Azamat");
+//        etPassword.setText("12345678");
     }
 
     private void loading(boolean show) {
@@ -97,9 +96,7 @@ public class LoginFragment extends BaseFragment {
             @Override
             public void onFailure(Call<BasicSingleDataResponse<LoginKey>> call, Throwable t) {
                 Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
                 loading(false);
-
             }
         });
     }

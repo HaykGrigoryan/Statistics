@@ -12,11 +12,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.app.RealmManager;
+import com.constantlab.statistics.models.ApartmentType;
+import com.constantlab.statistics.models.GeoPolygon;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
+import com.constantlab.statistics.utils.GsonUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,8 +34,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,8 +69,23 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Double latitude;
     private Double longitude;
+    private Integer taskId;
+    private List<GeoPolygon> geoPolygons;
+
+    @BindView(R.id.sp_map_type)
+    Spinner spMapType;
 
     MapAction mMapAction = MapAction.VIEW;
+
+    public static MapFragment newInstance(MapAction action, Integer taskId) {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putInt(ConstKeys.KEY_MAP_ACTION, action.ordinal());
+        args.putInt(ConstKeys.KEY_TASK_ID, taskId);
+
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public static MapFragment newInstance(MapAction action, Double lat, Double lon) {
         MapFragment fragment = new MapFragment();
@@ -85,9 +113,15 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         if (getArguments() != null) {
             mMapAction = MapAction.values()[getArguments().getInt(ConstKeys.KEY_MAP_ACTION)];
+            taskId = getArguments().getInt(ConstKeys.KEY_TASK_ID);
             latitude = getArguments().getDouble(ConstKeys.KEY_LATITUDE, Double.NaN);
             longitude = getArguments().getDouble(ConstKeys.KEY_LONGITUDE, Double.NaN);
+
+            if (mMapAction == MapAction.SHOW_POLYGON) {
+                geoPolygons = RealmManager.getInstance().getTaskGeoPolygons(taskId);
+            }
         }
+
     }
 
 
@@ -110,10 +144,35 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (mMapAction == MapAction.VIEW) {
+        if (mMapAction != MapAction.PICK_LOCATION) {
             tvSelect.setVisibility(View.GONE);
         }
+        loadMapType();
     }
+
+    List<MapType> mapTypes;
+
+    private void loadMapType() {
+        mapTypes = new ArrayList<>();
+        mapTypes.add(new MapType(GoogleMap.MAP_TYPE_SATELLITE, getString(R.string.map_type_satellite)));
+        mapTypes.add(new MapType(GoogleMap.MAP_TYPE_NORMAL, getString(R.string.map_type_normal)));
+        ArrayAdapter<MapType> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item_map, mapTypes);
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spMapType.setAdapter(arrayAdapter);
+
+        spMapType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mMap != null) {
+                    mMap.setMapType(mapTypes.get(i).getType());
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -140,6 +199,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setOnMapClickListener(this);
         // Prompt the user for permission.
         getLocationPermission();
@@ -149,13 +209,36 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
-
-        if (latitude != null && !latitude.isNaN() && longitude != null && !longitude.isNaN()) {
-            LatLng latLng = new LatLng(latitude, longitude);
-            addMarker(latLng);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    latLng, DEFAULT_ZOOM));
+        if (mMapAction == MapAction.SHOW_POLYGON) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            int pointsCount = 0;
+            for (GeoPolygon geoPolygon : geoPolygons) {
+                pointsCount += geoPolygon.getPoints().size();
+                drawPolygon(geoPolygon.getPoints(), builder);
+            }
+            if (pointsCount != 0) {
+                mMap.moveCamera(CameraUpdateFactory
+                        .newLatLngBounds(builder.build(), 20));
+            }
+        } else {
+            if (latitude != null && !latitude.isNaN() && longitude != null && !longitude.isNaN()) {
+                LatLng latLng = new LatLng(latitude, longitude);
+                addMarker(latLng);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        latLng, DEFAULT_ZOOM));
+            }
         }
+    }
+
+    private void drawPolygon(List<LatLng> points, LatLngBounds.Builder bounds) {
+        PolylineOptions rectOptions = new PolylineOptions();
+        for (LatLng point : points) {
+            rectOptions.add(point);
+            bounds.include(point);
+        }
+
+        Polyline polyline = mMap.addPolyline(rectOptions);
+
     }
 
     private void getDeviceLocation() {
@@ -266,6 +349,37 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback, Goo
     }
 
     public enum MapAction {
-        VIEW, PICK_LOCATION
+        VIEW, PICK_LOCATION, SHOW_POLYGON;
+    }
+
+    public class MapType {
+        int type;
+        String name;
+
+        public MapType(int type, String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

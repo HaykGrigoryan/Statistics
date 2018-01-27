@@ -14,8 +14,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.Building;
+import com.constantlab.statistics.models.GeoPolygon;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseFragment;
@@ -110,12 +112,12 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
 
     @Override
     public void onTaskSelected(Task task, int position) {
-        NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getTaskId(), task.getName()));//Actions.VIEW_BUILDINGS
+        NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getTaskId(), task.getDisplayName()));//Actions.VIEW_BUILDINGS
     }
 
     @Override
     public void onTaskHistory(Task task, int position) {
-        NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getTaskId(), task.getName()));//Actions.VIEW_BUILDINGS
+        NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getTaskId(), task.getDisplayName()));//Actions.VIEW_BUILDINGS
     }
 
     @Override

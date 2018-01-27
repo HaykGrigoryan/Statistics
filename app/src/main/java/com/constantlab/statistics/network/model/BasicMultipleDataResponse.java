@@ -38,4 +38,8 @@ public class BasicMultipleDataResponse<E> implements Serializable {
     public boolean isSuccess() {
         return status.equals("1");
     }
+
+    public boolean isSuccessNestedStatus() {
+        return status.equals("2");
+    }
 }

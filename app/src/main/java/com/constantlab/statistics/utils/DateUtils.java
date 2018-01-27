@@ -30,4 +30,12 @@ public class DateUtils {
         format = new SimpleDateFormat(DISPLAY_FORMAT);
         return format.format(date);
     }
+
+    public static String getSyncDate(long timeInMillis) {
+        SimpleDateFormat format = new SimpleDateFormat(DB_DATE_FORMAT);
+        Date date = new Date(timeInMillis);
+
+        format = new SimpleDateFormat(DISPLAY_FORMAT);
+        return format.format(date);
+    }
 }

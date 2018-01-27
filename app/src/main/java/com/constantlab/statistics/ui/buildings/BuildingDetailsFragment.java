@@ -1,19 +1,26 @@
 package com.constantlab.statistics.ui.buildings;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.BuildingStatus;
 import com.constantlab.statistics.models.BuildingType;
@@ -163,6 +170,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         mSelectedLon = object.getLongitude();
         etKato.setText(object.getKato());
         spBuildingType.setSelection(BuildingType.getIndex(mBuildingTypes, object.getBuildingType()));
+        spBuildingStatus.setSelection(BuildingStatus.getIndex(mBuildingStatus, object.getBuildingStatus()));
         etLivingCount.setText(String.valueOf(object.getTemporaryInhabitants()));
         mSelectedLat = object.getLatitude();
         mSelectedLon = object.getLongitude();
@@ -170,43 +178,52 @@ public class BuildingDetailsFragment extends BaseFragment {
     }
 
     private void loadStaticContent() {
+        loadStreetType();
         loadBuildingType();
         loadBuildingStatus();
-        loadStreetType();
         etStreetName.setText(mStreet.getDisplayName(getContext()));
+        etKato.setText(mStreet.getKato());
     }
 
     private List<BuildingType> mBuildingTypes;
 
     private void loadBuildingType() {
-        mBuildingTypes = GsonUtils.getBuildingTypeData(getContext());
+        mBuildingTypes = (List<BuildingType>) RealmManager.getInstance().getTypes(BuildingType.class);// GsonUtils.getBuildingTypeData(getContext());
 
         ArrayAdapter<BuildingType> arrayAdapterEditBl = new ArrayAdapter<BuildingType>(getContext(), R.layout.spinner_item, mBuildingTypes);
         arrayAdapterEditBl.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spBuildingType.setAdapter(arrayAdapterEditBl);
+        spBuildingType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (Building.isTypeClosedInstitution(mBuildingTypes.get(i).getId())) {
+                    etLivingCount.setVisibility(View.GONE);
+                    etLivingCount.setText("");
+                } else {
+                    etLivingCount.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
+    private List<BuildingStatus> mBuildingStatus;
+
     private void loadBuildingStatus() {
-        List<BuildingStatus> types = new ArrayList<>();
-
-        ArrayList<String> arrayListBuildingStatus = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.demo_list)));
-        int id = 1;
-        for (String name : arrayListBuildingStatus) {
-            BuildingStatus buildingStatus = new BuildingStatus();
-            buildingStatus.setId(id++);
-            buildingStatus.setStatus(name);
-            types.add(buildingStatus);
-        }
-
-        ArrayAdapter<BuildingStatus> arrayAdapterEditSt = new ArrayAdapter<BuildingStatus>(getContext(), R.layout.spinner_item, types);
-        arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        spBuildingStatus.setAdapter(arrayAdapterEditSt);
+        mBuildingStatus = (List<BuildingStatus>) RealmManager.getInstance().getTypes(BuildingStatus.class);// GsonUtils.getBuildingStatusData(getContext());
+        ArrayAdapter<BuildingStatus> arrayAdapterEditBl = new ArrayAdapter<BuildingStatus>(getContext(), R.layout.spinner_item, mBuildingStatus);
+        arrayAdapterEditBl.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spBuildingStatus.setAdapter(arrayAdapterEditBl);
     }
 
     private List<StreetType> mStreetType;
 
     private void loadStreetType() {
-        mStreetType = GsonUtils.getStreetTypeData(getContext());
+        mStreetType = (List<StreetType>) RealmManager.getInstance().getTypes(StreetType.class);// GsonUtils.getStreetTypeData(getContext());
 
         ArrayAdapter<StreetType> arrayAdapterEditSt = new ArrayAdapter<StreetType>(getContext(), R.layout.spinner_item, mStreetType);
         arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -237,6 +254,7 @@ public class BuildingDetailsFragment extends BaseFragment {
     @OnClick(R.id.btn_save)
     public void save() {
         etHouse.setError(null);
+
 //        etLongitude.setError(null);
 //        etTotalFlats.setError(null);
 //        etArea.setError(null);
@@ -248,33 +266,32 @@ public class BuildingDetailsFragment extends BaseFragment {
             etHouse.setError(getString(R.string.error_empty_field));
         }
 
-//        if (etAddress.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etAddress.setError(getString(R.string.error_empty_field));
-//        }
-//
-//        if (etArea.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etArea.setError(getString(R.string.error_empty_field));
-//        }
-//
-//        if (etTotalFlats.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etTotalFlats.setError(getString(R.string.error_empty_field));
-//        }
-//
-//        if (etLatitude.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etLongitude.setError(getString(R.string.error_select_location));
-//        }
-//
-//        if (etFloors.getText().toString().isEmpty()) {
-//            proceed = false;
-//            etFloors.setError(getString(R.string.error_empty_field));
-//        }
+        if (Building.isTypeSpetialInstitution(((BuildingType) spBuildingType.getSelectedItem()).getId())) {
+            if (etLivingCount.getText().toString().isEmpty()) {
+                proceed = false;
+                etLivingCount.setError(getString(R.string.error_empty_field));
+            }
+        }
+
+
+        if (mSelectedLat == null || mSelectedLat.isNaN() || mSelectedLon == null || mSelectedLon.isNaN()) {
+            if (proceed) {
+                Toast.makeText(getContext(), getString(R.string.message_location_required), Toast.LENGTH_SHORT).show();
+            }
+            proceed = false;
+        }
 
         if (proceed) {
-            saveDataToDatabase();
+            if (RealmManager.getInstance().checkBuildingDuplicateName(mStreet.getTaskId(), mStreet.getId(), buildingId, etHouse.getText().toString())) {
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(getContext());
+                builder.setTitle(getString(R.string.dialog_title_attention));
+                builder.setMessage(getString(R.string.dialog_duplicate_building_number));
+                builder.setPositiveButton(getString(R.string.label_ok), null);
+                builder.show();
+            } else {
+                saveDataToDatabase();
+            }
         }
     }
 
@@ -288,6 +305,7 @@ public class BuildingDetailsFragment extends BaseFragment {
                 Building building = null;
                 if (b != null) {
                     building = realmObject.copyFromRealm(b);
+                    building.setNew(false);
                 } else {
                     building = new Building();
                     Number currentIdNum = realmObject.where(Building.class).max("id");
@@ -307,7 +325,6 @@ public class BuildingDetailsFragment extends BaseFragment {
                         nextLocalId = currentLocalIdNum.intValue() + 1;
                     }
                     building.setLocalId(nextLocalId);
-
                     building.setStreetId(streetId);
                     building.setTaskId(taskId);
                     building.setNew(true);
@@ -318,42 +335,92 @@ public class BuildingDetailsFragment extends BaseFragment {
                 building.setStreetType(streetType.getId());
                 BuildingType buildingType = (BuildingType) spBuildingType.getSelectedItem();
                 building.setBuildingType(buildingType.getId());
+
                 BuildingStatus buildingStatus = (BuildingStatus) spBuildingStatus.getSelectedItem();
-                building.setBuildingStatus(buildingStatus);
+                building.setBuildingStatus(buildingStatus.getId());
+
                 building.setOwnerName(etOwner.getText().toString().trim());
                 building.setLatitude(mSelectedLat);
-                Integer tempInhabitants = Integer.valueOf(etLivingCount.getText().toString());
-                building.setTemporaryInhabitants(tempInhabitants);
+                String livingCount = etLivingCount.getText().toString();
+                boolean isTypeClosedInstitution = Building.isTypeClosedInstitution(((BuildingType) spBuildingType.getSelectedItem()).getId());
+                Integer tempInhabitants = 0;
+                if (isTypeClosedInstitution) {
+                    building.setTemporaryInhabitants(null);
+                } else {
+                    tempInhabitants = livingCount.equals("") ? 0 : Integer.parseInt(livingCount);
+                    building.setTemporaryInhabitants(tempInhabitants);
+                }
                 building.setLongitude(mSelectedLon);
                 building.setComment(etComment.getText().toString());
                 building.setKato(etKato.getText().toString());
-                realmObject.insertOrUpdate(building);
+
 
                 if (!building.isNew()) {
-                    if (mBuilding.getBuildingType() != buildingType.getId()) {
-                        addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), building.getId(), realmObject);
+                    if (!mBuilding.getBuildingType().equals(buildingType.getId())) {
+                        addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), building.getId(), building.getId(), realmObject);
+                    }
+
+                    if (!mBuilding.getBuildingStatus().equals(buildingStatus.getId())) {
+                        addHistory(mStreet.getTaskId(), 6, new TempNewData(String.valueOf(buildingStatus.getId())), building.getId(), building.getId(), realmObject);
                     }
 
                     if (building.getOwnerName() != null && (!mBuilding.getOwnerName().equals(building.getOwnerName()))) {
-                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), building.getId(), building.getId(), realmObject);
                     }
 
                     if (building.getComment() != null && !building.getComment().equals("") && !mBuilding.getComment().equals(building.getComment())) {
-                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), building.getId(), building.getId(), realmObject);
                     }
 
                     if (building.getHouseNumber() != null && !building.getHouseNumber().equals("") && !mBuilding.getHouseNumber().equals(building.getHouseNumber())) {
-                        addHistory(mStreet.getTaskId(), 15, new TempNewData(building.getHouseNumber()), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 15, new TempNewData(building.getHouseNumber()), building.getId(), building.getId(), realmObject);
                     }
-
-                    if (!etLivingCount.getText().toString().equals("") && tempInhabitants != mBuilding.getTemporaryInhabitants()) {
-                        addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), building.getId(), realmObject);
+                    if (isTypeClosedInstitution) {
+                        removeHistory(mStreet.getTaskId(), 8, building.getId(), realmObject);
+                    } else {
+                        if (!etLivingCount.getText().toString().equals("") && !tempInhabitants.equals(mBuilding.getTemporaryInhabitants())) {
+                            addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), building.getId(), building.getId(), realmObject);
+                        }
                     }
 
                     if (mSelectedLat != null && !mSelectedLon.isNaN() && mSelectedLon != null && !mSelectedLon.isNaN() && mSelectedLat != mBuilding.getLatitude() && mSelectedLon != mBuilding.getLongitude()) {
-                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), building.getId(), building.getId(), realmObject);
+                    }
+                } else {
+                    Integer referenceId = null;
+                    if (!mStreet.isNew()) {
+                        referenceId = addHistory(taskId, 2, new TempNewData(building.getHouseNumber()), mStreet.getId(), building.getId(), realmObject);
+                    } else {
+                        referenceId = addHistory(taskId, 12, new TempNewData(building.getHouseNumber()), null, building.getId(), realmObject, mStreet.getHistoryId());
+                    }
+                    building.setHistoryId(referenceId);
+                    addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), null, building.getId(), realmObject, referenceId);
+                    addHistory(mStreet.getTaskId(), 6, new TempNewData(String.valueOf(buildingStatus.getId())), null, building.getId(), realmObject, referenceId);
+                    if (building.getOwnerName() != null && !building.getOwnerName().equals("")) {
+                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), null, building.getId(), realmObject, referenceId);
+                    }
+                    if (building.getComment() != null && !building.getComment().equals("")) {
+                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), null, building.getId(), realmObject, referenceId);
+                    }
+                    if (!isTypeClosedInstitution) {
+                        if (!etLivingCount.getText().toString().equals("")) {
+                            addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), null, building.getId(), realmObject, referenceId);
+                        }
+                    }
+
+                    if (mSelectedLat != null && !mSelectedLon.isNaN() && mSelectedLon != null && !mSelectedLon.isNaN()) {
+                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), null, building.getId(), realmObject, referenceId);
                     }
                 }
+                realmObject.insertOrUpdate(building);
+
+
+                if (!Building.isStatusInactive(building.getBuildingStatus()) && !Building.isTypeSpetialInstitution(building.getBuildingType()) && !Building.isTypeClosedInstitution(building.getBuildingType())) {
+                    RealmManager.getInstance().changeHistoryInactiveStatus(taskId, buildingId,false,realmObject);
+                } else {
+                    RealmManager.getInstance().changeHistoryInactiveStatus(taskId, buildingId,true,realmObject);
+                }
+
             });
         } finally {
             if (realm != null)
@@ -362,15 +429,32 @@ public class BuildingDetailsFragment extends BaseFragment {
         getActivity().onBackPressed();
     }
 
-    private void addHistory(int taskId, int changeType, TempNewData newData, int buildingId, Realm realm) {
+    private Integer addHistory(int taskId, int changeType, TempNewData newData, Integer buildingId, Integer tempBuildingId, Realm realm) {
+        return addHistory(taskId, changeType, newData, buildingId, tempBuildingId, realm, null);
+    }
+
+
+    private Integer addHistory(int taskId, int changeType, TempNewData newData, Integer buildingId, Integer tempBuildingId, Realm realm, Integer referenceId) {
         History history = new History();
         history.setTaskId(taskId);
         history.setChangeType(changeType);
         history.setNewData(newData);
         history.setObjectId(buildingId);
+        history.setTempObjectId(tempBuildingId);
+        history.setReferenceId(referenceId);
         history.setObjectType(2);
-        HistoryManager.getInstance().addOrUpdateHistory(history, realm);
+        return HistoryManager.getInstance().addOrUpdateHistory(history, realm);
     }
+
+    private void removeHistory(int taskId, int changeType, int tempBuildingId, Realm realm) {
+        History history = new History();
+        history.setTaskId(taskId);
+        history.setChangeType(changeType);
+        history.setTempObjectId(tempBuildingId);
+        history.setObjectType(2);
+        HistoryManager.getInstance().removeHistory(history, realm);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -389,6 +473,18 @@ public class BuildingDetailsFragment extends BaseFragment {
     }
 
     private void updateLocationIndicator(boolean locationSelected) {
-        mLocationIndicator.setText(locationSelected ? getString(R.string.label_have_mark) : getString(R.string.label_not_have_mark));
+        if (locationSelected) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(mSelectedLat);
+            builder.append("\n");
+            builder.append(mSelectedLon);
+            mLocationIndicator.setText(builder.toString());
+            mLocationIndicator.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+//            mLocationIndicator.setText(locationSelected ? getString(R.string.label_have_mark) : getString(R.string.label_not_have_mark));
+        } else {
+            mLocationIndicator.setTextColor(ContextCompat.getColor(getContext(), R.color.color_red));
+            mLocationIndicator.setText(getString(R.string.label_not_have_mark));
+        }
+
     }
 }

@@ -1,9 +1,5 @@
 package com.constantlab.statistics.models;
 
-import android.content.Context;
-
-import com.constantlab.statistics.utils.GsonUtils;
-
 import java.util.List;
 
 import io.realm.RealmObject;
@@ -64,13 +60,13 @@ public class BuildingType extends RealmObject {
         return 0;
     }
 
-    public static String getDescriptionById(Context context, int id) {
-        List<BuildingType> items = GsonUtils.getBuildingTypeData(context);
-        for (BuildingType buildingType : items) {
-            if (buildingType.getId() == id) {
-                return buildingType.getName();
-            }
-        }
-        return "";
-    }
+//    public static String getDescriptionById(Context context, int id) {
+//        List<BuildingType> items = GsonUtils.getBuildingTypeData(context);
+//        for (BuildingType buildingType : items) {
+//            if (buildingType.getId() == id) {
+//                return buildingType.getName();
+//            }
+//        }
+//        return "";
+//    }
 }

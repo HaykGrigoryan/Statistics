@@ -10,8 +10,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_below="@id/toolbar_container"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar_container">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,7 +71,7 @@
                     android:fontFamily="@font/opensansbold"
                     android:text="@string/label_sync_to_server"
                     android:textColor="@color/text_gray_1"
-                    android:textSize="@dimen/text_medium_large"/>
+                    android:textSize="@dimen/text_medium_large" />
 
                 <Button
                     android:id="@+id/btn_sync_to_server"
@@ -97,17 +97,18 @@
                     android:textSize="@dimen/text_ex_small" />
 
             </LinearLayout>
+
             <Button
                 android:id="@+id/btn_logout"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_large"
                 android:layout_marginTop="@dimen/margin_medium"
                 android:paddingBottom="@dimen/padding_medium"
                 android:paddingLeft="@dimen/padding_ex_large"
                 android:paddingRight="@dimen/padding_ex_large"
                 android:paddingTop="@dimen/padding_medium"
-                android:layout_margin="@dimen/padding_large"
                 android:text="@string/label_logout"
                 android:textAllCaps="false"
                 android:textSize="@dimen/text_medium" />
@@ -117,8 +118,8 @@
 
     <ProgressBar
         android:id="@+id/pb_sync"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/loader_size"
+        android:layout_height="@dimen/loader_size"
         android:layout_centerInParent="true"
         android:visibility="invisible"
         tools:visibility="visible" />

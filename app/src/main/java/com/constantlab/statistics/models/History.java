@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.Sort;
 import io.realm.annotations.PrimaryKey;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +29,6 @@ import retrofit2.Response;
  */
 
 public class History extends RealmObject implements Serializable {
-
     @PrimaryKey
     private Integer id;
     @SerializedName("key")
@@ -41,9 +41,14 @@ public class History extends RealmObject implements Serializable {
     private Integer object_type;
     @SerializedName("object_id")
     private Integer object_id;
+    @SerializedName("temp_object_id")
+    private Integer temp_object_id;
     @SerializedName("new_data")
     private TempNewData new_data;
+
+    private Integer reference_id;
     private boolean synced;
+    private boolean inactive;
 
     private String address;
 
@@ -57,7 +62,8 @@ public class History extends RealmObject implements Serializable {
 
 
     public String getTitle(Context context) {
-        return ChangeType.getDescriptionById(context, change_type);
+        return RealmManager.getInstance().getChangeTypeNameById(change_type);
+//        return ChangeType.getDescriptionById(context, change_type);
     }
 
 
@@ -67,16 +73,23 @@ public class History extends RealmObject implements Serializable {
             case 5:
                 switch (object_type) {
                     case 1:
-                        message = StreetType.getDescriptionById(context, Integer.valueOf(new_data.getData()));
+                        message = StreetType.getDescriptionById(Integer.valueOf(new_data.getData()));
                         break;
                     case 2:
-                        message = BuildingType.getDescriptionById(context, Integer.valueOf(new_data.getData()));
+                        message = RealmManager.getInstance().getBuildingTypeNameById(Integer.valueOf(new_data.getData()));// BuildingType.getDescriptionById(context, Integer.valueOf(new_data.getData()));
                         break;
                     case 3:
-                        message = ApartmentType.getDescriptionById(context, Integer.valueOf(new_data.getData()));
+                        message = RealmManager.getInstance().getApartmentTypeNameById(Integer.valueOf(new_data.getData()));//ApartmentType.getDescriptionById(context, Integer.valueOf(new_data.getData()));
                         break;
                 }
 
+                break;
+            case 6:
+                switch (object_type) {
+                    case 2:
+                        message = RealmManager.getInstance().getBuildingStatusTypeNameById(Integer.valueOf(new_data.getData()));// BuildingStatus.getDescriptionById(context, Integer.valueOf(new_data.getData()));
+                        break;
+                }
                 break;
             default:
                 message = new_data.getData();
@@ -107,6 +120,14 @@ public class History extends RealmObject implements Serializable {
 
     public void setObjectType(Integer object_type) {
         this.object_type = object_type;
+    }
+
+    public Integer getTempObjectId() {
+        return temp_object_id;
+    }
+
+    public void setTempObjectId(Integer temp_object_id) {
+        this.temp_object_id = temp_object_id;
     }
 
     public Integer getObjectId() {
@@ -141,6 +162,22 @@ public class History extends RealmObject implements Serializable {
         this.key = key;
     }
 
+    public Integer getReferenceId() {
+        return reference_id;
+    }
+
+    public void setReferenceId(Integer referenceId) {
+        this.reference_id = referenceId;
+    }
+
+    public boolean isInactive() {
+        return inactive;
+    }
+
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
+    }
+
     public String getAddress(Context context) {
         String address = "";
         Realm realm = null;
@@ -151,16 +188,16 @@ public class History extends RealmObject implements Serializable {
             realm = RealmManager.getInstance().getDefaultInstance(context);
             switch (object_type) {
                 case 1:
-                    street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", object_id).findFirst();
+                    street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", temp_object_id).findFirst();
                     address += context.getString(R.string.label_street_short) + " " + street.getName();
                     break;
                 case 2:
-                    building = realm.where(Building.class).equalTo("task_id", task_id).equalTo("id", object_id).findFirst();
+                    building = realm.where(Building.class).equalTo("task_id", task_id).equalTo("id", temp_object_id).findFirst();
                     street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", building.getStreetId()).findFirst();
                     address += context.getString(R.string.label_street_short) + " " + street.getName() + ", " + context.getString(R.string.label_bld_short) + " " + building.getHouseNumber();
                     break;
                 case 3:
-                    apartment = realm.where(Apartment.class).equalTo("task_id", task_id).equalTo("id", object_id).findFirst();
+                    apartment = realm.where(Apartment.class).equalTo("task_id", task_id).equalTo("id", temp_object_id).findFirst();
                     building = realm.where(Building.class).equalTo("task_id", task_id).equalTo("id", apartment.getBuildingId()).findFirst();
                     street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", building.getStreetId()).findFirst();
                     address += context.getString(R.string.label_street_short) + " " + street.getName() + ", " + context.getString(R.string.label_bld_short) + " " + building.getHouseNumber() + ", " + context.getString(R.string.label_apt_no) + " " + apartment.getApartmentNumber();
@@ -179,7 +216,7 @@ public class History extends RealmObject implements Serializable {
         this.address = address;
     }
 
-    public static List<History> getNotSyncedHistory() {
+    public static List<History> getNotSyncedHistories() {
         Realm realm = null;
         List<History> historyList = new ArrayList<>();
         try {
@@ -192,6 +229,25 @@ public class History extends RealmObject implements Serializable {
         }
 
         return historyList;
+
+    }
+
+    public static History getNotSyncedHistory() {
+        Realm realm = null;
+        History history = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            History historyRealm = realm.where(History.class).equalTo("synced", false).equalTo("inactive", false).sort("id", Sort.ASCENDING).findFirst();
+            if (historyRealm != null) {
+                history = realm.copyFromRealm(historyRealm);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return history;
 
     }
 
@@ -244,5 +300,22 @@ public class History extends RealmObject implements Serializable {
         }
     }
 
+    public void updateReferenceHisrories(Context context, Integer tempId) {
+        Realm realm = null;
 
+        try {
+            realm = RealmManager.getInstance().getDefaultInstance(context);
+            List<History> historyList = realm.where(History.class).equalTo("reference_id", id).findAll();
+            realm.executeTransaction(realmObject -> {
+                for (History h : historyList) {
+                    h.setObjectId(tempId);
+                    realmObject.insertOrUpdate(h);
+                }
+            });
+        } finally {
+            if (realm != null) {
+                realm.close();
+            }
+        }
+    }
 }

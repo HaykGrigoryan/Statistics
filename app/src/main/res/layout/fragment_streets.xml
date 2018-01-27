@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,12 +9,41 @@
         android:id="@+id/toolbar_container"
         layout="@layout/toolbar_streets" />
 
+    <RelativeLayout
+        android:id="@+id/layout_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar_container"
+        android:padding="@dimen/padding_medium">
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_toLeftOf="@+id/sort_order"
+            android:fontFamily="@font/opensansregular"
+            android:hint="@string/hint_search"
+            android:inputType="textNoSuggestions"
+            android:padding="@dimen/padding_large"
+            android:textSize="@dimen/text_small" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/sort_order"
+            android:layout_width="@dimen/ic_sort_size"
+            android:layout_height="@dimen/ic_sort_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/sort_asc" />
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_streets"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_container" />
+        android:layout_below="@id/layout_filter" />
 
     <ProgressBar
         android:id="@+id/pb_streets"

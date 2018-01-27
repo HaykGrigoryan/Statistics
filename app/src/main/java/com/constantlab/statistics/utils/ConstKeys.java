@@ -10,7 +10,9 @@ public class ConstKeys {
 
     public static final String KEY_LATITUDE = "key_latitude";
     public static final String KEY_LONGITUDE = "key_longitude";
+    public static final String KEY_GEO_POLYGON = "key_geo_polygon";
     public static final String KEY_MAP_ACTION = "map_action";
+    public static final String KEY_TASK_ID = "key_task_id";
 
     public static final String KEY_CAMERA_POSITION = "camera_position";
     public static final String KEY_LOCATION = "location";
@@ -31,5 +33,7 @@ public class ConstKeys {
 
     public static final String KEY_APP_SHARED_PREFERENCES = PACKAGE_NAME + "_KEY_APP_SHARED_PREFERENCES";
     public static final String KEY_USER_KEY = PACKAGE_NAME + "_KEY_USER_KEY";
+    public static final String KEY_LAST_SYNC_FROM_SERVER = PACKAGE_NAME + "_KEY_LAST_SYNC_FROM_SERVER";
+    public static final String KEY_LAST_SYNC_TO_SERVER = PACKAGE_NAME + "_KEY_LAST_SYNC_TO_SERVER";
 
 }

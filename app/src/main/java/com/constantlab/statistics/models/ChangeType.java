@@ -16,32 +16,22 @@ import io.realm.annotations.PrimaryKey;
 
 public class ChangeType extends RealmObject {
     @PrimaryKey
-    private int type_id;
-    private String description;
+    private int id;
+    private String name;
 
-    public int getTypeId() {
-        return type_id;
+    public int getId() {
+        return id;
     }
 
-    public void setTypeId(int type_id) {
-        this.type_id = type_id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public static String getDescriptionById(Context context, int id) {
-        List<ChangeType> items = GsonUtils.getChangeTypeData(context);
-        for (ChangeType changeType : items) {
-            if (changeType.getTypeId() == id) {
-                return changeType.getDescription();
-            }
-        }
-        return "";
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -10,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class HistoryForSend<T> {
+    private Integer id;
     private String key;
     private Integer task_id;
     private Integer change_type;
@@ -33,23 +34,29 @@ public class HistoryForSend<T> {
         historyForSend.setObjectId(history.getObjectId());
         historyForSend.setObjectType(history.getObjectType());
         historyForSend.setTaskId(history.getTaskId());
-
+        historyForSend.setId(history.getId());
         return historyForSend;
     }
 
-    public void setHistorySynced(History history) {
+    public History setHistorySynced() {
         Realm realm = null;
+        History history = null;
         try {
             realm = Realm.getDefaultInstance();
+            history = realm.where(History.class).equalTo("id", id).findFirst();
+            History finalHistory = history;
+            history = realm.copyFromRealm(history);
             realm.executeTransaction(realmObject -> {
-                history.setSynced(true);
-                realmObject.insertOrUpdate(history);
+                finalHistory.setSynced(true);
+                realmObject.insertOrUpdate(finalHistory);
             });
 
         } finally {
             if (realm != null)
                 realm.close();
         }
+
+        return history;
     }
 
     public String getKey() {
@@ -100,5 +107,11 @@ public class HistoryForSend<T> {
         this.new_data = new_data;
     }
 
+    public Integer getId() {
+        return id;
+    }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }

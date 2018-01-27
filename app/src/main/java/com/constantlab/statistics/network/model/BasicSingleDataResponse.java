@@ -9,11 +9,15 @@ import java.io.Serializable;
  * Created by Hayk on 31/01/2017.
  */
 
-public class BasicSingleDataResponse<E>  implements Serializable {
+public class BasicSingleDataResponse<E> implements Serializable {
     @SerializedName("status")
     @Expose
     protected String status;
-//
+
+    @SerializedName("temp_id")
+    @Expose
+    protected Integer temp_id;
+    //
     @SerializedName("data")
     @Expose
     protected E data;
@@ -40,5 +44,13 @@ public class BasicSingleDataResponse<E>  implements Serializable {
 
     public boolean isSuccessNestedStatus() {
         return status.equals("2");
+    }
+
+    public Integer getTempId() {
+        return temp_id;
+    }
+
+    public void setTempId(Integer temp_id) {
+        this.temp_id = temp_id;
     }
 }

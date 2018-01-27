@@ -34,7 +34,13 @@ public class MapActivity extends BaseActivity {
             MapFragment.MapAction action = MapFragment.MapAction.values()[getIntent().getIntExtra(ConstKeys.KEY_MAP_ACTION, 0)];
             Double lat = getIntent().getDoubleExtra(ConstKeys.KEY_LATITUDE, Double.NaN);
             Double lon = getIntent().getDoubleExtra(ConstKeys.KEY_LONGITUDE, Double.NaN);
-            showFragment(MapFragment.newInstance(action, lat, lon), false);
+            Integer taskid = getIntent().getIntExtra(ConstKeys.KEY_TASK_ID, -1);
+            if (action == MapFragment.MapAction.SHOW_POLYGON) {
+                showFragment(MapFragment.newInstance(action, taskid), false);
+            } else {
+                showFragment(MapFragment.newInstance(action, lat, lon), false);
+            }
+
         } else {
             showFragment(MapFragment.newInstance(MapFragment.MapAction.PICK_LOCATION), false);
         }
