@@ -58,7 +58,8 @@ public class StreetView extends RelativeLayout {
     }
 
     public void setData(Street street) {
-        streetName.setText(getContext().getString(R.string.label_street_short) + " " + street.getName());
+//        streetName.setText(getContext().getString(R.string.label_street_short) + " " + street.getName());
+        streetName.setText(street.getName());
         buidingsCount
                 .setText(String.format(Locale.getDefault(), FORMAT, street.getBuidingsCount()));
         apartmentsCount

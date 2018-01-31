@@ -74,7 +74,8 @@ public class Apartment extends RealmObject {
     }
 
     public String getDisplayName(Context context) {
-        return context.getString(R.string.label_apt_no) + " " + getApartmentNumber();
+//        return context.getString(R.string.label_apt_no) + " " + getApartmentNumber();
+        return String.valueOf(getApartmentNumber());
     }
 
     public int getBuildingId() {
@@ -93,11 +94,14 @@ public class Apartment extends RealmObject {
         this.task_id = task_id;
     }
 
-    public static Apartment getApartment(ApartmentItem apartmentItem) {
+    public static Apartment getApartment(ApartmentItem item) {
         Apartment apartment = new Apartment();
-        apartment.setId(apartmentItem.getId());
-        apartment.setApartmentNumber(apartmentItem.getNumber());
-        apartment.setTotalInhabitants(apartmentItem.getInhabitants());
+        apartment.setId(item.getId());
+        apartment.setApartmentNumber(item.getNumber());
+        apartment.setTotalInhabitants(item.getInhabitants());
+        apartment.setComment(item.getFlatComment());
+        apartment.setOwnerName(item.getFlatOwner());
+        apartment.setApartmentType(item.getFlatType());
 
         return apartment;
     }

@@ -72,7 +72,8 @@ public class Building extends RealmObject {
     }
 
     public String getDisplayAddress(Context context) {
-        return context.getString(R.string.label_street_short) + " " + getStreetName() + " " + context.getString(R.string.label_bld_short) + " " + getHouseNumber();
+//        return context.getString(R.string.label_street_short) + " " + getStreetName() + " " + context.getString(R.string.label_bld_short) + " " + getHouseNumber();
+        return getStreetName() + " " + getHouseNumber();
     }
 
     public String getHouseNumber() {
@@ -172,6 +173,13 @@ public class Building extends RealmObject {
         building.setId(item.getId());
         building.setHouseNumber(item.getBuildingNumber());
         building.setBuildingType(item.getBuildingType());
+        building.setBuildingStatus(item.getBuildingStatus());
+        building.setComment(item.getBuildingComment());
+        building.setOwnerName(item.getBuildingOwner());
+        building.setLatitude(item.getBuildingLat());
+        building.setLongitude(item.getBuildingLng());
+        building.setTemporaryInhabitants(item.getBuildingPeople());
+
         return building;
     }
 

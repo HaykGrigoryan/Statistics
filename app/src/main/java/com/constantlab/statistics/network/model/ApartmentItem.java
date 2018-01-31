@@ -12,13 +12,26 @@ public class ApartmentItem {
     @Expose
     protected Integer id;
 
-    @SerializedName("quantityofinhabitants")
+    @SerializedName("flat_people")
     @Expose
     protected Integer inhabitants;
 
     @SerializedName("num")
     @Expose
     protected Integer number;
+
+    @SerializedName("flat_owner")
+    @Expose
+    protected String flatOwner;
+
+    @SerializedName("flat_comment")
+    @Expose
+    protected String flatComment;
+
+    @SerializedName("flat_type_id")
+    @Expose
+    protected Integer flatType;
+
 
     public Integer getId() {
         return id;
@@ -42,5 +55,29 @@ public class ApartmentItem {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public String getFlatOwner() {
+        return flatOwner;
+    }
+
+    public void setFlatOwner(String flatOwner) {
+        this.flatOwner = flatOwner;
+    }
+
+    public String getFlatComment() {
+        return flatComment;
+    }
+
+    public void setFlatComment(String flatComment) {
+        this.flatComment = flatComment;
+    }
+
+    public Integer getFlatType() {
+        return flatType;
+    }
+
+    public void setFlatType(Integer flatType) {
+        this.flatType = flatType;
     }
 }

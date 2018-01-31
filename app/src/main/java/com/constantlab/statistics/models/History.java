@@ -189,18 +189,21 @@ public class History extends RealmObject implements Serializable {
             switch (object_type) {
                 case 1:
                     street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", temp_object_id).findFirst();
-                    address += context.getString(R.string.label_street_short) + " " + street.getName();
+//                    address += context.getString(R.string.label_street_short) + " " + street.getName();
+                    address += street.getName();
                     break;
                 case 2:
                     building = realm.where(Building.class).equalTo("task_id", task_id).equalTo("id", temp_object_id).findFirst();
                     street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", building.getStreetId()).findFirst();
-                    address += context.getString(R.string.label_street_short) + " " + street.getName() + ", " + context.getString(R.string.label_bld_short) + " " + building.getHouseNumber();
+//                    address += context.getString(R.string.label_street_short) + " " + street.getName() + ", " + context.getString(R.string.label_bld_short) + " " + building.getHouseNumber();
+                    address += street.getName() + ", " + building.getHouseNumber();
                     break;
                 case 3:
                     apartment = realm.where(Apartment.class).equalTo("task_id", task_id).equalTo("id", temp_object_id).findFirst();
                     building = realm.where(Building.class).equalTo("task_id", task_id).equalTo("id", apartment.getBuildingId()).findFirst();
                     street = realm.where(Street.class).equalTo("task_id", task_id).equalTo("id", building.getStreetId()).findFirst();
-                    address += context.getString(R.string.label_street_short) + " " + street.getName() + ", " + context.getString(R.string.label_bld_short) + " " + building.getHouseNumber() + ", " + context.getString(R.string.label_apt_no) + " " + apartment.getApartmentNumber();
+//                    address += context.getString(R.string.label_street_short) + " " + street.getName() + ", " + context.getString(R.string.label_bld_short) + " " + building.getHouseNumber() + ", " + context.getString(R.string.label_apt_no) + " " + apartment.getApartmentNumber();
+                    address += street.getName() + ", "  + building.getHouseNumber() + ", " +  apartment.getApartmentNumber();
                     break;
             }
         } finally {

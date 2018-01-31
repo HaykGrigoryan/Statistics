@@ -83,7 +83,7 @@ public class ServiceGenerator {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(1, TimeUnit.HOURS).writeTimeout(1,TimeUnit.HOURS).sslSocketFactory(sslSocketFactory).build();
+        OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10,TimeUnit.MINUTES).sslSocketFactory(sslSocketFactory).build();
 
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);

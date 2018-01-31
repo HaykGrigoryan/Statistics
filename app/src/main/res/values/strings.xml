@@ -67,7 +67,7 @@
     <string name="hint_owner_name_surname_etc">Владелец (ФИО или организация)</string>
     <string name="hint_owner_organization">Owner/organization</string>
     <string name="hint_owner_or_organization_owner">ФИО или организация кому принадлежит</string>
-    <string name="hint_comment">Примичание</string>
+    <string name="hint_comment">Примечание</string>
     <string name="hint_kato">КАТО</string>
     <string name="label_building_status">Статус объекта</string>
     <string name="hint_territory">Territory</string>
@@ -107,9 +107,9 @@
     <string name="label_sync">Синхронизировать</string>
     <string name="label_ok">ОК</string>
     <string name="label_continue">Продолжить</string>
-    <string name="label_apt_no">кв.</string>
-    <string name="label_street_short">ул.</string>
-    <string name="label_bld_short">д.</string>
+    <!--<string name="label_apt_no">кв.</string>-->
+    <!--<string name="label_street_short">ул.</string>-->
+    <!--<string name="label_bld_short">д.</string>-->
     <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
     
     <string name="dialog_title_attention">Внимание</string>

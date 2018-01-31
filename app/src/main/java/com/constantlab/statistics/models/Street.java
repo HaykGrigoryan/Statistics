@@ -110,7 +110,8 @@ public class Street extends RealmObject {
     }
 
     public String getDisplayName(Context context) {
-        return context.getString(R.string.label_street_short) + " " + getName();
+//        return context.getString(R.string.label_street_short) + " " + getName();
+        return getName();
     }
 
     public Integer getStreetTypeCode() {

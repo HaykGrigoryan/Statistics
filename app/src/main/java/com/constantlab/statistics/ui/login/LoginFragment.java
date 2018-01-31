@@ -66,8 +66,9 @@ public class LoginFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         pbLogin.setIndeterminate(true);
-//        etUsername.setText("Azamat");
-//        etPassword.setText("12345678");
+
+//        etUsername.setText("Indira_123");
+//        etPassword.setText("Qwerty123");
     }
 
     private void loading(boolean show) {
