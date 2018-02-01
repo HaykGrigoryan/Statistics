@@ -2,6 +2,10 @@ package com.constantlab.statistics.ui.login;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.ui.base.BaseActivity;
@@ -28,4 +32,5 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_with_fragment);
         showFragment(LoginFragment.newInstance(), false);
     }
+
 }

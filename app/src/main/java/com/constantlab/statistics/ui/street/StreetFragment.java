@@ -151,7 +151,7 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            streetList = realm.copyFromRealm(realm.where(Street.class).equalTo("task_id", taskId).between("local_id", 0, 10).findAll());
+            streetList = realm.copyFromRealm(realm.where(Street.class).equalTo("task_id", taskId).findAll());
 //            Task taskFirst = realm.where(Task.class).equalTo("task_id", taskId).findFirst();
 //            if (taskFirst != null && taskFirst.getStreetList() != null) {
 //                streetList = realm.copyFromRealm(taskFirst.getStreetList());
