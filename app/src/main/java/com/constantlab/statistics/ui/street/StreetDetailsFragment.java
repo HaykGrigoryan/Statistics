@@ -264,7 +264,6 @@ public class StreetDetailsFragment extends BaseFragment {
 
     private void loadStreetType() {
         mStreetType = (List<StreetType>) RealmManager.getInstance().getTypes(StreetType.class);//GsonUtils.getStreetTypeData(getContext());
-
         ArrayAdapter<StreetType> arrayAdapterEditSt = new ArrayAdapter<StreetType>(getContext(), R.layout.spinner_item, mStreetType);
         arrayAdapterEditSt.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spStreetType.setAdapter(arrayAdapterEditSt);

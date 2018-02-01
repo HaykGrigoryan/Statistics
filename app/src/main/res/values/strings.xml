@@ -84,6 +84,7 @@
     <string name="message_wrong_key">Неправильные ключ</string>
     <string name="message_connection_problem">Проблема соединения</string>
     <string name="message_success_sync_from_server">Удачная синхронизация с сервером</string>
+    <string name="message_sync_in_progress">Синхронизация в процессе.</string>
     <string name="message_success_sync_to_server">Удачная отправка изменений</string>
     <string-array name="demo_list">
         <item>Bricks</item>
@@ -111,7 +112,7 @@
     <!--<string name="label_street_short">ул.</string>-->
     <!--<string name="label_bld_short">д.</string>-->
     <!--<string name="google_maps_key">AIzaSyAtTIPifdhZvxzo4XCIpwknHIu-MkWrdIU</string>-->
-    
+
     <string name="dialog_title_attention">Внимание</string>
     <string name="dialog_title_warning">Предупреждение</string>
     <string name="dialog_logout_confirmation">Вы уверены?</string>

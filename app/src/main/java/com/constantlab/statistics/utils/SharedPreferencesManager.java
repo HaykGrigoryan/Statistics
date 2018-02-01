@@ -57,4 +57,14 @@ public class SharedPreferencesManager {
         SharedPreferences prefs = context.getSharedPreferences(ConstKeys.KEY_APP_SHARED_PREFERENCES, 0);
         prefs.edit().remove(ConstKeys.KEY_LAST_SYNC_FROM_SERVER).remove(ConstKeys.KEY_LAST_SYNC_TO_SERVER).commit();
     }
+
+    public void setSyncing(Context context, boolean syncing) {
+        SharedPreferences prefs = context.getSharedPreferences(ConstKeys.KEY_APP_SHARED_PREFERENCES, 0);
+        prefs.edit().putBoolean(ConstKeys.KEY_SYNCING, syncing).commit();
+    }
+
+    public boolean isSyncing(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(ConstKeys.KEY_APP_SHARED_PREFERENCES, 0);
+        return prefs.getBoolean(ConstKeys.KEY_SYNCING, false);
+    }
 }

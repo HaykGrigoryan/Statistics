@@ -135,6 +135,7 @@ public class Street extends RealmObject {
         street.setId(item.getId());
         street.setName(item.getTitle());
         street.setOriginalName(item.getTitle());
+
         street.setStreetTypeCode(item.getStreetTypeCode());
         return street;
     }

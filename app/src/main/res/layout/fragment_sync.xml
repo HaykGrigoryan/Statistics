@@ -33,19 +33,33 @@
                     android:textColor="@color/text_gray_1"
                     android:textSize="@dimen/text_medium_large" />
 
-                <Button
-                    android:id="@+id/btn_sync_with_server"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_medium"
-                    android:paddingBottom="@dimen/padding_medium"
-                    android:paddingLeft="@dimen/padding_ex_large"
-                    android:paddingRight="@dimen/padding_ex_large"
-                    android:paddingTop="@dimen/padding_medium"
-                    android:text="@string/label_get_task"
-                    android:textAllCaps="false"
-                    android:textSize="@dimen/text_medium" />
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_sync_with_server"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="@dimen/padding_medium"
+                        android:paddingLeft="@dimen/padding_ex_large"
+                        android:paddingRight="@dimen/padding_ex_large"
+                        android:paddingTop="@dimen/padding_medium"
+                        android:text="@string/label_get_task"
+                        android:textAllCaps="false"
+                        android:textSize="@dimen/text_medium" />
+
+                    <ProgressBar
+                        android:id="@+id/loaderSync"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:indeterminate="true" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/last_sync_from_server"

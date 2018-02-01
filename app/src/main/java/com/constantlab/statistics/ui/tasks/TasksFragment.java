@@ -75,7 +75,6 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
     }
 
     private void refreshData() {
-//        refreshCount();
         List<Task> taskList = getTaskList();
         if (taskList != null && taskList.size() > 0) {
             tvNoTasks.setVisibility(View.INVISIBLE);

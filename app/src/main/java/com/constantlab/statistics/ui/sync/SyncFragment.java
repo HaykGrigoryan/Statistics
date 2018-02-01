@@ -3,17 +3,21 @@ package com.constantlab.statistics.ui.sync;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.app.RealmManager;
+import com.constantlab.statistics.background.receivers.SyncResultReceiver;
+import com.constantlab.statistics.background.service.SyncService;
 import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.ApartmentType;
 import com.constantlab.statistics.models.Building;
@@ -34,27 +38,24 @@ import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
 import com.constantlab.statistics.network.model.BasicSingleDataResponse;
 import com.constantlab.statistics.network.model.BuildingItem;
 import com.constantlab.statistics.network.model.GeoItem;
-import com.constantlab.statistics.network.model.LoginKey;
 import com.constantlab.statistics.network.model.StreetItem;
 import com.constantlab.statistics.network.model.TaskItem;
+import com.constantlab.statistics.ui.MainActivity;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.login.LoginActivity;
-import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.DateUtils;
+import com.constantlab.statistics.utils.ISync;
 import com.constantlab.statistics.utils.NotificationCenter;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
-import com.google.gson.Gson;
 
+import java.lang.ref.WeakReference;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,14 +64,23 @@ import retrofit2.Response;
  * Created by Hayk on 25/12/2017.
  */
 
-public class SyncFragment extends BaseFragment {
+public class SyncFragment extends BaseFragment implements ISync {
     @BindView(R.id.pb_sync)
     ProgressBar pbSync;
     @BindView(R.id.last_sync_to_server)
     TextView mLastSyncToServer;
 
+    @BindView(R.id.btn_sync_with_server)
+    Button btnSyncWithServer;
+
+    @BindView(R.id.btn_sync_to_server)
+    Button btnSyncToServer;
+
     @BindView(R.id.last_sync_from_server)
     TextView mLastSyncFromServer;
+
+    @BindView(R.id.loaderSync)
+    ProgressBar loaderSync;
 
     public static SyncFragment newInstance() {
         return new SyncFragment();
@@ -86,7 +96,14 @@ public class SyncFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sync, container, false);
         ButterKnife.bind(this, view);
+        NotificationCenter.getInstance().addSyncListener(this);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        NotificationCenter.getInstance().removeSyncListener(this);
     }
 
     @Override
@@ -94,13 +111,22 @@ public class SyncFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         updateLastSyncToServerTime();
         updateLastSyncFromServerTime();
+        loadButtonState();
+    }
+
+    private void loadButtonState() {
+        loaderSync.setVisibility(SharedPreferencesManager.getInstance().isSyncing(getContext()) ? View.VISIBLE : View.INVISIBLE);
+        btnSyncWithServer.setEnabled(!SharedPreferencesManager.getInstance().isSyncing(getContext()));
+        btnSyncToServer.setEnabled(!SharedPreferencesManager.getInstance().isSyncing(getContext()));
     }
 
     @OnClick(R.id.btn_sync_with_server)
     public void getDataFromServer() {
+//        if (SharedPreferencesManager.getInstance().isSyncing(getContext())) {
+//            Toast.makeText(getContext(), getContext().getString(R.string.message_sync_in_progress), Toast.LENGTH_SHORT).show();
+//        } else {
         if (History.getNotSyncedHistories().size() == 0) {
-            loadData();
-//            syncData();
+            startSync();
         } else {
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(getContext());
@@ -109,12 +135,13 @@ public class SyncFragment extends BaseFragment {
             builder.setPositiveButton(getString(R.string.label_continue), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    loadData();
+                    startSync();
                 }
             });
             builder.setNegativeButton(getString(R.string.label_cancel), null);
             builder.show();
         }
+//        }
     }
 
 
@@ -293,7 +320,6 @@ public class SyncFragment extends BaseFragment {
 //            });
 //        }
 //    }
-
 
     private void loading(boolean show) {
         pbSync.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -515,5 +541,46 @@ public class SyncFragment extends BaseFragment {
         loadChangeTypes();
     }
 
+    private void startSync() {
+        SharedPreferencesManager.getInstance().setSyncing(getContext(), true);
+        SyncService.startServiceToSync(getActivity(), new SyncDataResultReceiver((MainActivity) getActivity()));
+        loadButtonState();
+    }
+
+    @Override
+    public void onSyncFromServer() {
+        loadButtonState();
+//        updateLastSyncFromServerTime();
+    }
+
+    @Override
+    public void onSyncToServer() {
+
+    }
+
+    private static class SyncDataResultReceiver implements SyncResultReceiver.ResultReceiverCallBack<Boolean> {
+        private WeakReference<MainActivity> activityRef;
+
+        public SyncDataResultReceiver(MainActivity activity) {
+            activityRef = new WeakReference<MainActivity>(activity);
+        }
+
+        @Override
+        public void onSuccess(Boolean data) {
+            if (activityRef != null && activityRef.get() != null) {
+                activityRef.get().showMessage(activityRef.get().getString(R.string.message_success_sync_from_server));
+                NotificationCenter.getInstance().notifyOnSyncFromServer();
+            }
+        }
+
+        @Override
+        public void onError(Exception exception) {
+            if (activityRef != null && activityRef.get() != null) {
+                activityRef.get().showMessage(exception != null ? exception.getMessage() : "Error");
+
+                NotificationCenter.getInstance().notifyOnSyncFromServer();
+            }
+        }
+    }
 
 }

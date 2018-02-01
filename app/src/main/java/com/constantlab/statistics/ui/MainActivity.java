@@ -37,6 +37,7 @@ import com.constantlab.statistics.ui.tasks.TasksFragment;
 import com.constantlab.statistics.utils.INavigation;
 import com.constantlab.statistics.utils.ISync;
 import com.constantlab.statistics.utils.NotificationCenter;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
 import com.roughike.bottombar.BottomBar;
 
 import butterknife.BindView;
@@ -54,6 +55,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
     @BindView(R.id.mainContainer)
     RelativeLayout mContentView;
     BottomBar bottomBar;
+
     @Override
     protected int getFragmentContainerId() {
         return R.id.fragment_container;
@@ -86,7 +88,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
                         public void run() {
                             hideTaskContainer();
                         }
-                    },100);
+                    }, 100);
                     break;
                 case R.id.tab_map:
                     showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
@@ -95,7 +97,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
                         public void run() {
                             hideTaskContainer();
                         }
-                    },100);
+                    }, 100);
                     break;
             }
         });
@@ -117,14 +119,13 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
 
                 if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                     bottomBar.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             bottomBar.setVisibility(View.VISIBLE);
                         }
-                    },10);
+                    }, 10);
 
                 }
             }
@@ -144,7 +145,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
             layoutParams.height = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
 //                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
 //                            displayMetrics);
-            layoutParams.width = (int)getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
+            layoutParams.width = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
 //                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
 //                            displayMetrics);
             iconView.setLayoutParams(layoutParams);
@@ -430,9 +431,10 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         NotificationCenter.getInstance().removeNavigationListener(this);
         NotificationCenter.getInstance().removeSyncListener(this);
+        SharedPreferencesManager.getInstance().setSyncing(this, false);
+        super.onDestroy();
     }
 
     @Override
@@ -443,7 +445,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
     @Override
     public void onSyncFromServer() {
         FragmentManager fm = getSupportFragmentManager();
-        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+        for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
             fm.popBackStack();
         }
         showTaskFragment(TasksFragment.newInstance(), false);
@@ -452,9 +454,14 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
     @Override
     public void onSyncToServer() {
         FragmentManager fm = getSupportFragmentManager();
-        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+        for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
             fm.popBackStack();
         }
         showTaskFragment(TasksFragment.newInstance(), false);
+    }
+
+
+    public void showMessage(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }
