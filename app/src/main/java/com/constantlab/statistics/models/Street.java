@@ -22,6 +22,7 @@ public class Street extends RealmObject {
     private Integer local_id;
     private Integer id;
     private String name;
+    private String nameLowerCase;
     private String originalName;
     private Integer streetTypeCode;
     private Integer task_id;
@@ -43,6 +44,9 @@ public class Street extends RealmObject {
 
     public void setName(String name) {
         this.name = name;
+        if (name != null) {
+            nameLowerCase = name.toLowerCase();
+        }
     }
 
     public String getOriginalName() {

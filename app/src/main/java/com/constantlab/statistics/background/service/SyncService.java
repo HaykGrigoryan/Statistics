@@ -80,21 +80,6 @@ public class SyncService extends IntentService {
     }
 
 
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();
-////        onTaskRemoved(intent);
-//        ResultReceiver resultReceiver = intent.getParcelableExtra(PARAM.RESULT_RECEIVER.name());
-//        if (intent != null) {
-//            final String action = intent.getAction();
-//            if (Actions.SYNC_FROM_SERVER.name().equals(action)) {
-//                handleSync(resultReceiver);
-//            }
-//        }
-//        return START_NOT_STICKY;
-//    }
-
-
     @Override
     protected void onHandleIntent(Intent intent) {
         ResultReceiver resultReceiver = intent.getParcelableExtra(PARAM.RESULT_RECEIVER.name());
@@ -452,13 +437,6 @@ public class SyncService extends IntentService {
                         if (taskItem.getDetails() != null) {
                             for (GeoItem geoItem : taskItem.getDetails().getGeoItems()) {
                                 GeoPolygon polygon = GeoPolygon.getGeoPolygon(task.getTaskId(), geoItem);
-//                                Number currentIdNum = realmObject.where(GeoPolygon.class).max("local_id");
-//                                int nextId;
-//                                if (currentIdNum == null) {
-//                                    nextId = 1;
-//                                } else {
-//                                    nextId = currentIdNum.intValue() + 1;
-//                                }
                                 polygon.setLocalId(polygonId++);
                                 realmObject.insert(polygon);
                             }
@@ -468,13 +446,6 @@ public class SyncService extends IntentService {
                             Street street = Street.getStreet(streetItem);
                             street.setTaskId(taskItem.getTaskId());
                             street.setKato(taskItem.getDetails().getKato());
-//                            Number currentIdNum = realmObject.where(Street.class).max("local_id");
-//                            int nextId;
-//                            if (currentIdNum == null) {
-//                                nextId = 1;
-//                            } else {
-//                                nextId = currentIdNum.intValue() + 1;
-//                            }
                             street.setLocalId(streetId++);
                             realmObject.insert(street);
 
@@ -489,12 +460,6 @@ public class SyncService extends IntentService {
                                     building.setStreetName(streetItem.getTitle());
                                     building.setStreetType(addressData.getStreetType());
 
-//                                    currentIdNum = realmObject.where(Building.class).max("local_id");
-//                                    if (currentIdNum == null) {
-//                                        nextId = 1;
-//                                    } else {
-//                                        nextId = currentIdNum.intValue() + 1;
-//                                    }
                                     building.setLocalId(buildingId++);
 
                                     realmObject.insert(building);
@@ -503,12 +468,6 @@ public class SyncService extends IntentService {
                                         Apartment apartment = Apartment.getApartment(apartmentItem);
                                         apartment.setBuildingId(buildingItem.getId());
                                         apartment.setTaskId(task.getTaskId());
-//                                        currentIdNum = realmObject.where(Apartment.class).max("local_id");
-//                                        if (currentIdNum == null) {
-//                                            nextId = 1;
-//                                        } else {
-//                                            nextId = currentIdNum.intValue() + 1;
-//                                        }
                                         apartment.setLocalId(apartmentId++);
                                         realmObject.insert(apartment);
                                     }

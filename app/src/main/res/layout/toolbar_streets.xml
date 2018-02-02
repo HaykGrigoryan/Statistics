@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:layout_gravity="center_vertical|start"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_arrow_back" />
@@ -22,8 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:layout_toEndOf="@+id/iv_back"
-        android:layout_toStartOf="@id/iv_map"
+        android:layout_toRightOf="@+id/iv_back"
+        android:layout_toLeftOf="@id/iv_map"
         android:fontFamily="@font/opensansregular"
         android:singleLine="true"
         android:text="@string/title_street"
@@ -38,6 +39,7 @@
         android:layout_gravity="center_vertical|end"
         android:layout_marginRight="@dimen/padding_medium"
         android:layout_toLeftOf="@+id/iv_add"
+        android:layout_centerVertical="true"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_map_nav" />
 
@@ -48,6 +50,7 @@
         android:layout_alignParentRight="true"
         android:layout_gravity="center_vertical|end"
         android:tint="@android:color/white"
+        android:layout_centerVertical="true"
         app:srcCompat="@drawable/ic_add" />
 
 

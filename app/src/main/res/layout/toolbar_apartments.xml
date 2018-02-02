@@ -10,6 +10,7 @@
         android:id="@+id/iv_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_gravity="center_vertical|start"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_arrow_back" />
@@ -21,8 +22,8 @@
         android:layout_gravity="center"
         android:fontFamily="@font/opensansregular"
         android:text="@string/title_apartments"
-        android:layout_toEndOf="@id/iv_back"
-        android:layout_toStartOf="@id/iv_add"
+        android:layout_toRightOf="@id/iv_back"
+        android:layout_toLeftOf="@id/iv_add"
         android:textAlignment="center"
         android:singleLine="true"
         android:textColor="@android:color/white"
@@ -33,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_add" />
 

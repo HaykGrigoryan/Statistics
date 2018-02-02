@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -47,7 +48,7 @@ import io.realm.Realm;
  * Created by Hayk on 26/12/2017.
  */
 
-public class StreetFragment extends BaseFragment implements StreetAdapter.InteractionListener {
+public class StreetFragment extends BaseFragment implements StreetRecyclerViewAdapter.InteractionListener {
     Integer taskId;
     String taskName;
     @BindView(R.id.rv_streets)
@@ -69,8 +70,8 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
     AppCompatImageView imSortOrder;
     private int mSortOrder = 0;
     private StreetAdapter mStreetAdapter;
-
-
+    private StreetRecyclerViewAdapter adapter;
+    private Realm realm;
     public static StreetFragment newInstance(Integer taskId, String taskName) {
         StreetFragment fragment = new StreetFragment();
         Bundle args = new Bundle();
@@ -88,6 +89,7 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
             taskName = getArguments().getString(ConstKeys.TAG_TASK_NAME);
         }
         mStreetAdapter = new StreetAdapter(getContext());
+
     }
 
     @Nullable
@@ -95,8 +97,11 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_streets, container, false);
         ButterKnife.bind(this, view);
-        setupRecyclerView();
-        showData();
+        realm = Realm.getDefaultInstance();
+        setUpRecyclerView();
+//        setupRecyclerView();
+
+//        showData();
 
         return view;
     }
@@ -121,7 +126,8 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mStreetAdapter.getFilter().filter(editable.toString());
+//                mStreetAdapter.getFilter().filter(editable.toString());
+                adapter.getFilter().filter(editable.toString());
             }
         });
     }
@@ -130,15 +136,27 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
     protected void updateSortOrder() {
         mSortOrder = (mSortOrder + 1) % 2;
         imSortOrder.setImageResource(mSortOrder == 0 ? R.drawable.sort_asc : R.drawable.sort_desc);
-        mStreetAdapter.setSortOrder(mSortOrder);
+//        mStreetAdapter.setSortOrder(mSortOrder);
+        adapter.setSortOrder(mSortOrder);
     }
 
     List<Street> mStreetList;
 
+//    private void showData() {
+//        mStreetList = getStreetList();
+//        if (mStreetList != null && mStreetList.size() > 0) {
+//            mStreetAdapter.setInteractionListener(this);
+//            mStreetAdapter.setStreetList(mStreetList);
+//            mStreetAdapter.setSortOrder(mSortOrder);
+//        } else {
+//            tvNoStreets.setVisibility(View.VISIBLE);
+//        }
+//    }
+
     private void showData() {
         mStreetList = getStreetList();
         if (mStreetList != null && mStreetList.size() > 0) {
-            mStreetAdapter.setInteractionListener(this);
+//            mStreetAdapter.setInteractionListener(this);
             mStreetAdapter.setStreetList(mStreetList);
             mStreetAdapter.setSortOrder(mSortOrder);
         } else {
@@ -152,10 +170,6 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
         try {
             realm = Realm.getDefaultInstance();
             streetList = realm.copyFromRealm(realm.where(Street.class).equalTo("task_id", taskId).findAll());
-//            Task taskFirst = realm.where(Task.class).equalTo("task_id", taskId).findFirst();
-//            if (taskFirst != null && taskFirst.getStreetList() != null) {
-//                streetList = realm.copyFromRealm(taskFirst.getStreetList());
-//            }
             return streetList;
         } finally {
             if (realm != null)
@@ -172,6 +186,27 @@ public class StreetFragment extends BaseFragment implements StreetAdapter.Intera
         rvStreets.setLayoutManager(llm);
         rvStreets.setAdapter(mStreetAdapter);
     }
+
+    private void setUpRecyclerView() {
+        adapter = new StreetRecyclerViewAdapter(realm.where(Street.class).equalTo("task_id", taskId).findAll(), realm,taskId);
+        adapter.setInteractionListener(this);
+        adapter.setSortOrder(mSortOrder);
+        rvStreets.setHasFixedSize(true);
+        rvStreets.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setSmoothScrollbarEnabled(true);
+        rvStreets.setLayoutManager(llm);
+        rvStreets.setAdapter(adapter);
+        rvStreets.setHasFixedSize(true);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        rvStreets.setAdapter(null);
+        realm.close();
+    }
+
 
     @OnClick(R.id.iv_map)
     public void showMap() {
