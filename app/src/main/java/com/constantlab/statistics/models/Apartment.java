@@ -16,7 +16,7 @@ public class Apartment extends RealmObject {
     @PrimaryKey
     private Integer local_id;
     private Integer id;
-    private Integer apartmentNumber;
+    private String apartmentNumber;
     private Integer totalInhabitants;
     private Integer apartmentType;
     private String ownerName;
@@ -57,11 +57,11 @@ public class Apartment extends RealmObject {
         this.id = id;
     }
 
-    public Integer getApartmentNumber() {
-        return apartmentNumber;
+    public String getApartmentNumber() {
+        return apartmentNumber == null ? "" : apartmentNumber;
     }
 
-    public void setApartmentNumber(Integer apartmentNumber) {
+    public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
     }
 
@@ -75,7 +75,7 @@ public class Apartment extends RealmObject {
 
     public String getDisplayName(Context context) {
 //        return context.getString(R.string.label_apt_no) + " " + getApartmentNumber();
-        return String.valueOf(getApartmentNumber());
+        return getApartmentNumber();
     }
 
     public int getBuildingId() {

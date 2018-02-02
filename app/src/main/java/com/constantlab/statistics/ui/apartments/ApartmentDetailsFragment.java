@@ -161,7 +161,7 @@ public class ApartmentDetailsFragment extends BaseFragment {
     }
 
     private void showData(Apartment object) {
-        etApartmentNumber.setText(object.getApartmentNumber() != null ? object.getApartmentNumber() + "" : "");
+        etApartmentNumber.setText(object.getApartmentNumber());
         etOwner.setText(object.getOwnerName());
         etComment.setText(object.getComment() != null ? object.getComment() : "");
         spApartmentType.setSelection(ApartmentType.getIndex(mApartmentTypes, object.getApartmentType()));
@@ -192,7 +192,7 @@ public class ApartmentDetailsFragment extends BaseFragment {
         }
 
         if (proceed) {
-            if (RealmManager.getInstance().checkApartmentDuplicateName(taskId, buildingId, apartmentId, Integer.parseInt(etApartmentNumber.getText().toString()))) {
+            if (RealmManager.getInstance().checkApartmentDuplicateName(taskId, buildingId, apartmentId, etApartmentNumber.getText().toString())) {
                 AlertDialog.Builder builder =
                         new AlertDialog.Builder(getContext());
                 builder.setTitle(getString(R.string.dialog_title_attention));
@@ -245,7 +245,7 @@ public class ApartmentDetailsFragment extends BaseFragment {
                 apartment.setComment(etComment.getText().toString().trim());
                 ApartmentType apartmentType = (ApartmentType) spApartmentType.getSelectedItem();
                 apartment.setApartmentType(apartmentType.getId());
-                Integer apartmentNumber = Integer.parseInt(etApartmentNumber.getText().toString());
+                String apartmentNumber = etApartmentNumber.getText().toString();
                 apartment.setApartmentNumber(apartmentNumber);
 
                 realmObject.insertOrUpdate(apartment);
@@ -271,12 +271,12 @@ public class ApartmentDetailsFragment extends BaseFragment {
                     if (mBuilding.isNew()) {
                         Street street = getStreet(realmObject);
                         if (street != null && street.isNew()) {
-                            referenceId = addHistory(taskId, 13, new TempNewData(String.valueOf(apartment.getApartmentNumber())), null, apartment.getId(), realmObject, mBuilding.getHistoryId());
+                            referenceId = addHistory(taskId, 13, new TempNewData(apartment.getApartmentNumber()), null, apartment.getId(), realmObject, mBuilding.getHistoryId());
                         } else {
-                            referenceId = addHistory(taskId, 17, new TempNewData(String.valueOf(apartment.getApartmentNumber())), null, apartment.getId(), realmObject, mBuilding.getHistoryId());
+                            referenceId = addHistory(taskId, 17, new TempNewData(apartment.getApartmentNumber()), null, apartment.getId(), realmObject, mBuilding.getHistoryId());
                         }
                     } else {
-                        referenceId = addHistory(taskId, 3, new TempNewData(String.valueOf(apartment.getApartmentNumber())), mBuilding.getId(), apartment.getId(), realmObject);
+                        referenceId = addHistory(taskId, 3, new TempNewData(apartment.getApartmentNumber()), mBuilding.getId(), apartment.getId(), realmObject);
                     }
                     if (etOwner.getText().toString() != null && !etOwner.getText().toString().equals("")) {
                         addHistory(taskId, 7, new TempNewData(apartment.getOwnerName()), null, apartment.getId(), realmObject, referenceId);

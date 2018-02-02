@@ -135,7 +135,7 @@ public class RealmManager {
         return null;
     }
 
-    public boolean checkApartmentDuplicateName(Integer taskId, Integer buildingId, Integer apartmentId, Integer number) {
+    public boolean checkApartmentDuplicateName(Integer taskId, Integer buildingId, Integer apartmentId, String number) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();

@@ -18,7 +18,7 @@ public class ApartmentItem {
 
     @SerializedName("num")
     @Expose
-    protected Integer number;
+    protected String number;
 
     @SerializedName("flat_owner")
     @Expose
@@ -49,11 +49,11 @@ public class ApartmentItem {
         this.inhabitants = inhabitants;
     }
 
-    public Integer getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

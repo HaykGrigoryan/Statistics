@@ -437,8 +437,14 @@ public class SyncService extends IntentService {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
+
             if (realm.where(Task.class).findAll().size() == 0) {
                 realm.executeTransaction(realmObject -> {
+                    int taskId = 1;
+                    int polygonId = 1;
+                    int streetId = 1;
+                    int buildingId = 1;
+                    int apartmentId = 1;
                     for (TaskItem taskItem : items) {
                         Task task = Task.getTask(taskItem);
                         task.setKato(taskItem.getDetails().getKato());
@@ -446,14 +452,14 @@ public class SyncService extends IntentService {
                         if (taskItem.getDetails() != null) {
                             for (GeoItem geoItem : taskItem.getDetails().getGeoItems()) {
                                 GeoPolygon polygon = GeoPolygon.getGeoPolygon(task.getTaskId(), geoItem);
-                                Number currentIdNum = realmObject.where(GeoPolygon.class).max("local_id");
-                                int nextId;
-                                if (currentIdNum == null) {
-                                    nextId = 1;
-                                } else {
-                                    nextId = currentIdNum.intValue() + 1;
-                                }
-                                polygon.setLocalId(nextId);
+//                                Number currentIdNum = realmObject.where(GeoPolygon.class).max("local_id");
+//                                int nextId;
+//                                if (currentIdNum == null) {
+//                                    nextId = 1;
+//                                } else {
+//                                    nextId = currentIdNum.intValue() + 1;
+//                                }
+                                polygon.setLocalId(polygonId++);
                                 realmObject.insert(polygon);
                             }
                         }
@@ -462,14 +468,14 @@ public class SyncService extends IntentService {
                             Street street = Street.getStreet(streetItem);
                             street.setTaskId(taskItem.getTaskId());
                             street.setKato(taskItem.getDetails().getKato());
-                            Number currentIdNum = realmObject.where(Street.class).max("local_id");
-                            int nextId;
-                            if (currentIdNum == null) {
-                                nextId = 1;
-                            } else {
-                                nextId = currentIdNum.intValue() + 1;
-                            }
-                            street.setLocalId(nextId);
+//                            Number currentIdNum = realmObject.where(Street.class).max("local_id");
+//                            int nextId;
+//                            if (currentIdNum == null) {
+//                                nextId = 1;
+//                            } else {
+//                                nextId = currentIdNum.intValue() + 1;
+//                            }
+                            street.setLocalId(streetId++);
                             realmObject.insert(street);
 
                             if (streetItem.getAddressData() != null && streetItem.getAddressData().size() > 0) {
@@ -483,13 +489,13 @@ public class SyncService extends IntentService {
                                     building.setStreetName(streetItem.getTitle());
                                     building.setStreetType(addressData.getStreetType());
 
-                                    currentIdNum = realmObject.where(Building.class).max("local_id");
-                                    if (currentIdNum == null) {
-                                        nextId = 1;
-                                    } else {
-                                        nextId = currentIdNum.intValue() + 1;
-                                    }
-                                    building.setLocalId(nextId);
+//                                    currentIdNum = realmObject.where(Building.class).max("local_id");
+//                                    if (currentIdNum == null) {
+//                                        nextId = 1;
+//                                    } else {
+//                                        nextId = currentIdNum.intValue() + 1;
+//                                    }
+                                    building.setLocalId(buildingId++);
 
                                     realmObject.insert(building);
 
@@ -497,13 +503,13 @@ public class SyncService extends IntentService {
                                         Apartment apartment = Apartment.getApartment(apartmentItem);
                                         apartment.setBuildingId(buildingItem.getId());
                                         apartment.setTaskId(task.getTaskId());
-                                        currentIdNum = realmObject.where(Apartment.class).max("local_id");
-                                        if (currentIdNum == null) {
-                                            nextId = 1;
-                                        } else {
-                                            nextId = currentIdNum.intValue() + 1;
-                                        }
-                                        apartment.setLocalId(nextId);
+//                                        currentIdNum = realmObject.where(Apartment.class).max("local_id");
+//                                        if (currentIdNum == null) {
+//                                            nextId = 1;
+//                                        } else {
+//                                            nextId = currentIdNum.intValue() + 1;
+//                                        }
+                                        apartment.setLocalId(apartmentId++);
                                         realmObject.insert(apartment);
                                     }
 

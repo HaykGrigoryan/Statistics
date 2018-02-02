@@ -61,9 +61,10 @@
             android:name=".ui.map.MapActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name=".background.service.SyncService"
+        <service
+            android:name=".background.service.SyncService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

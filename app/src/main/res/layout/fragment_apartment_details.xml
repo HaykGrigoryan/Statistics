@@ -34,7 +34,7 @@
                     android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_apartment_number"
-                    android:inputType="number"
+                    android:singleLine="true"
                     android:padding="@dimen/padding_large"
                     android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
