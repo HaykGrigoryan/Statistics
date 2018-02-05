@@ -1,13 +1,18 @@
 package com.constantlab.statistics.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +37,7 @@ import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.ui.base.BaseActivity;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.map.MapFragment;
+import com.constantlab.statistics.ui.map.OSMMapFragment;
 import com.constantlab.statistics.ui.sync.SyncFragment;
 import com.constantlab.statistics.ui.tasks.TasksFragment;
 import com.constantlab.statistics.utils.INavigation;
@@ -46,7 +52,9 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-public class MainActivity extends BaseActivity implements INavigation, ISync {
+public class MainActivity extends BaseActivity implements INavigation, ISync, ActivityCompat.OnRequestPermissionsResultCallback {
+    private static final int REQUEST_WRITE_PERMISSION = 786;
+
     @BindView(R.id.fragment_container)
     FrameLayout mFragmentContainer;
 
@@ -69,6 +77,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestPermission();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 //        insertDummyContent();
@@ -91,7 +100,7 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
                     }, 100);
                     break;
                 case R.id.tab_map:
-                    showFragment(MapFragment.newInstance(MapFragment.MapAction.VIEW), false);
+                    showFragment(OSMMapFragment.newInstance(OSMMapFragment.MapAction.VIEW), false);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -130,7 +139,30 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
                 }
             }
         });
+
+//        isStoragePermissionGranted();
+
     }
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+////                Log.v(TAG,"Permission is granted");
+//                return true;
+//            } else {
+//                Log.v(TAG,"Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+//            Log.v(TAG,"Permission is granted");
+            return true;
+        }
+        return false;
+    }
+
 
     private void refreshBottomNavigationSize(BottomNavigationView bottomNavigationView) {
         BottomNavigationMenuView menuView = (BottomNavigationMenuView)
@@ -463,5 +495,21 @@ public class MainActivity extends BaseActivity implements INavigation, ISync {
 
     public void showMessage(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            showMessage("Granted");
+        }
+
+    }
+
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
+        } else {
+//            showMessage("Granted");
+        }
     }
 }
