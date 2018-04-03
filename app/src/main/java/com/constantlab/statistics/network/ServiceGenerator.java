@@ -1,6 +1,9 @@
 package com.constantlab.statistics.network;
 
+import android.content.Context;
 import android.util.Base64;
+
+import com.constantlab.statistics.utils.ConstKeys;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -31,7 +34,66 @@ public class ServiceGenerator {
                     .baseUrl(Constants.SERVER_URL)
                     .addConverterFactory(GsonConverterFactory.create());
 
-    public static <S> S createService(Class<S> serviceClass) {
+    public static <S> S createService(Class<S> serviceClass, Context context) {
+        SSLSocketFactory sslSocketFactory = null;
+
+
+        try {
+
+            final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(
+                        java.security.cert.X509Certificate[] chain,
+                        String authType) throws CertificateException {
+                }
+
+                @Override
+                public void checkServerTrusted(
+                        java.security.cert.X509Certificate[] chain,
+                        String authType) throws CertificateException {
+                }
+
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return new java.security.cert.X509Certificate[0];
+                }
+            }};
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+
+            sslContext.init(null, trustAllCerts,
+                    new java.security.SecureRandom());
+            sslSocketFactory = sslContext
+                    .getSocketFactory();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+        }
+        // Create an ssl socket factory with our all-trusting manager
+        httpClient.interceptors().add(new LogJsonInterceptor());
+        httpClient.addInterceptor(chain -> {
+            Request original = chain.request();
+            Request.Builder requestBuilder = original.newBuilder()
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "application/json; charset=utf-8")
+                    .method(original.method(), original.body());
+            Request request = requestBuilder.build();
+            return chain.proceed(request);
+        });
+
+        //TODO Set Level.NONE on release
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+
+        OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10, TimeUnit.MINUTES).sslSocketFactory(sslSocketFactory).build();
+        builder.baseUrl(Constants.constructBaseURL(context));
+        Retrofit retrofit = builder.client(client).build();
+        return retrofit.create(serviceClass);
+    }
+
+
+    public static <S> S createLocalService(Class<S> serviceClass) {
         SSLSocketFactory sslSocketFactory = null;
 
 
@@ -83,8 +145,8 @@ public class ServiceGenerator {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10,TimeUnit.MINUTES).sslSocketFactory(sslSocketFactory).build();
-
+        OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10, TimeUnit.MINUTES).sslSocketFactory(sslSocketFactory).build();
+        builder.baseUrl(Constants.SERVER_LOCAL_URL);
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);
     }

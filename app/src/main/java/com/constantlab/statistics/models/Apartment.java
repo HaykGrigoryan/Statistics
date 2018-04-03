@@ -17,6 +17,7 @@ public class Apartment extends RealmObject {
     private Integer local_id;
     private Integer id;
     private String apartmentNumber;
+    private String apartmentNumberLowerCase;
     private Integer totalInhabitants;
     private Integer apartmentType;
     private String ownerName;
@@ -24,6 +25,9 @@ public class Apartment extends RealmObject {
     private Integer task_id;
     private int building_id;
     private boolean isNew;
+    private boolean isEdited;
+    private Integer user_id;
+    private long change_time;
 
     public Integer getApartmentType() {
         return (apartmentType == null) ? 0 : apartmentType;
@@ -63,6 +67,9 @@ public class Apartment extends RealmObject {
 
     public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
+        if (apartmentNumber != null) {
+            apartmentNumberLowerCase = apartmentNumber.toLowerCase();
+        }
     }
 
     public Integer getTotalInhabitants() {
@@ -114,11 +121,35 @@ public class Apartment extends RealmObject {
         isNew = aNew;
     }
 
+    public boolean isEdited() {
+        return isEdited;
+    }
+
+    public void setEdited(boolean edited) {
+        isEdited = edited;
+    }
+
     public Integer getLocalId() {
         return local_id;
     }
 
     public void setLocalId(Integer local_id) {
         this.local_id = local_id;
+    }
+
+    public Integer getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(Integer user_id) {
+        this.user_id = user_id;
+    }
+
+    public long getChangeTime() {
+        return change_time;
+    }
+
+    public void setChangeTime(long change_time) {
+        this.change_time = change_time;
     }
 }

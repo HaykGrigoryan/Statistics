@@ -1,5 +1,6 @@
 package com.constantlab.statistics.ui.login;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,12 +13,16 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.constantlab.statistics.R;
+import com.constantlab.statistics.app.RealmManager;
+import com.constantlab.statistics.models.User;
 import com.constantlab.statistics.network.RTService;
 import com.constantlab.statistics.network.ServiceGenerator;
 import com.constantlab.statistics.network.model.BasicSingleDataResponse;
+import com.constantlab.statistics.network.model.GetKeyRequest;
 import com.constantlab.statistics.network.model.LoginKey;
 import com.constantlab.statistics.ui.MainActivity;
 import com.constantlab.statistics.ui.base.BaseFragment;
+import com.constantlab.statistics.utils.DialogManager;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
 
 import butterknife.BindView;
@@ -49,8 +54,13 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (SharedPreferencesManager.getInstance().getKey(getContext()) != null) {
-            goToMain();
+        User user = SharedPreferencesManager.getInstance().getUser(getContext());
+        if (user != null) {
+            if (RealmManager.getInstance().getUser(user.getUsername(), user.getPassword()) != null) {
+                goToMain();
+            } else {
+                SharedPreferencesManager.getInstance().removeUser(getContext());
+            }
         }
     }
 
@@ -66,40 +76,69 @@ public class LoginFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         pbLogin.setIndeterminate(true);
-
-//        etUsername.setText("Indira_123");
-//        etPassword.setText("Qwerty123");
+//
+//        etUsername.setText("dummy1");
+//        etPassword.setText("qwe123qwe");
     }
 
     private void loading(boolean show) {
         pbLogin.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    @OnClick(R.id.btn_login)
-    public void login() {
-        String user = etUsername.getText().toString();
-        String password = etPassword.getText().toString();
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicSingleDataResponse<LoginKey>> call = rtService.getKey(user, password);
-        loading(true);
-        call.enqueue(new Callback<BasicSingleDataResponse<LoginKey>>() {
-            @Override
-            public void onResponse(Call<BasicSingleDataResponse<LoginKey>> call, Response<BasicSingleDataResponse<LoginKey>> response) {
-                if (response.body().isSuccess()) {
-                    SharedPreferencesManager.getInstance().setKey(getContext(), response.body().getData().getKey());
-                    goToMain();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_credentials), Toast.LENGTH_SHORT).show();
-                }
-                loading(false);
-            }
+    AlertDialog mServerInfoDialog;
 
+    @OnClick(R.id.btn_server_info)
+    public void serverInfo() {
+        mServerInfoDialog = DialogManager.getInstance().showServerInfoDialog(getActivity(), new View.OnClickListener() {
             @Override
-            public void onFailure(Call<BasicSingleDataResponse<LoginKey>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-                loading(false);
+            public void onClick(View v) {
+                String serverIp = ((EditText) mServerInfoDialog.findViewById(R.id.et_ip)).getText().toString();
+                String serverPort = ((EditText) mServerInfoDialog.findViewById(R.id.et_port)).getText().toString();
+                SharedPreferencesManager.getInstance().setServerIP(getContext(), serverIp);
+                SharedPreferencesManager.getInstance().setServerPort(getContext(), serverPort);
+
+                if (mServerInfoDialog != null) {
+                    mServerInfoDialog.dismiss();
+                }
             }
         });
+    }
+
+    @OnClick(R.id.btn_login)
+    public void login() {
+        String username = etUsername.getText().toString();
+        String password = etPassword.getText().toString();
+
+        User user = RealmManager.getInstance().getUser(username, password);
+        if (user != null) {
+            SharedPreferencesManager.getInstance().setUser(getContext(), user);
+            goToMain();
+        } else {
+            RTService rtService = ServiceGenerator.createService(RTService.class, getContext());
+            Call<BasicSingleDataResponse<String>> call = rtService.getKey(new GetKeyRequest(username, password));
+            loading(true);
+            call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
+                @Override
+                public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
+                    if (response.code() == 200 && response.body().isSuccessNestedStatus()) {
+                        User u = User.createUser(getContext(), username, password, response.body().getData());
+                        RealmManager.getInstance().addUser(u);
+                        SharedPreferencesManager.getInstance().setUser(getContext(), RealmManager.getInstance().getUser(username, password));
+                        goToMain();
+                    } else {
+                        Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_credentials), Toast.LENGTH_SHORT).show();
+                    }
+                    loading(false);
+                }
+
+                @Override
+                public void onFailure(Call<BasicSingleDataResponse<String>> call, Throwable t) {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+                    loading(false);
+                }
+            });
+        }
+
     }
 
     private void goToMain() {

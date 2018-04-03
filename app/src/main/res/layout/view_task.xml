@@ -17,40 +17,74 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_large">
 
-            <TextView
-                android:id="@+id/tv_task_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/tv_date"
-                android:fontFamily="@font/opensanslight"
-                android:paddingRight="@dimen/padding_small"
-                android:text="Task #1"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/text_medium"
+                android:layout_toLeftOf="@+id/btn_history"
+                android:orientation="vertical">
 
-                />
+                <TextView
+                    android:id="@+id/tv_task_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/tv_date"
+                    android:fontFamily="@font/opensanslight"
+                    android:paddingRight="@dimen/padding_small"
+                    android:text="Task #1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_medium" />
 
-            <TextView
-                android:id="@+id/tv_task_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/tv_task_name"
-                android:layout_alignBottom="@+id/tv_task_name"
-                android:layout_toStartOf="@+id/btn_history"
-                android:fontFamily="@font/opensanslight"
-                android:paddingLeft="@dimen/padding_medium"
-                android:paddingRight="@dimen/padding_medium"
-                android:text="21.12.2017"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_small" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_ex_small"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/tv_task_date"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/opensanslight"
+                        android:paddingRight="@dimen/padding_small"
+                        android:text="@string/label_date"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_small" />
+
+                    <TextView
+                        android:id="@+id/tv_task_kato"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/opensanslight"
+                        android:text="@string/label_kato"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_small" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_task_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_ex_small"
+                    android:fontFamily="@font/opensanslight"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/text_small" />
+
+            </LinearLayout>
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_history"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
                 app:srcCompat="@drawable/ic_history" />
 
         </RelativeLayout>

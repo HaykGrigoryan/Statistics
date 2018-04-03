@@ -26,18 +26,6 @@
                 android:paddingStart="@dimen/padding_large"
                 android:paddingTop="@dimen/padding_medium">
 
-                <!--<TextView-->
-                <!--android:id="@+id/tv_apartment_no"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:fontFamily="@font/opensansregular"-->
-                <!--android:gravity="center_vertical"-->
-                <!--android:maxLines="2"-->
-                <!--android:minLines="2"-->
-                <!--android:layout_toLeftOf="@+id/btn_edit"-->
-                <!--android:textColor="@color/text_primary"-->
-                <!--android:textSize="14sp"-->
-                <!--tools:text="Buiding Name" />-->
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/tv_street_name"
                     android:layout_width="wrap_content"
@@ -49,7 +37,7 @@
                     android:paddingRight="@dimen/padding_small"
                     android:text="Street"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/text_medium_large" />
+                    android:textSize="@dimen/text_medium" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/btn_edit"

@@ -13,17 +13,21 @@ import java.util.List;
 public class BasicMultipleDataResponse<E> implements Serializable {
     @SerializedName("status")
     @Expose
-    protected String status;
+    protected Integer status;
+
+    @SerializedName("message")
+    @Expose
+    protected String message;
 
     @SerializedName("data")
     @Expose
     protected List<E> data;
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -35,11 +39,19 @@ public class BasicMultipleDataResponse<E> implements Serializable {
         this.data = data;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public boolean isSuccess() {
-        return status.equals("1");
+        return status.equals(1);
     }
 
     public boolean isSuccessNestedStatus() {
-        return status.equals("2");
+        return status.equals(2);
     }
 }

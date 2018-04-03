@@ -27,16 +27,21 @@ import com.constantlab.statistics.models.BuildingType;
 import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
+import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.models.TempNewData;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.map.MapActivity;
 import com.constantlab.statistics.ui.map.MapFragment;
+import com.constantlab.statistics.ui.map.OSMMapFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.GsonUtils;
 import com.constantlab.statistics.utils.HistoryManager;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
+import com.constantlab.statistics.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,6 +59,8 @@ public class BuildingDetailsFragment extends BaseFragment {
     Integer buildingId;
     String buildingName;
     Integer streetId;
+    Integer taskId;
+    Integer userId;
     @BindView(R.id.btn_map)
     Button btnMap;
     @BindView(R.id.et_house)
@@ -82,14 +89,17 @@ public class BuildingDetailsFragment extends BaseFragment {
     TextView mTitle;
     Double mSelectedLat, mSelectedLon;
     private Street mStreet;
-
+    private Task mTask;
     private Building mBuilding;
 
-    public static BuildingDetailsFragment newInstance(Integer buildingId, String buildingName, Integer streetId) {
+    private boolean isFlatLevelEnabled;
+
+    public static BuildingDetailsFragment newInstance(Integer buildingId, String buildingName, Integer streetId, Integer taskId) {
         BuildingDetailsFragment fragment = new BuildingDetailsFragment();
         Bundle args = new Bundle();
         args.putInt(ConstKeys.TAG_BUILDING, buildingId);
         args.putInt(ConstKeys.TAG_STREET, streetId);
+        args.putInt(ConstKeys.TAG_TASK, taskId);
         args.putString(ConstKeys.TAG_BUILDING_NAME, buildingName);
         fragment.setArguments(args);
         return fragment;
@@ -103,8 +113,12 @@ public class BuildingDetailsFragment extends BaseFragment {
         if (getArguments() != null) {
             buildingId = getArguments().getInt(ConstKeys.TAG_BUILDING);
             streetId = getArguments().getInt(ConstKeys.TAG_STREET);
+            taskId = getArguments().getInt(ConstKeys.TAG_TASK);
             buildingName = getArguments().getString(ConstKeys.TAG_BUILDING_NAME);
+            userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
             mStreet = getStreet();
+            mTask = getTask();
+
         }
     }
 
@@ -113,7 +127,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         Street street = new Street();
         try {
             realm = Realm.getDefaultInstance();
-            street = realm.where(Street.class).equalTo("id", streetId).findFirst();
+            street = realm.where(Street.class).equalTo("task_id", taskId).equalTo("id", streetId).equalTo("user_id", userId).findFirst();
             if (street != null) {
                 street = realm.copyFromRealm(street);
             }
@@ -124,6 +138,24 @@ public class BuildingDetailsFragment extends BaseFragment {
         }
         return street;
     }
+
+    private Task getTask() {
+        Realm realm = null;
+        Task task = new Task();
+        try {
+            realm = Realm.getDefaultInstance();
+            task = realm.where(Task.class).equalTo("task_id", taskId).equalTo("user_id", userId).findFirst();
+            if (task != null) {
+                task = realm.copyFromRealm(task);
+            }
+        } finally {
+            if (realm != null) {
+                realm.close();
+            }
+        }
+        return task;
+    }
+
 
     @Nullable
     @Override
@@ -150,7 +182,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            mBuilding = realm.where(Building.class).equalTo("id", buildingId).findFirst();
+            mBuilding = realm.where(Building.class).equalTo("task_id", taskId).equalTo("id", buildingId).equalTo("user_id", userId).findFirst();
             if (mBuilding != null) {
                 mBuilding = realm.copyFromRealm(mBuilding);
                 showData(mBuilding);
@@ -168,7 +200,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         etComment.setText(object.getComment());
         mSelectedLon = object.getLatitude();
         mSelectedLon = object.getLongitude();
-        etKato.setText(object.getKato());
+        etKato.setText(mTask.getKatoCode());
         spBuildingType.setSelection(BuildingType.getIndex(mBuildingTypes, object.getBuildingType()));
         spBuildingStatus.setSelection(BuildingStatus.getIndex(mBuildingStatus, object.getBuildingStatus()));
         etLivingCount.setText(String.valueOf(object.getTemporaryInhabitants()));
@@ -181,8 +213,22 @@ public class BuildingDetailsFragment extends BaseFragment {
         loadStreetType();
         loadBuildingType();
         loadBuildingStatus();
+        refreshPeopleNumberState();
         etStreetName.setText(mStreet.getDisplayName(getContext()));
-        etKato.setText(mStreet.getKato());
+        etKato.setText(mTask.getKatoCode());
+    }
+
+    private void refreshPeopleNumberState() {
+        int typeId = ((BuildingType) spBuildingType.getSelectedItem()).getId();
+        int statusId = ((BuildingStatus) spBuildingStatus.getSelectedItem()).getId();
+        isFlatLevelEnabled = Building.isFlatLevelEnabled(typeId, statusId) || Building.isTypeClosedInstitution(typeId);
+        if (isFlatLevelEnabled) {
+            etLivingCount.setVisibility(View.GONE);
+            etLivingCount.setText("");
+        } else {
+            etLivingCount.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private List<BuildingType> mBuildingTypes;
@@ -196,12 +242,8 @@ public class BuildingDetailsFragment extends BaseFragment {
         spBuildingType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (Building.isTypeClosedInstitution(mBuildingTypes.get(i).getId())) {
-                    etLivingCount.setVisibility(View.GONE);
-                    etLivingCount.setText("");
-                } else {
-                    etLivingCount.setVisibility(View.VISIBLE);
-                }
+
+                refreshPeopleNumberState();
             }
 
             @Override
@@ -218,6 +260,17 @@ public class BuildingDetailsFragment extends BaseFragment {
         ArrayAdapter<BuildingStatus> arrayAdapterEditBl = new ArrayAdapter<BuildingStatus>(getContext(), R.layout.spinner_item, mBuildingStatus);
         arrayAdapterEditBl.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spBuildingStatus.setAdapter(arrayAdapterEditBl);
+        spBuildingStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                refreshPeopleNumberState();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private List<StreetType> mStreetType;
@@ -235,7 +288,7 @@ public class BuildingDetailsFragment extends BaseFragment {
     @OnClick(R.id.btn_map)
     public void gotoMaps() {
         Intent intent = new Intent(getContext(), MapActivity.class);
-        intent.putExtra(ConstKeys.KEY_MAP_ACTION, MapFragment.MapAction.PICK_LOCATION.ordinal());
+        intent.putExtra(ConstKeys.KEY_MAP_ACTION, OSMMapFragment.MapAction.PICK_LOCATION.ordinal());
 //        if (mBuilding != null && mBuilding.getLatitude() != null && mBuilding.getLongitude() != null) {
         intent.putExtra(ConstKeys.KEY_LATITUDE, mSelectedLat);
         intent.putExtra(ConstKeys.KEY_LONGITUDE, mSelectedLon);
@@ -266,10 +319,12 @@ public class BuildingDetailsFragment extends BaseFragment {
             etHouse.setError(getString(R.string.error_empty_field));
         }
 
-        if (Building.isTypeSpetialInstitution(((BuildingType) spBuildingType.getSelectedItem()).getId())) {
+        if (Building.isTypeSpetialInstitution(((BuildingType) spBuildingType.getSelectedItem()).getId()) && !isFlatLevelEnabled) {
             if (etLivingCount.getText().toString().isEmpty()) {
+                if (proceed) {
+                    etLivingCount.setError(getString(R.string.error_empty_field));
+                }
                 proceed = false;
-                etLivingCount.setError(getString(R.string.error_empty_field));
             }
         }
 
@@ -282,7 +337,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         }
 
         if (proceed) {
-            if (RealmManager.getInstance().checkBuildingDuplicateName(mStreet.getTaskId(), mStreet.getId(), buildingId, etHouse.getText().toString())) {
+            if (RealmManager.getInstance().checkBuildingDuplicateName(mStreet.getTaskId(), mStreet.getId(), buildingId, etHouse.getText().toString(), userId)) {
                 AlertDialog.Builder builder =
                         new AlertDialog.Builder(getContext());
                 builder.setTitle(getString(R.string.dialog_title_attention));
@@ -297,15 +352,13 @@ public class BuildingDetailsFragment extends BaseFragment {
 
     private void saveDataToDatabase() {
         Realm realm = null;
-        Integer taskId = mStreet.getTaskId();
         try {
             realm = Realm.getDefaultInstance();
             realm.executeTransaction(realmObject -> {
-                Building b = realmObject.where(Building.class).equalTo("id", buildingId).equalTo("task_id", taskId).findFirst();
+                Building b = realmObject.where(Building.class).equalTo("id", buildingId).equalTo("task_id", taskId).equalTo("user_id", userId).findFirst();
                 Building building = null;
                 if (b != null) {
                     building = realmObject.copyFromRealm(b);
-                    building.setNew(false);
                 } else {
                     building = new Building();
                     Number currentIdNum = realmObject.where(Building.class).max("id");
@@ -327,24 +380,23 @@ public class BuildingDetailsFragment extends BaseFragment {
                     building.setLocalId(nextLocalId);
                     building.setStreetId(streetId);
                     building.setTaskId(taskId);
+                    building.setUserId(userId);
                     building.setNew(true);
 
                 }
                 building.setHouseNumber(etHouse.getText().toString());
-                StreetType streetType = (StreetType) spStreetType.getSelectedItem();
-                building.setStreetType(streetType.getId());
+//                StreetType streetType = (StreetType) spStreetType.getSelectedItem();
+//                building.setStreetType(streetType.getId());
                 BuildingType buildingType = (BuildingType) spBuildingType.getSelectedItem();
                 building.setBuildingType(buildingType.getId());
-
                 BuildingStatus buildingStatus = (BuildingStatus) spBuildingStatus.getSelectedItem();
                 building.setBuildingStatus(buildingStatus.getId());
-
                 building.setOwnerName(etOwner.getText().toString().trim());
                 building.setLatitude(mSelectedLat);
                 String livingCount = etLivingCount.getText().toString();
-                boolean isTypeClosedInstitution = Building.isTypeClosedInstitution(((BuildingType) spBuildingType.getSelectedItem()).getId());
+//                boolean isTypeClosedInstitution = Building.isTypeClosedInstitution(((BuildingType) spBuildingType.getSelectedItem()).getId());
                 Integer tempInhabitants = 0;
-                if (isTypeClosedInstitution) {
+                if (isFlatLevelEnabled) {
                     building.setTemporaryInhabitants(null);
                 } else {
                     tempInhabitants = livingCount.equals("") ? 0 : Integer.parseInt(livingCount);
@@ -353,72 +405,75 @@ public class BuildingDetailsFragment extends BaseFragment {
                 building.setLongitude(mSelectedLon);
                 building.setComment(etComment.getText().toString());
                 building.setKato(etKato.getText().toString());
-
-
+                building.setEdited(true);
+                building.setChangeTime(Calendar.getInstance().getTimeInMillis());
                 if (!building.isNew()) {
                     if (!mBuilding.getBuildingType().equals(buildingType.getId())) {
-                        addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), building.getId(), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), new TempNewData(String.valueOf(mBuilding.getBuildingType())), building.getId(), building.getId(), realmObject);
                     }
 
                     if (!mBuilding.getBuildingStatus().equals(buildingStatus.getId())) {
-                        addHistory(mStreet.getTaskId(), 6, new TempNewData(String.valueOf(buildingStatus.getId())), building.getId(), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 6, new TempNewData(String.valueOf(buildingStatus.getId())), new TempNewData(String.valueOf(mBuilding.getBuildingStatus())), building.getId(), building.getId(), realmObject);
                     }
 
-                    if (building.getOwnerName() != null && (!mBuilding.getOwnerName().equals(building.getOwnerName()))) {
-                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), building.getId(), building.getId(), realmObject);
+                    if (!mBuilding.getOwnerName().equals(building.getOwnerName())) {
+                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), new TempNewData(mBuilding.getOwnerName()), building.getId(), building.getId(), realmObject);
                     }
 
-                    if (building.getComment() != null && !building.getComment().equals("") && !mBuilding.getComment().equals(building.getComment())) {
-                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), building.getId(), building.getId(), realmObject);
+                    if (!mBuilding.getComment().equals(building.getComment())) {
+                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), new TempNewData(mBuilding.getComment()), building.getId(), building.getId(), realmObject);
                     }
 
                     if (building.getHouseNumber() != null && !building.getHouseNumber().equals("") && !mBuilding.getHouseNumber().equals(building.getHouseNumber())) {
-                        addHistory(mStreet.getTaskId(), 15, new TempNewData(building.getHouseNumber()), building.getId(), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 15, new TempNewData(building.getHouseNumber()), new TempNewData(mBuilding.getHouseNumber()), building.getId(), building.getId(), realmObject);
                     }
-                    if (isTypeClosedInstitution) {
+                    if (isFlatLevelEnabled) {
                         removeHistory(mStreet.getTaskId(), 8, building.getId(), realmObject);
                     } else {
                         if (!etLivingCount.getText().toString().equals("") && !tempInhabitants.equals(mBuilding.getTemporaryInhabitants())) {
-                            addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), building.getId(), building.getId(), realmObject);
+                            addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), new TempNewData(String.valueOf(mBuilding.getTemporaryInhabitants())), building.getId(), building.getId(), realmObject);
                         }
                     }
 
                     if (mSelectedLat != null && !mSelectedLon.isNaN() && mSelectedLon != null && !mSelectedLon.isNaN() && mSelectedLat != mBuilding.getLatitude() && mSelectedLon != mBuilding.getLongitude()) {
-                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), building.getId(), building.getId(), realmObject);
+                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), new TempNewData(mBuilding.getLatitude(), mBuilding.getLongitude()), building.getId(), building.getId(), realmObject);
                     }
                 } else {
                     Integer referenceId = null;
-                    if (!mStreet.isNew()) {
-                        referenceId = addHistory(taskId, 2, new TempNewData(building.getHouseNumber()), mStreet.getId(), building.getId(), realmObject);
-                    } else {
-                        referenceId = addHistory(taskId, 12, new TempNewData(building.getHouseNumber()), null, building.getId(), realmObject, mStreet.getHistoryId());
-                    }
+                    referenceId = addHistory(taskId, 2, new TempNewData(building.getHouseNumber()), new TempNewData(""), mStreet.getId(), building.getId(), realmObject);
+                    addHistory(taskId, 15, new TempNewData(building.getHouseNumber()), new TempNewData(""), building.getId(), building.getId(), realmObject);
+//                    if (!mStreet.isNew()) {
+//                        referenceId = addHistory(taskId, 2, new TempNewData(building.getHouseNumber()), new TempNewData(""), mStreet.getId(), building.getId(), realmObject);
+//                    } else {
+//                        referenceId = addHistory(taskId, 12, new TempNewData(building.getHouseNumber()), new TempNewData(""), null, building.getId(), realmObject, mStreet.getHistoryId());
+//                    }
                     building.setHistoryId(referenceId);
-                    addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), null, building.getId(), realmObject, referenceId);
-                    addHistory(mStreet.getTaskId(), 6, new TempNewData(String.valueOf(buildingStatus.getId())), null, building.getId(), realmObject, referenceId);
+                    addHistory(mStreet.getTaskId(), 5, new TempNewData(String.valueOf(buildingType.getId())), new TempNewData(""), null, building.getId(), realmObject, referenceId);
+                    addHistory(mStreet.getTaskId(), 6, new TempNewData(String.valueOf(buildingStatus.getId())), new TempNewData(""), null, building.getId(), realmObject, referenceId);
                     if (building.getOwnerName() != null && !building.getOwnerName().equals("")) {
-                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), null, building.getId(), realmObject, referenceId);
+                        addHistory(mStreet.getTaskId(), 7, new TempNewData(building.getOwnerName()), new TempNewData(""), null, building.getId(), realmObject, referenceId);
                     }
                     if (building.getComment() != null && !building.getComment().equals("")) {
-                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), null, building.getId(), realmObject, referenceId);
+                        addHistory(mStreet.getTaskId(), 10, new TempNewData(building.getComment()), new TempNewData(""), null, building.getId(), realmObject, referenceId);
                     }
-                    if (!isTypeClosedInstitution) {
+                    if (!isFlatLevelEnabled) {
                         if (!etLivingCount.getText().toString().equals("")) {
-                            addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), null, building.getId(), realmObject, referenceId);
+                            addHistory(mStreet.getTaskId(), 8, new TempNewData(String.valueOf(tempInhabitants)), new TempNewData(""), null, building.getId(), realmObject, referenceId);
                         }
                     }
 
                     if (mSelectedLat != null && !mSelectedLon.isNaN() && mSelectedLon != null && !mSelectedLon.isNaN()) {
-                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), null, building.getId(), realmObject, referenceId);
+                        addHistory(mStreet.getTaskId(), 14, new TempNewData(mSelectedLat, mSelectedLon), new TempNewData(Double.NaN, Double.NaN), null, building.getId(), realmObject, referenceId);
                     }
                 }
                 realmObject.insertOrUpdate(building);
-
+                Building.refreshCounts(userId, taskId, streetId, building.getId(), realmObject);
+                Street.refreshCounts(userId, taskId, streetId, realmObject);
 
                 if (!Building.isStatusInactive(building.getBuildingStatus()) && !Building.isTypeSpetialInstitution(building.getBuildingType()) && !Building.isTypeClosedInstitution(building.getBuildingType())) {
-                    RealmManager.getInstance().changeHistoryInactiveStatus(taskId, buildingId,false,realmObject);
+                    RealmManager.getInstance().changeHistoryInactiveStatus(taskId, buildingId, false, realmObject, userId);
                 } else {
-                    RealmManager.getInstance().changeHistoryInactiveStatus(taskId, buildingId,true,realmObject);
+                    RealmManager.getInstance().changeHistoryInactiveStatus(taskId, buildingId, true, realmObject, userId);
                 }
 
             });
@@ -426,24 +481,26 @@ public class BuildingDetailsFragment extends BaseFragment {
             if (realm != null)
                 realm.close();
         }
+        UIUtils.hideSoftKeyboard(getActivity());
         getActivity().onBackPressed();
     }
 
-    private Integer addHistory(int taskId, int changeType, TempNewData newData, Integer buildingId, Integer tempBuildingId, Realm realm) {
-        return addHistory(taskId, changeType, newData, buildingId, tempBuildingId, realm, null);
+    private Integer addHistory(int taskId, int changeType, TempNewData newData, TempNewData oldData, Integer buildingId, Integer tempBuildingId, Realm realm) {
+        return addHistory(taskId, changeType, newData, oldData, buildingId, tempBuildingId, realm, null);
     }
 
 
-    private Integer addHistory(int taskId, int changeType, TempNewData newData, Integer buildingId, Integer tempBuildingId, Realm realm, Integer referenceId) {
+    private Integer addHistory(int taskId, int changeType, TempNewData newData, TempNewData oldData, Integer buildingId, Integer tempBuildingId, Realm realm, Integer referenceId) {
         History history = new History();
         history.setTaskId(taskId);
         history.setChangeType(changeType);
         history.setNewData(newData);
+        history.setOldData(oldData);
         history.setObjectId(buildingId);
         history.setTempObjectId(tempBuildingId);
         history.setReferenceId(referenceId);
         history.setObjectType(2);
-        return HistoryManager.getInstance().addOrUpdateHistory(history, realm);
+        return HistoryManager.getInstance().addOrUpdateHistory(userId, history, realm);
     }
 
     private void removeHistory(int taskId, int changeType, int tempBuildingId, Realm realm) {
@@ -452,7 +509,7 @@ public class BuildingDetailsFragment extends BaseFragment {
         history.setChangeType(changeType);
         history.setTempObjectId(tempBuildingId);
         history.setObjectType(2);
-        HistoryManager.getInstance().removeHistory(history, realm);
+        HistoryManager.getInstance().removeHistory(userId, history, realm);
     }
 
 

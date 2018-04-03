@@ -18,6 +18,7 @@ import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class HistoryFragment extends BaseFragment {
     TextView mToolbarTitle;
 
     private HistoryAdapter mHistoryAdapter;
+    private Integer userId;
 
     public static HistoryFragment newInstance(Integer streetId, String streetName) {
         HistoryFragment fragment = new HistoryFragment();
@@ -62,6 +64,7 @@ public class HistoryFragment extends BaseFragment {
         if (getArguments() != null) {
             taskId = getArguments().getInt(ConstKeys.TAG_TASK);
             taskName = getArguments().getString(ConstKeys.TAG_TASK_NAME);
+            userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
         }
         mHistoryAdapter = new HistoryAdapter();
     }
@@ -72,7 +75,7 @@ public class HistoryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, view);
         setupRecyclerView();
-        showHistoryData();
+        showHistoryData(userId);
         return view;
     }
 
@@ -84,8 +87,8 @@ public class HistoryFragment extends BaseFragment {
         }
     }
 
-    private void showHistoryData() {
-        List<History> historyList = getHistoryList();
+    private void showHistoryData(Integer userId) {
+        List<History> historyList = getHistoryList(userId);
         if (historyList != null && historyList.size() > 0) {
             mHistoryAdapter.setHistoryList(historyList);
         } else {
@@ -93,12 +96,12 @@ public class HistoryFragment extends BaseFragment {
         }
     }
 
-    private List<History> getHistoryList() {
+    private List<History> getHistoryList(Integer userId) {
         Realm realm = null;
 
         try {
             realm = Realm.getDefaultInstance();
-            return realm.copyFromRealm(realm.where(History.class).equalTo("task_id", taskId).equalTo("inactive", false).sort("synced", Sort.ASCENDING).findAll());
+            return realm.copyFromRealm(realm.where(History.class).equalTo("user_id", userId).equalTo("task_id", taskId).equalTo("inactive", false).sort("synced", Sort.ASCENDING).findAll());
 
         } finally {
             if (realm != null)

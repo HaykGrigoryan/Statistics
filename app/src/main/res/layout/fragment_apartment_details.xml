@@ -35,6 +35,7 @@
                     android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_apartment_number"
                     android:singleLine="true"
+                    android:maxLength="40"
                     android:padding="@dimen/padding_large"
                     android:textSize="@dimen/text_small" />
             </android.support.design.widget.TextInputLayout>
@@ -77,6 +78,7 @@
                     android:layout_marginEnd="@dimen/margin_medium"
                     android:layout_marginStart="@dimen/margin_medium"
                     android:fontFamily="@font/opensansregular"
+                    android:maxLength="6"
                     android:hint="@string/hint_total_residents"
                     android:inputType="numberSigned"
                     android:padding="@dimen/padding_large"

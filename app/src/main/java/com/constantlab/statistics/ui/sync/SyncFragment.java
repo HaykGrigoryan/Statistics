@@ -1,10 +1,12 @@
 package com.constantlab.statistics.ui.sync;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.app.RealmManager;
+import com.constantlab.statistics.app.SyncManager;
 import com.constantlab.statistics.background.receivers.SyncResultReceiver;
 import com.constantlab.statistics.background.service.SyncService;
 import com.constantlab.statistics.models.Apartment;
@@ -30,14 +33,18 @@ import com.constantlab.statistics.models.HistoryForSend;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.models.User;
+import com.constantlab.statistics.models.send.TaskSend;
 import com.constantlab.statistics.network.Constants;
 import com.constantlab.statistics.network.RTService;
 import com.constantlab.statistics.network.ServiceGenerator;
+import com.constantlab.statistics.network.TaskRequest;
 import com.constantlab.statistics.network.model.ApartmentItem;
 import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
 import com.constantlab.statistics.network.model.BasicSingleDataResponse;
 import com.constantlab.statistics.network.model.BuildingItem;
 import com.constantlab.statistics.network.model.GeoItem;
+import com.constantlab.statistics.network.model.GetReferenceRequest;
 import com.constantlab.statistics.network.model.StreetItem;
 import com.constantlab.statistics.network.model.TaskItem;
 import com.constantlab.statistics.ui.MainActivity;
@@ -47,7 +54,13 @@ import com.constantlab.statistics.utils.DateUtils;
 import com.constantlab.statistics.utils.ISync;
 import com.constantlab.statistics.utils.NotificationCenter;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.List;
@@ -81,6 +94,8 @@ public class SyncFragment extends BaseFragment implements ISync {
 
     @BindView(R.id.loaderSync)
     ProgressBar loaderSync;
+    Integer userId;
+    RTService rtService;
 
     public static SyncFragment newInstance() {
         return new SyncFragment();
@@ -89,6 +104,8 @@ public class SyncFragment extends BaseFragment implements ISync {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
+        rtService = ServiceGenerator.createService(RTService.class, getContext());
     }
 
     @Nullable
@@ -125,7 +142,7 @@ public class SyncFragment extends BaseFragment implements ISync {
 //        if (SharedPreferencesManager.getInstance().isSyncing(getContext())) {
 //            Toast.makeText(getContext(), getContext().getString(R.string.message_sync_in_progress), Toast.LENGTH_SHORT).show();
 //        } else {
-        if (History.getNotSyncedHistories().size() == 0) {
+        if (History.getNotSyncedHistories(userId).size() == 0) {
             startSync();
         } else {
             AlertDialog.Builder builder =
@@ -145,38 +162,9 @@ public class SyncFragment extends BaseFragment implements ISync {
     }
 
 
-    private void syncData() {
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskList(SharedPreferencesManager.getInstance().getKey(getContext()));
-        loading(true);
-        call.enqueue(new Callback<BasicMultipleDataResponse<TaskItem>>() {
-            @Override
-            public void onResponse(Call<BasicMultipleDataResponse<TaskItem>> call, Response<BasicMultipleDataResponse<TaskItem>> response) {
-                if (response.code() == 200 && response.body().isSuccess()) {
-                    insertTasks(response.body().getData());
-                    NotificationCenter.getInstance().notifyOnSyncFromServer();
-                    SharedPreferencesManager.getInstance().setLastSyncFromServer(getContext(), Calendar.getInstance().getTimeInMillis());
-                    updateLastSyncFromServerTime();
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_from_server), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                }
-                loading(false);
-            }
-
-            @Override
-            public void onFailure(Call<BasicMultipleDataResponse<TaskItem>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
-                loading(false);
-
-            }
-        });
-    }
-
     @OnClick(R.id.btn_logout)
     public void logout() {
-        if (History.getNotSyncedHistories().size() == 0) {
+        if (History.getNotSyncedHistories(userId).size() == 0) {
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(getContext());
             builder.setTitle(getString(R.string.dialog_title_attention));
@@ -184,11 +172,7 @@ public class SyncFragment extends BaseFragment implements ISync {
             builder.setPositiveButton(getString(R.string.label_logout), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    SharedPreferencesManager.getInstance().setKey(getContext(), null);
-                    SharedPreferencesManager.getInstance().clearSyncTimeInfo(getContext());
-                    RealmManager.getInstance().clearLocalData();
-                    getActivity().finish();
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    logoutAction();
                 }
             });
             builder.setNegativeButton(getString(R.string.label_cancel), null);
@@ -206,10 +190,7 @@ public class SyncFragment extends BaseFragment implements ISync {
             }).setNegativeButton(getString(R.string.label_logout), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    SharedPreferencesManager.getInstance().setKey(getContext(), null);
-                    RealmManager.getInstance().clearLocalData();
-                    getActivity().finish();
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    logoutAction();
                 }
             });
             builder.show();
@@ -217,9 +198,18 @@ public class SyncFragment extends BaseFragment implements ISync {
 
     }
 
+    private void logoutAction() {
+        SharedPreferencesManager.getInstance().removeUser(getContext());
+//        SharedPreferencesManager.getInstance().clearSyncTimeInfo(getContext());
+//        SharedPreferencesManager.getInstance().clearGeoPoint(getContext());
+//        RealmManager.getInstance().clearLocalData();
+        getActivity().finish();
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+    }
+
     private void updateLastSyncToServerTime() {
         String date = "";
-        long timeInMillis = SharedPreferencesManager.getInstance().getLastSyncToServer(getContext());
+        long timeInMillis = SharedPreferencesManager.getInstance().getUser(getContext()).getLastSyncToServer();
         if (timeInMillis != -1) {
             date = DateUtils.getSyncDate(timeInMillis);
         }
@@ -229,7 +219,7 @@ public class SyncFragment extends BaseFragment implements ISync {
 
     private void updateLastSyncFromServerTime() {
         String date = "";
-        long timeInMillis = SharedPreferencesManager.getInstance().getLastSyncFromServer(getContext());
+        long timeInMillis = SharedPreferencesManager.getInstance().getUser(getContext()).getLastSyncFromServer();
         if (timeInMillis != -1) {
             date = DateUtils.getSyncDate(timeInMillis);
         }
@@ -239,34 +229,64 @@ public class SyncFragment extends BaseFragment implements ISync {
 
     @OnClick(R.id.btn_sync_to_server)
     public void sendHistoryToServer() {
-        History history = History.getNotSyncedHistory();
-        if (history != null) {
-            final HistoryForSend historyForSend = HistoryForSend.getForSend(history);
-            performSendHistory(historyForSend);
-        } else {
-            SharedPreferencesManager.getInstance().setLastSyncToServer(getContext(), Calendar.getInstance().getTimeInMillis());
-            updateLastSyncToServerTime();
-            Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
-            loading(false);
+        List<History> histories = RealmManager.getInstance().getNotSyncedHistories(userId);
+        if (histories.size() != 0) {
+            List<TaskSend> dataForSend = SyncManager.construct(getContext(), histories, userId);
+            try {
+                createChangesLog(new Gson().toJson(dataForSend));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            performSendHistory(dataForSend);
         }
+//        Gson gson = new Gson();
+//        gson.toJson(SyncManager.construct(getContext(), histories, userId));
+//        else {
+//            Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
+//        }
+
+////        List<HistoryForSend> sends = HistoryForSend.getForDump(History.getAllHistories());
+////        Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().serializeNulls().create();
+////        gson.toJson(sends);
+//        History history = History.getNotSyncedHistory();
+//        if (history != null) {
+//            final HistoryForSend historyForSend = HistoryForSend.getForSend(history);
+//            performSendHistory(historyForSend);
+//        } else {
+//            SharedPreferencesManager.getInstance().setLastSyncToServer(getContext(), Calendar.getInstance().getTimeInMillis());
+//            updateLastSyncToServerTime();
+//            Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
+//            loading(false);
+//        }
     }
 
-    private void performSendHistory(HistoryForSend historyForSend) {
+    private void performSendHistory(List<TaskSend> sendData) {
         loading(true);
-        historyForSend.setKey(SharedPreferencesManager.getInstance().getKey(getContext()));
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(historyForSend);
+
+        Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(sendData);
         call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
             @Override
             public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
-                if (response.body().isSuccessNestedStatus()) {
-                    History history = historyForSend.setHistorySynced();
-                    history.updateReferenceHisrories(getContext(), response.body().getTempId());
-                    sendHistoryToServer();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                    loading(false);
+                if (response.code() == 200 && response.body().isSuccessNestedStatus()) {
+
+                    RealmManager.getInstance().updateNotSyncHistories(userId);
+                    User user = SharedPreferencesManager.getInstance().getUser(getContext());
+                    User realmUser = RealmManager.getInstance().getUser(user.getUsername(), user.getPassword());
+                    realmUser.setLastSyncToServer(Calendar.getInstance().getTimeInMillis());
+                    RealmManager.getInstance().saveUser(realmUser);
+                    SharedPreferencesManager.getInstance().setUser(getContext(), realmUser);
+                    updateLastSyncToServerTime();
+                    if (response.body().getMessage() == null) {
+                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
+                    }
                 }
+                if (response.body() != null && response.body().getMessage() != null) {
+                    Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+                }
+                loading(false);
             }
 
             @Override
@@ -277,268 +297,8 @@ public class SyncFragment extends BaseFragment implements ISync {
         });
     }
 
-//    public void sendHistoryToServer() {
-//        tempSyncCount = 0;
-//        List<History> historyList = History.getNotSyncedHistories();
-//        final int syncItemsCount = historyList.size();
-//        for (History history : historyList) {
-//            final HistoryForSend historyForSend = HistoryForSend.getForSend(history);
-//            historyForSend.setKey(SharedPreferencesManager.getInstance().getKey(getContext()));
-//            RTService rtService = ServiceGenerator.createService(RTService.class);
-////            Call<BasicSingleDataResponse<String>> call = rtService.addChanges(SharedPreferencesManager.getInstance().getKey(getContext()),
-////                    history.getTaskId(), history.getObjectType(), history.getObjectId(), history.getChangeType(), history.getNewData());
-//            Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(historyForSend);
-//            Gson gson = new Gson();
-//            gson.toJson(historyForSend);
-//            loading(true);
-//
-//            call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
-//                @Override
-//                public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
-//                    historyForSend.setHistorySynced(history);
-//                    tempSyncCount++;
-//                    if (tempSyncCount == syncItemsCount) {
-//                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
-//                        loading(false);
-//                        NotificationCenter.getInstance().notifyOnSyncToServer();
-//                    }
-//
-////                    if (response.body().isSuccessNestedStatus()) {
-////                        Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
-////                    } else {
-////                        Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-////                    }
-//
-//                }
-//
-//                @Override
-//                public void onFailure(Call<BasicSingleDataResponse<String>> call, Throwable t) {
-//                    Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-//
-//                    loading(false);
-//                }
-//            });
-//        }
-//    }
-
     private void loading(boolean show) {
         pbSync.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
-    private void insertTasks(List<TaskItem> items) {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(Task.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    for (TaskItem taskItem : items) {
-                        Task task = Task.getTask(taskItem);
-                        task.setKato(taskItem.getDetails().getKato());
-                        realmObject.insert(task);
-                        if (taskItem.getDetails() != null) {
-                            for (GeoItem geoItem : taskItem.getDetails().getGeoItems()) {
-                                GeoPolygon polygon = GeoPolygon.getGeoPolygon(task.getTaskId(), geoItem);
-                                Number currentIdNum = realmObject.where(GeoPolygon.class).max("local_id");
-                                int nextId;
-                                if (currentIdNum == null) {
-                                    nextId = 1;
-                                } else {
-                                    nextId = currentIdNum.intValue() + 1;
-                                }
-                                polygon.setLocalId(nextId);
-                                realmObject.insert(polygon);
-                            }
-                        }
-
-                        for (StreetItem streetItem : taskItem.getDetails().getStreetItems()) {
-                            Street street = Street.getStreet(streetItem);
-                            street.setTaskId(taskItem.getTaskId());
-                            street.setKato(taskItem.getDetails().getKato());
-                            Number currentIdNum = realmObject.where(Street.class).max("local_id");
-                            int nextId;
-                            if (currentIdNum == null) {
-                                nextId = 1;
-                            } else {
-                                nextId = currentIdNum.intValue() + 1;
-                            }
-                            street.setLocalId(nextId);
-                            realmObject.insert(street);
-
-                            if (streetItem.getAddressData() != null && streetItem.getAddressData().size() > 0) {
-                                StreetItem.AddressData addressData = streetItem.getAddressData().get(0);
-                                List<BuildingItem> buildingItems = addressData.getBuildingItems();
-                                for (BuildingItem buildingItem : buildingItems) {
-                                    Building building = Building.getBuilding(buildingItem);
-                                    building.setStreetId(streetItem.getId());
-                                    building.setTaskId(task.getTaskId());
-                                    building.setKato(String.valueOf(street.getKato()));
-                                    building.setStreetName(streetItem.getTitle());
-                                    building.setStreetType(addressData.getStreetType());
-
-                                    currentIdNum = realmObject.where(Building.class).max("local_id");
-                                    if (currentIdNum == null) {
-                                        nextId = 1;
-                                    } else {
-                                        nextId = currentIdNum.intValue() + 1;
-                                    }
-                                    building.setLocalId(nextId);
-
-                                    realmObject.insert(building);
-
-                                    for (ApartmentItem apartmentItem : buildingItem.getApartmentItems()) {
-                                        Apartment apartment = Apartment.getApartment(apartmentItem);
-                                        apartment.setBuildingId(buildingItem.getId());
-                                        apartment.setTaskId(task.getTaskId());
-                                        currentIdNum = realmObject.where(Apartment.class).max("local_id");
-                                        if (currentIdNum == null) {
-                                            nextId = 1;
-                                        } else {
-                                            nextId = currentIdNum.intValue() + 1;
-                                        }
-                                        apartment.setLocalId(nextId);
-                                        realmObject.insert(apartment);
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-
-    private void loadChangeTypes() {
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicMultipleDataResponse<ChangeType>> call = rtService.getChangeTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_CHANGE_TYPE);
-        call.enqueue(new Callback<BasicMultipleDataResponse<ChangeType>>() {
-            @Override
-            public void onResponse(Call<BasicMultipleDataResponse<ChangeType>> call, Response<BasicMultipleDataResponse<ChangeType>> response) {
-                if (response.body().isSuccessNestedStatus()) {
-                    RealmManager.getInstance().clearLocalData();
-                    RealmManager.getInstance().insertTypes(response.body().getData());
-                    loadStreetTypes();
-                } else {
-                    loading(false);
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BasicMultipleDataResponse<ChangeType>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
-                loading(false);
-            }
-        });
-    }
-
-    private void loadStreetTypes() {
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicMultipleDataResponse<StreetType>> call = rtService.getStreetTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_STREET_TYPE);
-        call.enqueue(new Callback<BasicMultipleDataResponse<StreetType>>() {
-            @Override
-            public void onResponse(Call<BasicMultipleDataResponse<StreetType>> call, Response<BasicMultipleDataResponse<StreetType>> response) {
-                if (response.body().isSuccessNestedStatus()) {
-                    RealmManager.getInstance().insertTypes(response.body().getData());
-                    loadBuildingTypes();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                    loading(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BasicMultipleDataResponse<StreetType>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
-                loading(false);
-            }
-        });
-    }
-
-    private void loadBuildingTypes() {
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicMultipleDataResponse<BuildingType>> call = rtService.getBuildingTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_BUILDING_TYPE);
-        call.enqueue(new Callback<BasicMultipleDataResponse<BuildingType>>() {
-            @Override
-            public void onResponse(Call<BasicMultipleDataResponse<BuildingType>> call, Response<BasicMultipleDataResponse<BuildingType>> response) {
-                if (response.body().isSuccessNestedStatus()) {
-                    RealmManager.getInstance().insertTypes(response.body().getData());
-                    loadBuildingStatusTypes();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                    loading(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BasicMultipleDataResponse<BuildingType>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
-                loading(false);
-            }
-        });
-    }
-
-    private void loadBuildingStatusTypes() {
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicMultipleDataResponse<BuildingStatus>> call = rtService.getBuildingStatusTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_BUILDING_STATUS);
-
-        call.enqueue(new Callback<BasicMultipleDataResponse<BuildingStatus>>() {
-            @Override
-            public void onResponse(Call<BasicMultipleDataResponse<BuildingStatus>> call, Response<BasicMultipleDataResponse<BuildingStatus>> response) {
-                if (response.body().isSuccessNestedStatus()) {
-                    RealmManager.getInstance().insertTypes(response.body().getData());
-                    loadApartmentTypes();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                    loading(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BasicMultipleDataResponse<BuildingStatus>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
-                loading(false);
-            }
-        });
-    }
-
-    private void loadApartmentTypes() {
-        RTService rtService = ServiceGenerator.createService(RTService.class);
-        Call<BasicMultipleDataResponse<ApartmentType>> call = rtService.getApartmentTypes(SharedPreferencesManager.getInstance().getKey(getContext()), Constants.REF_TYPE_APARTMENT_TYPE);
-
-        call.enqueue(new Callback<BasicMultipleDataResponse<ApartmentType>>() {
-            @Override
-            public void onResponse(Call<BasicMultipleDataResponse<ApartmentType>> call, Response<BasicMultipleDataResponse<ApartmentType>> response) {
-                if (response.body().isSuccessNestedStatus()) {
-                    RealmManager.getInstance().insertTypes(response.body().getData());
-                    syncData();
-                } else {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_key), Toast.LENGTH_SHORT).show();
-                    loading(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BasicMultipleDataResponse<ApartmentType>> call, Throwable t) {
-                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
-
-                loading(false);
-            }
-        });
-    }
-
-    private void loadData() {
-        loading(true);
-        loadChangeTypes();
     }
 
     private void startSync() {
@@ -550,7 +310,15 @@ public class SyncFragment extends BaseFragment implements ISync {
     @Override
     public void onSyncFromServer() {
         loadButtonState();
-//        updateLastSyncFromServerTime();
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateLastSyncFromServerTime();
+                }
+            });
+        }
+
     }
 
     @Override
@@ -558,7 +326,7 @@ public class SyncFragment extends BaseFragment implements ISync {
 
     }
 
-    private static class SyncDataResultReceiver implements SyncResultReceiver.ResultReceiverCallBack<Boolean> {
+    private static class SyncDataResultReceiver implements SyncResultReceiver.ResultReceiverCallBack<String> {
         private WeakReference<MainActivity> activityRef;
 
         public SyncDataResultReceiver(MainActivity activity) {
@@ -566,9 +334,13 @@ public class SyncFragment extends BaseFragment implements ISync {
         }
 
         @Override
-        public void onSuccess(Boolean data) {
+        public void onSuccess(String message) {
             if (activityRef != null && activityRef.get() != null) {
-                activityRef.get().showMessage(activityRef.get().getString(R.string.message_success_sync_from_server));
+                if (message != null) {
+                    activityRef.get().showMessage(message);
+                } else {
+                    activityRef.get().showMessage(activityRef.get().getString(R.string.message_success_sync_from_server));
+                }
                 NotificationCenter.getInstance().notifyOnSyncFromServer();
             }
         }
@@ -577,9 +349,30 @@ public class SyncFragment extends BaseFragment implements ISync {
         public void onError(Exception exception) {
             if (activityRef != null && activityRef.get() != null) {
                 activityRef.get().showMessage(exception != null ? exception.getMessage() : "Error");
-
                 NotificationCenter.getInstance().notifyOnSyncFromServer();
             }
+        }
+    }
+
+    private boolean createChangesLog(String changesJson) {
+        String logFileName = "change_" + SharedPreferencesManager.getInstance().getUser(getContext()).getUsername() + "_" + DateUtils.getSyncDate(Calendar.getInstance().getTimeInMillis()) + ".json";
+        try {
+            File sdCard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdCard.getAbsolutePath() + "/" + "StatisticsLog");
+            dir.mkdirs();
+            File file = new File(dir, logFileName);
+
+            FileOutputStream fos = new FileOutputStream(file);
+//            FileOutputStream fos = getContext().openFileOutput(logFileName, Context.MODE_PRIVATE);
+            if (changesJson != null) {
+                fos.write(changesJson.getBytes());
+            }
+            fos.close();
+            return true;
+        } catch (FileNotFoundException fileNotFound) {
+            return false;
+        } catch (IOException ioException) {
+            return false;
         }
     }
 

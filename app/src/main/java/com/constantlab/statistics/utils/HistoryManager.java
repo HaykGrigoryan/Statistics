@@ -1,5 +1,7 @@
 package com.constantlab.statistics.utils;
 
+import android.content.Context;
+
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.models.Street;
@@ -24,15 +26,21 @@ public class HistoryManager {
         return _instance;
     }
 
-    public Integer addOrUpdateHistory(History history, Realm realm) {
-        History h = realm.where(History.class).equalTo("task_id", history.getTaskId()).equalTo("change_type", history.getChangeType()).equalTo("object_type", history.getObjectType()).equalTo("temp_object_id", history.getTempObjectId()).equalTo("synced", false).findFirst();
+    public Integer addOrUpdateHistory(Integer userId, History history, Realm realm) {
+        boolean noChange = history.getNewData().getData().equals(history.getOldData().getData());
+        History h = realm.where(History.class).equalTo("user_id", userId).equalTo("task_id", history.getTaskId()).equalTo("change_type", history.getChangeType()).equalTo("object_type", history.getObjectType()).equalTo("temp_object_id", history.getTempObjectId()).equalTo("synced", false).findFirst();
         History changedHistory = null;
         int nextId = 0;
         if (h != null) {
-            changedHistory = realm.copyFromRealm(h);
-            changedHistory.setNewData(history.getNewData());
-            nextId = changedHistory.getId();
-        } else {
+            noChange = history.getNewData().getData().equals(h.getOldData().getData());
+            if (noChange) {
+                h.deleteFromRealm();
+            } else {
+                changedHistory = realm.copyFromRealm(h);
+                changedHistory.setNewData(history.getNewData());
+                nextId = changedHistory.getId();
+            }
+        } else if (!noChange) {
             changedHistory = history;
             Number currentIdNum = realm.where(History.class).max("id");
             if (currentIdNum == null) {
@@ -41,14 +49,17 @@ public class HistoryManager {
                 nextId = currentIdNum.intValue() + 1;
             }
             changedHistory.setId(nextId);
+            changedHistory.setUserId(userId);
+            changedHistory.setOldData(history.getOldData());
         }
-
-        realm.insertOrUpdate(changedHistory);
+        if (changedHistory != null) {
+            realm.insertOrUpdate(changedHistory);
+        }
         return nextId;
     }
 
-    public void removeHistory(History history, Realm realm) {
-        History h = realm.where(History.class).equalTo("task_id", history.getTaskId()).equalTo("change_type", history.getChangeType()).equalTo("object_type", history.getObjectType()).equalTo("temp_object_id", history.getTempObjectId()).equalTo("synced", false).findFirst();
+    public void removeHistory(Integer userId, History history, Realm realm) {
+        History h = realm.where(History.class).equalTo("task_id", history.getTaskId()).equalTo("change_type", history.getChangeType()).equalTo("object_type", history.getObjectType()).equalTo("temp_object_id", history.getTempObjectId()).equalTo("synced", false).equalTo("user_id", userId).findFirst();
         if (h != null) {
             RealmObject.deleteFromRealm(h);
         }

@@ -22,10 +22,20 @@ public class TempNewData extends RealmObject implements Serializable {
         this.lon = lon;
     }
 
-    public TempNewData(){}
+    public TempNewData() {
+    }
 
     public String getData() {
-        return data;
+        if (data == null) {
+            if (lat == null || lon == null) {
+                return "";
+            } else {
+                return lat + "|" + lon;
+            }
+        } else {
+            return data;
+        }
+
     }
 
     public void setData(String data) {

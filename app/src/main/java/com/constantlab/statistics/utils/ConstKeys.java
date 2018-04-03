@@ -32,9 +32,17 @@ public class ConstKeys {
 
 
     public static final String KEY_APP_SHARED_PREFERENCES = PACKAGE_NAME + "_KEY_APP_SHARED_PREFERENCES";
+    public static final String KEY_USER = PACKAGE_NAME + "_KEY_USER";
     public static final String KEY_USER_KEY = PACKAGE_NAME + "_KEY_USER_KEY";
     public static final String KEY_LAST_SYNC_FROM_SERVER = PACKAGE_NAME + "_KEY_LAST_SYNC_FROM_SERVER";
     public static final String KEY_LAST_SYNC_TO_SERVER = PACKAGE_NAME + "_KEY_LAST_SYNC_TO_SERVER";
     public static final String KEY_SYNCING = PACKAGE_NAME + "_KEY_SYNCING";
+
+    public static final String KEY_GEOPOINT = PACKAGE_NAME + "_KEY_GEOPOINT";
+    public static final String KEY_ZOOM = PACKAGE_NAME + "_KEY_ZOOM";
+
+    public static final String KEY_SERVER_IP = PACKAGE_NAME + "_KEY_SERVER_IP";
+    public static final String KEY_SERVER_PORT = PACKAGE_NAME + "_KEY_SERVER_PORT";
+
 
 }

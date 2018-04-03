@@ -13,6 +13,7 @@ import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.models.User;
 import com.constantlab.statistics.utils.ConstKeys;
 
 import java.util.ArrayList;
@@ -65,17 +66,17 @@ public class RealmManager {
         return Realm.getDefaultInstance();
     }
 
-    public void clearLocalData() {
+    public void clearLocalData(Integer userId) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
 
-            RealmResults<Task> tasks = realm.where(Task.class).findAll();
-            RealmResults<Street> streets = realm.where(Street.class).findAll();
-            RealmResults<Building> buildings = realm.where(Building.class).findAll();
-            RealmResults<Apartment> apartments = realm.where(Apartment.class).findAll();
-            RealmResults<History> histories = realm.where(History.class).findAll();
-            RealmResults<GeoPolygon> geoPolygons = realm.where(GeoPolygon.class).findAll();
+            RealmResults<Task> tasks = realm.where(Task.class).equalTo("user_id", userId).findAll();
+            RealmResults<Street> streets = realm.where(Street.class).equalTo("user_id", userId).findAll();
+            RealmResults<Building> buildings = realm.where(Building.class).equalTo("user_id", userId).findAll();
+            RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("user_id", userId).findAll();
+            RealmResults<History> histories = realm.where(History.class).equalTo("user_id", userId).findAll();
+            RealmResults<GeoPolygon> geoPolygons = realm.where(GeoPolygon.class).equalTo("user_id", userId).findAll();
             RealmResults<StreetType> streetTypes = realm.where(StreetType.class).findAll();
             RealmResults<BuildingType> buildingTypes = realm.where(BuildingType.class).findAll();
             RealmResults<BuildingStatus> buildingStatuses = realm.where(BuildingStatus.class).findAll();
@@ -101,12 +102,71 @@ public class RealmManager {
         }
     }
 
-    public List<GeoPolygon> getTaskGeoPolygons(Integer taskId) {
+    public void addUser(User user) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
 
-            RealmResults<GeoPolygon> geoPolygons = realm.where(GeoPolygon.class).equalTo("task_id", taskId).findAll();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realmObject) {
+                    realmObject.insertOrUpdate(user);
+                }
+            });
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+    }
+
+    public User getUser(String username, String password) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            User user = realm.where(User.class).equalTo("username", username).equalTo("password", password).findFirst();
+            if (user != null) {
+                return realm.copyFromRealm(user);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+        return null;
+    }
+
+    public void saveUser(User userForSave) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            User user = realm.where(User.class).equalTo("username", userForSave.getUsername()).equalTo("password", userForSave.getPassword()).findFirst();
+            if (user != null) {
+
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realmObject) {
+                        user.setLastSyncFromServer(userForSave.getLastSyncFromServer());
+                        user.setLastSyncToServer(user.getLastSyncToServer());
+                        realmObject.insertOrUpdate(user);
+                    }
+                });
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+    }
+
+    public List<GeoPolygon> getTaskGeoPolygons(Integer taskId, Integer userId) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+
+            RealmResults<GeoPolygon> geoPolygons = realm.where(GeoPolygon.class).equalTo("task_id", taskId).equalTo("user_id", userId).findAll();
             if (geoPolygons != null) {
                 return realm.copyFromRealm(geoPolygons);
             }
@@ -118,11 +178,11 @@ public class RealmManager {
         return new ArrayList<>();
     }
 
-    public Task getTask(Integer taskId) {
+    public Task getTask(Integer taskId, Integer userId) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Task task = realm.where(Task.class).equalTo("task_id", taskId).findFirst();
+            Task task = realm.where(Task.class).equalTo("task_id", taskId).equalTo("user_id", userId).findFirst();
 
             if (task != null) {
                 return realm.copyFromRealm(task);
@@ -135,11 +195,11 @@ public class RealmManager {
         return null;
     }
 
-    public boolean checkApartmentDuplicateName(Integer taskId, Integer buildingId, Integer apartmentId, String number) {
+    public boolean checkApartmentDuplicateName(Integer taskId, Integer buildingId, Integer apartmentId, String number, Integer userId) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("task_id", taskId).equalTo("building_id", buildingId).findAll();
+            RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("task_id", taskId).equalTo("building_id", buildingId).equalTo("user_id", userId).findAll();
             for (Apartment apartment : apartments) {
                 if (!apartment.getId().equals(apartmentId) && apartment.getApartmentNumber().equals(number)) {
                     return true;
@@ -154,11 +214,11 @@ public class RealmManager {
         return false;
     }
 
-    public boolean checkBuildingDuplicateName(Integer taskId, Integer streetId, Integer buildingId, String number) {
+    public boolean checkBuildingDuplicateName(Integer taskId, Integer streetId, Integer buildingId, String number, Integer userId) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<Building> buildings = realm.where(Building.class).equalTo("task_id", taskId).equalTo("street_id", streetId).findAll();
+            RealmResults<Building> buildings = realm.where(Building.class).equalTo("task_id", taskId).equalTo("street_id", streetId).equalTo("user_id", userId).findAll();
             for (Building building : buildings) {
                 if (!building.getId().equals(buildingId) && building.getHouseNumber().equals(number)) {
                     return true;
@@ -173,11 +233,11 @@ public class RealmManager {
         return false;
     }
 
-    public boolean checkStreetStreetName(Integer taskId, Integer streetId, String name) {
+    public boolean checkStreetStreetName(Integer taskId, Integer streetId, String name, Integer userId) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<Street> streets = realm.where(Street.class).equalTo("task_id", taskId).findAll();
+            RealmResults<Street> streets = realm.where(Street.class).equalTo("task_id", taskId).equalTo("user_id", userId).findAll();
             for (Street street : streets) {
                 if (!street.getId().equals(streetId) && street.getName().equals(name)) {
                     return true;
@@ -276,6 +336,58 @@ public class RealmManager {
         return "";
     }
 
+    public Street getStreet(Integer taskId, Integer streetId, Integer userId) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            Street street = realm.where(Street.class).equalTo("user_id", userId).equalTo("task_id", taskId).equalTo("id", streetId).findFirst();
+            if (street != null) {
+                return realm.copyFromRealm(street);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return null;
+    }
+
+    public Building getBuilding(Integer taskId, Integer buildingId, Integer userId) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            Building building = realm.where(Building.class).equalTo("user_id", userId).equalTo("task_id", taskId).equalTo("id", buildingId).findFirst();
+            if (building != null) {
+                return realm.copyFromRealm(building);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return null;
+    }
+
+    public Apartment getApartment(Integer taskId, Integer apartmentId, Integer userId) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            Apartment apartment = realm.where(Apartment.class).equalTo("user_id", userId).equalTo("task_id", taskId).equalTo("id", apartmentId).findFirst();
+            if (apartment != null) {
+                return realm.copyFromRealm(apartment);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return null;
+    }
+
+
     public void insertTypes(List<? extends RealmObject> types) {
         Realm realm = null;
         try {
@@ -345,8 +457,26 @@ public class RealmManager {
         return "";
     }
 
-    public void changeHistoryInactiveStatus(Integer taskId, Integer buildingId, boolean inactive, Realm realm) {
-        RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("task_id", taskId).equalTo("building_id", buildingId).findAll();
+    public List<Building> getBuildingsWithPoints(Integer userId) {
+        Realm realm = null;
+        List<Building> buildings = new ArrayList<>();
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<Building> b = realm.where(Building.class).equalTo("user_id", userId).isNotNull("latitude").notEqualTo("latitude", Double.NaN).findAll();
+            if (b != null) {
+                buildings = realm.copyFromRealm(b);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return buildings;
+    }
+
+    public void changeHistoryInactiveStatus(Integer taskId, Integer buildingId, boolean inactive, Realm realm, Integer userId) {
+        RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("user_id", userId).equalTo("task_id", taskId).equalTo("building_id", buildingId).findAll();
         if (apartments == null) {
             return;
         }
@@ -356,7 +486,7 @@ public class RealmManager {
             ids[i] = apartments.get(i).getId();
         }
         if (ids.length != 0) {
-            RealmResults<History> histories = realm.where(History.class).in("temp_object_id", ids).findAll();
+            RealmResults<History> histories = realm.where(History.class).equalTo("user_id", userId).in("temp_object_id", ids).findAll();
             if (histories == null) {
                 return;
             }
@@ -367,4 +497,43 @@ public class RealmManager {
             }
         }
     }
+
+    public List<History> getNotSyncedHistories(Integer userId) {
+        Realm realm = null;
+        List<History> historyList = new ArrayList<>();
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<History> historyRealm = realm.where(History.class).equalTo("user_id", userId).equalTo("synced", false).equalTo("inactive", false).sort("id", Sort.ASCENDING).findAll();
+            if (historyRealm != null) {
+                historyList = realm.copyFromRealm(historyRealm);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return historyList;
+    }
+
+    public void updateNotSyncHistories(Integer userId) {
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<History> historyRealm = realm.where(History.class).equalTo("user_id", userId).equalTo("synced", false).equalTo("inactive", false).sort("id", Sort.ASCENDING).findAll();
+            if (historyRealm != null) {
+                realm.executeTransaction(realmObject -> {
+                    for (History history : historyRealm) {
+                        history.setSynced(true);
+                        realmObject.insertOrUpdate(history);
+                    }
+                });
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+    }
+
 }

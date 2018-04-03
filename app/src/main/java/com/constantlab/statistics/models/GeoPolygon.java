@@ -1,10 +1,11 @@
 package com.constantlab.statistics.models;
 
 import com.constantlab.statistics.network.model.GeoItem;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import org.osmdroid.util.GeoPoint;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -24,6 +25,7 @@ public class GeoPolygon extends RealmObject {
     private Integer local_id;
     private Integer task_id;
     private Integer poly_id;
+    private Integer user_id;
     private String data;
 
     public Integer getLocalId() {
@@ -58,6 +60,14 @@ public class GeoPolygon extends RealmObject {
         this.data = data;
     }
 
+    public Integer getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(Integer user_id) {
+        this.user_id = user_id;
+    }
+
     public static GeoPolygon getGeoPolygon(Integer taskId, GeoItem item) {
         GeoPolygon polygon = new GeoPolygon();
         polygon.setTaskId(taskId);
@@ -66,8 +76,8 @@ public class GeoPolygon extends RealmObject {
         return polygon;
     }
 
-    public List<LatLng> getPoints() {
-        List<LatLng> pointsList = new ArrayList<>();
+    public List<GeoPoint> getPoints() {
+        List<GeoPoint> pointsList = new ArrayList<>();
         Gson gson = new GsonBuilder().create();
         Type listType = new TypeToken<List<List<Double>>>() {
         }.getType();
@@ -75,7 +85,7 @@ public class GeoPolygon extends RealmObject {
         List<List<Double>> list = gson.fromJson(data, listType);
         for (List<Double> doubleList : list) {
             if (doubleList.size() == 2) {
-                pointsList.add(new LatLng(doubleList.get(0), doubleList.get(1)));
+                pointsList.add(new GeoPoint(doubleList.get(0), doubleList.get(1)));
             }
         }
 

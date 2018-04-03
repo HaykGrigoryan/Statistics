@@ -11,6 +11,7 @@ import java.util.Date;
 public class DateUtils {
     private static final String DB_DATE_FORMAT = "yyyy-MM-dd";
     private static final String DISPLAY_FORMAT = "dd.MM.yyyy";
+    private static final String DISPLAY_DATETIME_FORMAT = "dd.MM.yyyy HH:mm:ss";
 
     public static String getDisplayDate(String dateString) {
         if (dateString == null) {
@@ -35,7 +36,13 @@ public class DateUtils {
         SimpleDateFormat format = new SimpleDateFormat(DB_DATE_FORMAT);
         Date date = new Date(timeInMillis);
 
-        format = new SimpleDateFormat(DISPLAY_FORMAT);
+        format = new SimpleDateFormat(DISPLAY_DATETIME_FORMAT);
+        return format.format(date);
+    }
+
+    public static String getChangeTime(long timeInMillis) {
+        SimpleDateFormat format = new SimpleDateFormat(DISPLAY_DATETIME_FORMAT);
+        Date date = new Date(timeInMillis);
         return format.format(date);
     }
 }

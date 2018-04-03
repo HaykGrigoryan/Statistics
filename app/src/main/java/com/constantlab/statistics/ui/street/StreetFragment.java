@@ -1,12 +1,9 @@
 package com.constantlab.statistics.ui.street;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -15,34 +12,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.constantlab.statistics.R;
-import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.Street;
-import com.constantlab.statistics.models.Task;
-import com.constantlab.statistics.ui.apartments.ApartmentActivity;
-import com.constantlab.statistics.ui.apartments.ApartmentFragment;
 import com.constantlab.statistics.ui.base.BaseFragment;
-import com.constantlab.statistics.ui.buildings.BuildingDetailsFragment;
-import com.constantlab.statistics.ui.buildings.BuildingsAdapter;
 import com.constantlab.statistics.ui.buildings.BuildingsFragment;
-import com.constantlab.statistics.ui.map.MapActivity;
-import com.constantlab.statistics.ui.map.MapFragment;
-import com.constantlab.statistics.utils.Actions;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.NotificationCenter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
+import io.realm.Sort;
 
 /**
  * Created by Hayk on 26/12/2017.
@@ -50,6 +36,7 @@ import io.realm.Realm;
 
 public class StreetFragment extends BaseFragment implements StreetRecyclerViewAdapter.InteractionListener {
     Integer taskId;
+    Integer userId;
     String taskName;
     @BindView(R.id.rv_streets)
     RecyclerView rvStreets;
@@ -57,8 +44,6 @@ public class StreetFragment extends BaseFragment implements StreetRecyclerViewAd
     ProgressBar pbStreets;
     @BindView(R.id.tv_no_streets)
     TextView tvNoStreets;
-    @BindView(R.id.iv_map)
-    ImageView btnMap;
 
     @BindView(R.id.title)
     TextView mToolbarTitle;
@@ -69,9 +54,9 @@ public class StreetFragment extends BaseFragment implements StreetRecyclerViewAd
     @BindView(R.id.sort_order)
     AppCompatImageView imSortOrder;
     private int mSortOrder = 0;
-    private StreetAdapter mStreetAdapter;
     private StreetRecyclerViewAdapter adapter;
     private Realm realm;
+
     public static StreetFragment newInstance(Integer taskId, String taskName) {
         StreetFragment fragment = new StreetFragment();
         Bundle args = new Bundle();
@@ -87,8 +72,8 @@ public class StreetFragment extends BaseFragment implements StreetRecyclerViewAd
         if (getArguments() != null) {
             taskId = getArguments().getInt(ConstKeys.TAG_TASK);
             taskName = getArguments().getString(ConstKeys.TAG_TASK_NAME);
+            userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
         }
-        mStreetAdapter = new StreetAdapter(getContext());
 
     }
 
@@ -99,10 +84,6 @@ public class StreetFragment extends BaseFragment implements StreetRecyclerViewAd
         ButterKnife.bind(this, view);
         realm = Realm.getDefaultInstance();
         setUpRecyclerView();
-//        setupRecyclerView();
-
-//        showData();
-
         return view;
     }
 
@@ -136,59 +117,12 @@ public class StreetFragment extends BaseFragment implements StreetRecyclerViewAd
     protected void updateSortOrder() {
         mSortOrder = (mSortOrder + 1) % 2;
         imSortOrder.setImageResource(mSortOrder == 0 ? R.drawable.sort_asc : R.drawable.sort_desc);
-//        mStreetAdapter.setSortOrder(mSortOrder);
         adapter.setSortOrder(mSortOrder);
     }
 
-    List<Street> mStreetList;
-
-//    private void showData() {
-//        mStreetList = getStreetList();
-//        if (mStreetList != null && mStreetList.size() > 0) {
-//            mStreetAdapter.setInteractionListener(this);
-//            mStreetAdapter.setStreetList(mStreetList);
-//            mStreetAdapter.setSortOrder(mSortOrder);
-//        } else {
-//            tvNoStreets.setVisibility(View.VISIBLE);
-//        }
-//    }
-
-    private void showData() {
-        mStreetList = getStreetList();
-        if (mStreetList != null && mStreetList.size() > 0) {
-//            mStreetAdapter.setInteractionListener(this);
-            mStreetAdapter.setStreetList(mStreetList);
-            mStreetAdapter.setSortOrder(mSortOrder);
-        } else {
-            tvNoStreets.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private List<Street> getStreetList() {
-        List<Street> streetList = new ArrayList<>();
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            streetList = realm.copyFromRealm(realm.where(Street.class).equalTo("task_id", taskId).findAll());
-            return streetList;
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void setupRecyclerView() {
-        rvStreets.setHasFixedSize(true);
-        rvStreets.setMotionEventSplittingEnabled(true);
-        rvStreets.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        llm.setSmoothScrollbarEnabled(true);
-        rvStreets.setLayoutManager(llm);
-        rvStreets.setAdapter(mStreetAdapter);
-    }
-
     private void setUpRecyclerView() {
-        adapter = new StreetRecyclerViewAdapter(realm.where(Street.class).equalTo("task_id", taskId).findAll(), realm,taskId);
+        OrderedRealmCollection<Street> streets = realm.where(Street.class).equalTo("task_id", taskId).equalTo("user_id", userId).sort("name", Sort.ASCENDING).findAll();
+        adapter = new StreetRecyclerViewAdapter(streets, realm, taskId, userId);
         adapter.setInteractionListener(this);
         adapter.setSortOrder(mSortOrder);
         rvStreets.setHasFixedSize(true);
@@ -208,13 +142,13 @@ public class StreetFragment extends BaseFragment implements StreetRecyclerViewAd
     }
 
 
-    @OnClick(R.id.iv_map)
-    public void showMap() {
-        Intent intent = new Intent(getContext(), MapActivity.class);
-        intent.putExtra(ConstKeys.KEY_MAP_ACTION, MapFragment.MapAction.SHOW_POLYGON.ordinal());
-        intent.putExtra(ConstKeys.KEY_TASK_ID, taskId);
-        startActivity(intent);
-    }
+//    @OnClick(R.id.iv_map)
+//    public void showMap() {
+//        Intent intent = new Intent(getContext(), MapActivity.class);
+//        intent.putExtra(ConstKeys.KEY_MAP_ACTION, OSMMapFragment.MapAction.SHOW_POLYGON.ordinal());
+//        intent.putExtra(ConstKeys.KEY_TASK_ID, taskId);
+//        startActivity(intent);
+//    }
 
     @OnClick(R.id.iv_add)
     public void addStreet() {

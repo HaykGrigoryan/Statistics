@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Statistics</string>
+    <string name="app_name">Перепись</string>
 
 
     <string name="error_default">An error has occurred. Please try again later.</string>
@@ -7,7 +7,8 @@
     <string name="please_wait">Please Wait…</string>
     <string name="hint_login">логин</string>
     <string name="hint_password">пароль</string>
-    <string name="btn_text_login">войти</string>
+    <string name="btn_text_login">Войти</string>
+    <string name="btn_text_server_info">Сервер адрес</string>
     <string name="authorization_system">Авторизация в системе</string>
     <string name="label_residents">Проживающих:</string>
     <string name="label_apartments">Квартир:</string>
@@ -39,7 +40,7 @@
     <string name="location">Location</string>
     <string name="label_map">Карта</string>
     <string name="label_select">Выбрать</string>
-    <string name="select_location">Please Select Location</string>
+    <string name="select_location">Выберите местоположение</string>
     <string name="error_empty_field">Поле не может быть пустым</string>
     <string name="error_select_location">Select Location From Map</string>
     <string name="hint_floors">Floors</string>
@@ -121,4 +122,19 @@
     <string name="dialog_duplicate_street_name">Улица с этим именем уже существует.</string>
     <string name="dialog_logut_without_sync_message">Есть не синхронизированные данные. Вы хотите выйти без синхронизации?</string>
     <string name="dialog_not_all_sync_note">Не все изменения отправлены на сервер. Вы уверены что хотите продолжить? Изменения будут потеряны.</string>
+
+    <string name="msg_grand_body">Требуется разрешение на хранение для отображения карты</string>
+    <string name="label_grand">Разрешать</string>
+
+    <string name="symbol_n">№</string>
+    <string name="label_kato">КАТО</string>
+    <string name="label_date">Дата</string>
+
+    <string name="label_settings">Настройки</string>
+    <string name="label_server_address">Сервер адрес</string>
+    <string name="label_server_ip">Сервер IP</string>
+    <string name="label_server_port">Сервер Port</string>
+
+
+    <string name="msg_waiting_location">Ожидание местоположения</string>
 </resources>

@@ -14,4 +14,7 @@
     <color name="divider_color_dark">#1F000000</color>
     <color name="color_red">#dc3232</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="dialog_title">#2d2d2d</color>
+    <color name="line_color_gray">#bababa</color>
 </resources>

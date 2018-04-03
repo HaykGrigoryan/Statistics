@@ -6,10 +6,15 @@ import com.constantlab.statistics.models.BuildingType;
 import com.constantlab.statistics.models.ChangeType;
 import com.constantlab.statistics.models.HistoryForSend;
 import com.constantlab.statistics.models.StreetType;
+import com.constantlab.statistics.models.send.TaskSend;
 import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
 import com.constantlab.statistics.network.model.BasicSingleDataResponse;
+import com.constantlab.statistics.network.model.GetKeyRequest;
+import com.constantlab.statistics.network.model.GetReferenceRequest;
 import com.constantlab.statistics.network.model.LoginKey;
 import com.constantlab.statistics.network.model.TaskItem;
+
+import java.util.List;
 
 import retrofit2.Call;
 
@@ -25,40 +30,30 @@ import retrofit2.http.POST;
  */
 
 public interface RTService {
-    @FormUrlEncoded
     @POST("get_key")
-    Call<BasicSingleDataResponse<LoginKey>> getKey(@Field("user") String user, @Field("password") String password);
+    Call<BasicSingleDataResponse<String>> getKey(@Body() GetKeyRequest getKeyRequest);
 
-    @FormUrlEncoded
     @POST("get_task_list")
-    Call<BasicMultipleDataResponse<TaskItem>> getTaskList(@Field("key") String key);
+    Call<BasicMultipleDataResponse<TaskItem>> getTaskList(@Body TaskRequest taskRequest);
 
-    @FormUrlEncoded
     @POST("get_reference")
-    Call<BasicMultipleDataResponse<StreetType>> getStreetTypes(@Field("key") String key, @Field("ref_type") String refType);
+    Call<BasicMultipleDataResponse<StreetType>> getStreetTypes(@Body GetReferenceRequest getReferenceRequest);
 
-    @FormUrlEncoded
     @POST("get_reference")
-    Call<BasicMultipleDataResponse<ChangeType>> getChangeTypes(@Field("key") String key, @Field("ref_type") String refType);
+    Call<BasicMultipleDataResponse<ChangeType>> getChangeTypes(@Body GetReferenceRequest getReferenceRequest);
 
-    @FormUrlEncoded
     @POST("get_reference")
-    Call<BasicMultipleDataResponse<BuildingType>> getBuildingTypes(@Field("key") String key, @Field("ref_type") String refType);
+    Call<BasicMultipleDataResponse<BuildingType>> getBuildingTypes(@Body GetReferenceRequest getReferenceRequest);
 
-    @FormUrlEncoded
     @POST("get_reference")
-    Call<BasicMultipleDataResponse<BuildingStatus>> getBuildingStatusTypes(@Field("key") String key, @Field("ref_type") String refType);
+    Call<BasicMultipleDataResponse<BuildingStatus>> getBuildingStatusTypes(@Body GetReferenceRequest getReferenceRequest);
 
-    @FormUrlEncoded
     @POST("get_reference")
-    Call<BasicMultipleDataResponse<ApartmentType>> getApartmentTypes(@Field("key") String key, @Field("ref_type") String refType);
+    Call<BasicMultipleDataResponse<ApartmentType>> getApartmentTypes(@Body GetReferenceRequest getReferenceRequest);
 
-    @FormUrlEncoded
-    @POST("add_changes")
-    Call<BasicSingleDataResponse<String>> addChanges(@Field("key") String key, @Field("task_id") int task_id,
-                                                     @Field("object_type") int object_type, @Field("object_id") int object_id,
-                                                     @Field("change_type") int change_type, @Field("new_data") String newData);
+//    @POST("add_changes")
+//    Call<BasicSingleDataResponse<String>> addChangesJSON(@Body HistoryForSend history);
 
     @POST("add_changes")
-    Call<BasicSingleDataResponse<String>> addChangesJSON(@Body HistoryForSend history);
+    Call<BasicSingleDataResponse<String>> addChangesJSON(@Body List<TaskSend> history);
 }

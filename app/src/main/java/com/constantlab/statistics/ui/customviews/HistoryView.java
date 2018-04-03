@@ -59,7 +59,7 @@ public class HistoryView extends RelativeLayout {
     public void setData(History history) {
         historyName.setText(history.getTitle(getContext()));
         historyMessage.setText(history.getMessage(getContext()));
-        historyAddress.setText(history.getAddress(getContext()));
+        historyAddress.setText(history.getAddress(getContext(), history.getUserId()));
         icCheck.setVisibility(history.isSynced() ? VISIBLE : GONE);
     }
 }

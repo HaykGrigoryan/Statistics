@@ -1,50 +1,55 @@
 package com.constantlab.statistics.ui.buildings;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.constantlab.statistics.R;
-import com.constantlab.statistics.models.Apartment;
 import com.constantlab.statistics.models.Building;
-import com.constantlab.statistics.models.Street;
-import com.constantlab.statistics.models.Task;
-import com.constantlab.statistics.ui.apartments.ApartmentActivity;
+import com.constantlab.statistics.ui.EndlessRecyclerViewScrollListener;
 import com.constantlab.statistics.ui.apartments.ApartmentFragment;
 import com.constantlab.statistics.ui.base.BaseFragment;
-import com.constantlab.statistics.utils.Actions;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.NotificationCenter;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 
 /**
  * Created by Sunny Kinger on 05-12-2017.
  */
 
-public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.InteractionListener {
+public class BuildingsFragment extends BaseFragment implements BuildingRecyclerViewAdapter.InteractionListener {
 
     private static final int REQUEST_ADD_BUILDING = 23;
     private static final int REQUEST_EDIT_BUILDING = 24;
     private static final int REQUEST_APARTMENTS = 34;
+
+    private final int ITEMS_PER_PAGE = 10;
+    private int page = 0;
+
     Integer streetId;
     Integer taskId;
+    Integer userId;
     String streetName;
     @BindView(R.id.rv_buildings)
     RecyclerView rvBuildings;
@@ -58,7 +63,16 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     @BindView(R.id.title)
     TextView mToolbarTitle;
 
-    private BuildingsAdapter mBuildingsAdapter;
+
+    @BindView(R.id.et_search)
+    EditText etSearch;
+
+    @BindView(R.id.sort_order)
+    AppCompatImageView imSortOrder;
+    private int mSortOrder = 0;
+
+    private BuildingRecyclerViewAdapter mBuildingRecyclerViewAdapter;
+    private Realm realm;
 
     public static BuildingsFragment newInstance(Integer streetId, String streetName, int taskId) {
         BuildingsFragment fragment = new BuildingsFragment();
@@ -77,8 +91,8 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
             streetId = getArguments().getInt(ConstKeys.TAG_STREET);
             taskId = getArguments().getInt(ConstKeys.TAG_TASK);
             streetName = getArguments().getString(ConstKeys.TAG_STREET_NAME);
+            userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
         }
-        mBuildingsAdapter = new BuildingsAdapter();
     }
 
     @Nullable
@@ -86,10 +100,16 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_buildings, container, false);
         ButterKnife.bind(this, view);
+        realm = Realm.getDefaultInstance();
         setupRecyclerView();
-        showData();
-
         return view;
+    }
+
+    @OnClick(R.id.sort_order)
+    protected void updateSortOrder() {
+        mSortOrder = (mSortOrder + 1) % 2;
+        imSortOrder.setImageResource(mSortOrder == 0 ? R.drawable.sort_asc : R.drawable.sort_desc);
+        mBuildingRecyclerViewAdapter.setSortOrder(mSortOrder);
     }
 
     @Override
@@ -98,56 +118,63 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         if (streetName != null) {
             mToolbarTitle.setText(streetName);
         }
-    }
 
-    private void showData() {
-        List<Building> buildingList = getBuildingList();
-        if (buildingList != null && buildingList.size() > 0) {
-            mBuildingsAdapter.setInteractionListener(this);
-            mBuildingsAdapter.setBuildingList(buildingList);
-        } else {
-            tvNoBuildings.setVisibility(View.VISIBLE);
-        }
-    }
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-    private List<Building> getBuildingList() {
-        List<Building> buildingList = null;
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            buildingList = realm.copyFromRealm(realm.where(Building.class).equalTo("street_id", streetId).equalTo("task_id", taskId).findAll());
-            return buildingList;
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+//                mStreetAdapter.getFilter().filter(editable.toString());
+                mBuildingRecyclerViewAdapter.getFilter().filter(editable.toString());
+            }
+        });
     }
 
     private void setupRecyclerView() {
+        OrderedRealmCollection<Building> buildings = realm.where(Building.class).equalTo("task_id", taskId).equalTo("street_id", streetId).equalTo("user_id", userId).findAll();
+        mBuildingRecyclerViewAdapter = new BuildingRecyclerViewAdapter(buildings, realm, taskId, streetId, userId);
+        mBuildingRecyclerViewAdapter.setInteractionListener(this);
+        mBuildingRecyclerViewAdapter.setSortOrder(mSortOrder);
         rvBuildings.setHasFixedSize(true);
         rvBuildings.setMotionEventSplittingEnabled(true);
         rvBuildings.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setSmoothScrollbarEnabled(true);
         rvBuildings.setLayoutManager(llm);
-        rvBuildings.setAdapter(mBuildingsAdapter);
+        rvBuildings.setAdapter(mBuildingRecyclerViewAdapter);
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        rvBuildings.setAdapter(null);
+        realm.close();
     }
 
     @Override
     public void onEditBuilding(Building building, int adapterPosition) {
-        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(building.getId(), building.getDisplayAddress(getContext()), streetId));
+        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(building.getId(), building.getDisplayAddress(userId), streetId, taskId));
     }
 
     @Override
     public void onBuildingDetail(Building building, int adapterPosition) {
-        if (!Building.isStatusInactive(building.getBuildingStatus()) && !Building.isTypeSpetialInstitution(building.getBuildingType()) && !Building.isTypeClosedInstitution(building.getBuildingType())) {
-            NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(getContext()), building.getTaskId()));
+        if (Building.isFlatLevelEnabled(building.getBuildingType(), building.getBuildingStatus())) {// !Building.isStatusInactive(building.getBuildingStatus()) && !Building.isTypeSpetialInstitution(building.getBuildingType()) && !Building.isTypeClosedInstitution(building.getBuildingType())) {
+            NotificationCenter.getInstance().notifyOpenPage(ApartmentFragment.newInstance(building.getId(), building.getDisplayAddress(userId), building.getTaskId()));
         }
     }
 
     @OnClick(R.id.iv_add)
     public void addBuilding() {
-        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null, streetId));
+        NotificationCenter.getInstance().notifyOpenPage(BuildingDetailsFragment.newInstance(-1, null, streetId, taskId));
     }
 
     @OnClick(R.id.iv_back)
@@ -157,27 +184,26 @@ public class BuildingsFragment extends BaseFragment implements BuildingsAdapter.
         }
     }
 
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ADD_BUILDING && resultCode == Activity.RESULT_OK) {
-            mBuildingsAdapter.clear();
-            showData();
-            Integer buildingId = data.getExtras().getInt(ConstKeys.TAG_BUILDING);
-            Intent intent = new Intent(getContext(), ApartmentActivity.class);
-            intent.putExtra(ConstKeys.TAG_BUILDING, buildingId);
-            intent.putExtra(ConstKeys.TAG_ACTION, Actions.VIEW_APARTMENTS);
-            startActivityForResult(intent, REQUEST_APARTMENTS);
-            getActivity().setResult(Activity.RESULT_OK);
-        } else if (requestCode == REQUEST_EDIT_BUILDING && resultCode == Activity.RESULT_OK) {
-            mBuildingsAdapter.clear();
-            showData();
-            getActivity().setResult(Activity.RESULT_OK);
-        } else if (requestCode == REQUEST_APARTMENTS && resultCode == Activity.RESULT_OK) {
-            mBuildingsAdapter.clear();
-            showData();
-            getActivity().setResult(Activity.RESULT_OK);
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_ADD_BUILDING && resultCode == Activity.RESULT_OK) {
+//            mBuildingRecyclerViewAdapter.clear();
+//            showData();
+//            Integer buildingId = data.getExtras().getInt(ConstKeys.TAG_BUILDING);
+//            Intent intent = new Intent(getContext(), ApartmentActivity.class);
+//            intent.putExtra(ConstKeys.TAG_BUILDING, buildingId);
+//            intent.putExtra(ConstKeys.TAG_ACTION, Actions.VIEW_APARTMENTS);
+//            startActivityForResult(intent, REQUEST_APARTMENTS);
+//            getActivity().setResult(Activity.RESULT_OK);
+//        } else if (requestCode == REQUEST_EDIT_BUILDING && resultCode == Activity.RESULT_OK) {
+//            mBuildingRecyclerViewAdapter.clear();
+//            showData();
+//            getActivity().setResult(Activity.RESULT_OK);
+//        } else if (requestCode == REQUEST_APARTMENTS && resultCode == Activity.RESULT_OK) {
+//            mBuildingRecyclerViewAdapter.clear();
+//            showData();
+//            getActivity().setResult(Activity.RESULT_OK);
+//        }
+//    }
 }

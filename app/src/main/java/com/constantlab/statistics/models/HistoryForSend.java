@@ -2,6 +2,9 @@ package com.constantlab.statistics.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.annotations.PrimaryKey;
 
@@ -17,6 +20,7 @@ public class HistoryForSend<T> {
     private Integer object_type;
     private Integer object_id;
     private T new_data;
+    private T old_data;
 
     public static HistoryForSend getForSend(History history) {
         HistoryForSend historyForSend = null;
@@ -24,10 +28,12 @@ public class HistoryForSend<T> {
             case 14:
                 historyForSend = new HistoryForSend<History.ChangePointNewData>();
                 historyForSend.setNewData(history.getNewData().getChangePointNewData());
+                historyForSend.setOldData(history.getOldData().getChangePointNewData());
                 break;
             default:
                 historyForSend = new HistoryForSend<History.NewData>();
                 historyForSend.setNewData(history.getNewData().getNewData());
+                historyForSend.setOldData(history.getOldData().getNewData());
         }
         historyForSend.setKey(history.getKey());
         historyForSend.setChangeType(history.getChangeType());
@@ -38,12 +44,40 @@ public class HistoryForSend<T> {
         return historyForSend;
     }
 
-    public History setHistorySynced() {
+
+    public static List<HistoryForSend> getForDump(List<History> hList) {
+        List<HistoryForSend> list = new ArrayList<>();
+        for (History history : hList) {
+            HistoryForSend historyForSend = null;
+            switch (history.getChangeType()) {
+                case 14:
+                    historyForSend = new HistoryForSend<History.ChangePointNewData>();
+                    historyForSend.setNewData(history.getNewData().getChangePointNewData());
+                    historyForSend.setOldData(history.getOldData().getChangePointNewData());
+                    break;
+                default:
+                    historyForSend = new HistoryForSend<History.NewData>();
+                    historyForSend.setNewData(history.getNewData().getNewData());
+                    historyForSend.setOldData(history.getOldData().getNewData());
+            }
+            historyForSend.setKey(history.getKey());
+            historyForSend.setChangeType(history.getChangeType());
+            historyForSend.setObjectId(history.getObjectId());
+            historyForSend.setObjectType(history.getObjectType());
+            historyForSend.setTaskId(history.getTaskId());
+            historyForSend.setId(history.getId());
+            list.add(historyForSend);
+        }
+
+        return list;
+    }
+
+    public History setHistorySynced(Integer userId) {
         Realm realm = null;
         History history = null;
         try {
             realm = Realm.getDefaultInstance();
-            history = realm.where(History.class).equalTo("id", id).findFirst();
+            history = realm.where(History.class).equalTo("user_id",userId).equalTo("id", id).findFirst();
             History finalHistory = history;
             history = realm.copyFromRealm(history);
             realm.executeTransaction(realmObject -> {
@@ -105,6 +139,14 @@ public class HistoryForSend<T> {
 
     public void setNewData(T new_data) {
         this.new_data = new_data;
+    }
+
+    public T getOldData() {
+        return old_data;
+    }
+
+    public void setOldData(T old_data) {
+        this.old_data = old_data;
     }
 
     public Integer getId() {

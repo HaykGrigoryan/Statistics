@@ -20,17 +20,20 @@ public class StreetRecyclerViewAdapter extends RealmRecyclerViewAdapter<Street, 
     private InteractionListener interactionListener;
     private int mSortOrder;
     private Realm realm;
+    private Integer userId;
     private Integer taskId;
 
-    StreetRecyclerViewAdapter(OrderedRealmCollection<Street> data, Realm realm, Integer taskId) {
+    StreetRecyclerViewAdapter(OrderedRealmCollection<Street> data, Realm realm, Integer taskId, Integer userId) {
         super(data, true);
         this.realm = realm;
         this.taskId = taskId;
+        this.userId = userId;
         setHasStableIds(true);
     }
+
     public void setSortOrder(int sortOrder) {
         mSortOrder = sortOrder;
-        updateData(getData().sort("name", mSortOrder == 0?Sort.ASCENDING:Sort.DESCENDING));
+        updateData(getData().sort("name", mSortOrder == 0 ? Sort.ASCENDING : Sort.DESCENDING));
 //
 //        notifyDataSetChanged();
     }
@@ -61,23 +64,6 @@ public class StreetRecyclerViewAdapter extends RealmRecyclerViewAdapter<Street, 
 
     @Override
     public void onBindViewHolder(StreetHolder holder, int position) {
-//        final Street obj = getItem(position);
-//        holder.data = obj;
-//        holder.streetName.setText(obj.getName());
-//        holder.buidingsCount
-//                .setText(String.format(Locale.getDefault(), FORMAT, obj.getBuidingsCount()));
-//        holder.apartmentsCount
-//                .setText(String.format(Locale.getDefault(), FORMAT, obj.getApartmentCount()));
-//        holder.residentsCount
-//                .setText(String.format(Locale.getDefault(), FORMAT, obj.getResidentsCount()));
-//        holder.btnEdit.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (interactionListener != null) {
-//                    interactionListener.onEditStreet(getItem(holder.getAdapterPosition()), holder.getAdapterPosition());
-//                }
-//            }
-//        });
         StreetView view = (StreetView) holder.itemView;
         Street street = getItem(position);
         view.setData(street);
@@ -90,9 +76,9 @@ public class StreetRecyclerViewAdapter extends RealmRecyclerViewAdapter<Street, 
 
     public void filterResults(String text) {
         text = text == null ? null : text.toLowerCase().trim();
-        RealmQuery<Street> query = realm.where(Street.class).equalTo("task_id", taskId).sort("name",mSortOrder==0?Sort.ASCENDING:Sort.DESCENDING);
+        RealmQuery<Street> query = realm.where(Street.class).equalTo("task_id", taskId).equalTo("user_id", userId).sort("name", mSortOrder == 0 ? Sort.ASCENDING : Sort.DESCENDING);
 
-        if(!(text == null || "".equals(text))) {
+        if (!(text == null || "".equals(text))) {
             query.contains("nameLowerCase", text, Case.INSENSITIVE);
         }
         updateData(query.findAll());
@@ -135,7 +121,7 @@ public class StreetRecyclerViewAdapter extends RealmRecyclerViewAdapter<Street, 
     }
 
     static class StreetHolder extends RecyclerView.ViewHolder {
-//        TextView streetName, buidingsCount, apartmentsCount, residentsCount;
+        //        TextView streetName, buidingsCount, apartmentsCount, residentsCount;
 //        AppCompatImageView btnEdit;
 //        Street data;
 //        StreetHolder(View view) {
@@ -147,7 +133,7 @@ public class StreetRecyclerViewAdapter extends RealmRecyclerViewAdapter<Street, 
 //            btnEdit = view.findViewById(R.id.btn_edit);
 //        }
         StreetHolder(StreetView itemView) {
-    super(itemView);
-}
+            super(itemView);
+        }
     }
 }

@@ -27,6 +27,7 @@ import com.constantlab.statistics.ui.history.HistoryFragment;
 import com.constantlab.statistics.ui.street.StreetFragment;
 import com.constantlab.statistics.utils.Actions;
 import com.constantlab.statistics.utils.NotificationCenter;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
 
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            RealmResults<Task> realmResults = realm.where(Task.class).findAll();
+            RealmResults<Task> realmResults = realm.where(Task.class).equalTo("user_id", SharedPreferencesManager.getInstance().getUser(getContext()).getUserId()).findAll();
             taskList = realm.copyFromRealm(realmResults);
             return taskList;
         } finally {

@@ -31,18 +31,18 @@ public class MapActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_fragment);
         if (getIntent() != null) {
-            MapFragment.MapAction action = MapFragment.MapAction.values()[getIntent().getIntExtra(ConstKeys.KEY_MAP_ACTION, 0)];
+            OSMMapFragment.MapAction action = OSMMapFragment.MapAction.values()[getIntent().getIntExtra(ConstKeys.KEY_MAP_ACTION, 0)];
             Double lat = getIntent().getDoubleExtra(ConstKeys.KEY_LATITUDE, Double.NaN);
             Double lon = getIntent().getDoubleExtra(ConstKeys.KEY_LONGITUDE, Double.NaN);
             Integer taskid = getIntent().getIntExtra(ConstKeys.KEY_TASK_ID, -1);
-            if (action == MapFragment.MapAction.SHOW_POLYGON) {
-                showFragment(MapFragment.newInstance(action, taskid), false);
+            if (action == OSMMapFragment.MapAction.SHOW_POLYGON) {
+                showFragment(OSMMapFragment.newInstance(action, taskid), false);
             } else {
-                showFragment(MapFragment.newInstance(action, lat, lon), false);
+                showFragment(OSMMapFragment.newInstance(action, lat, lon), false);
             }
 
         } else {
-            showFragment(MapFragment.newInstance(MapFragment.MapAction.PICK_LOCATION), false);
+            showFragment(OSMMapFragment.newInstance(OSMMapFragment.MapAction.PICK_LOCATION), false);
         }
 
 

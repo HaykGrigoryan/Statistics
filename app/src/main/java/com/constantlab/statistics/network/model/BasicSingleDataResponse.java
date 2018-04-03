@@ -12,21 +12,25 @@ import java.io.Serializable;
 public class BasicSingleDataResponse<E> implements Serializable {
     @SerializedName("status")
     @Expose
-    protected String status;
+    protected Integer status;
 
-    @SerializedName("temp_id")
+    @SerializedName("message")
     @Expose
-    protected Integer temp_id;
+    protected String message;
+
+    //    @SerializedName("temp_id")
+//    @Expose
+//    protected Integer temp_id;
     //
     @SerializedName("data")
     @Expose
     protected E data;
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -39,18 +43,25 @@ public class BasicSingleDataResponse<E> implements Serializable {
     }
 
     public boolean isSuccess() {
-        return status.equals("1");
+        return status.equals(1);
     }
 
     public boolean isSuccessNestedStatus() {
-        return status.equals("2");
+        return status.equals(2);
     }
 
-    public Integer getTempId() {
-        return temp_id;
+    public String getMessage() {
+        return message;
     }
 
-    public void setTempId(Integer temp_id) {
-        this.temp_id = temp_id;
+    public void setMessage(String message) {
+        this.message = message;
     }
+//    public Integer getTempId() {
+//        return temp_id;
+//    }
+//
+//    public void setTempId(Integer temp_id) {
+//        this.temp_id = temp_id;
+//    }
 }

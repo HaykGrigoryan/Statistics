@@ -28,8 +28,11 @@ import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.GsonUtils;
 import com.constantlab.statistics.utils.HistoryManager;
+import com.constantlab.statistics.utils.SharedPreferencesManager;
+import com.constantlab.statistics.utils.UIUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +49,7 @@ public class StreetDetailsFragment extends BaseFragment {
     Integer streetId;
     String streetName;
     Integer taskId;
+    Integer userId;
     @BindView(R.id.et_street)
     EditText etStreetName;
     @BindView(R.id.layout_origin_name)
@@ -54,8 +58,6 @@ public class StreetDetailsFragment extends BaseFragment {
     TextInputLayout lName;
     @BindView(R.id.et_street_origin_name)
     EditText etStreetOriginName;
-
-
     @BindView(R.id.sp_street_type)
     Spinner spStreetType;
     @BindView(R.id.title)
@@ -81,6 +83,7 @@ public class StreetDetailsFragment extends BaseFragment {
             streetId = getArguments().getInt(ConstKeys.TAG_STREET);
             streetName = getArguments().getString(ConstKeys.TAG_STREET_NAME);
             taskId = getArguments().getInt(ConstKeys.TAG_TASK);
+            userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
         }
     }
 
@@ -107,7 +110,7 @@ public class StreetDetailsFragment extends BaseFragment {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            Street street = realm.where(Street.class).equalTo("id", streetId).equalTo("task_id", taskId).findFirst();
+            Street street = realm.where(Street.class).equalTo("id", streetId).equalTo("task_id", taskId).equalTo("user_id", userId).findFirst();
             if (street != null) {
                 mStreet = realm.copyFromRealm(street);
                 lName.setVisibility(View.VISIBLE);
@@ -163,7 +166,7 @@ public class StreetDetailsFragment extends BaseFragment {
 
 
         if (proceed) {
-            if (RealmManager.getInstance().checkStreetStreetName(taskId, streetId, name)) {
+            if (RealmManager.getInstance().checkStreetStreetName(taskId, streetId, name,userId)) {
                 AlertDialog.Builder builder =
                         new AlertDialog.Builder(getContext());
                 builder.setTitle(getString(R.string.dialog_title_attention));
@@ -182,12 +185,11 @@ public class StreetDetailsFragment extends BaseFragment {
         try {
             realm = Realm.getDefaultInstance();
             realm.executeTransaction(realmObject -> {
-                Street s = realmObject.where(Street.class).equalTo("id", streetId).findFirst();
+                Street s = realmObject.where(Street.class).equalTo("id", streetId).equalTo("task_id", taskId).equalTo("user_id", userId).findFirst();
                 Street street = null;
                 boolean isNew = false;
                 if (s != null) {
                     street = realmObject.copyFromRealm(s);
-                    street.setNew(false);
                 } else {
                     street = new Street();
                     Number currentIdNum = realmObject.where(Street.class).max("id");
@@ -210,6 +212,7 @@ public class StreetDetailsFragment extends BaseFragment {
                     street.setTaskId(taskId);
                     isNew = true;
                     street.setNew(true);
+                    street.setUserId(userId);
                 }
                 if (isNew) {
                     street.setOriginalName(etStreetOriginName.getText().toString());
@@ -219,19 +222,21 @@ public class StreetDetailsFragment extends BaseFragment {
                 }
                 StreetType streetType = (StreetType) spStreetType.getSelectedItem();
                 street.setStreetTypeCode(streetType.getId());
-
+                street.setEdited(true);
+                street.setChangeTime(Calendar.getInstance().getTimeInMillis());
                 if (!street.isNew()) {
                     if (!mStreet.getName().equals(street.getName())) {
-                        addHistory(taskId, 4, new TempNewData(street.getName()), street.getId(), street.getId(), realmObject);
+                        addHistory(taskId, 4, new TempNewData(street.getName()), new TempNewData(mStreet.getName()), street.getId(), street.getId(), realmObject);
                     }
 
                     if (!mStreet.getStreetTypeCode().equals(street.getStreetTypeCode())) {
-                        addHistory(taskId, 5, new TempNewData(String.valueOf(street.getStreetTypeCode())), street.getId(), street.getId(), realmObject);
+                        addHistory(taskId, 5, new TempNewData(String.valueOf(street.getStreetTypeCode())), new TempNewData(String.valueOf(mStreet.getStreetTypeCode())), street.getId(), street.getId(), realmObject);
                     }
                 } else {
-                    Integer referenceId = addHistory(taskId, 1, new TempNewData(street.getName()), taskId, street.getId(), realmObject);
+                    Integer referenceId = addHistory(taskId, 1, new TempNewData(street.getName()), new TempNewData(""), taskId, street.getId(), realmObject);
+                    addHistory(taskId, 4, new TempNewData(street.getName()), new TempNewData(""), street.getId(), street.getId(), realmObject);
                     street.setHistoryId(referenceId);
-                    addHistory(taskId, 5, new TempNewData(String.valueOf(street.getStreetTypeCode())), null, street.getId(), realmObject, referenceId);
+                    addHistory(taskId, 5, new TempNewData(String.valueOf(street.getStreetTypeCode())), new TempNewData(""), null, street.getId(), realmObject, referenceId);
                 }
 
                 realmObject.insertOrUpdate(street);
@@ -241,24 +246,26 @@ public class StreetDetailsFragment extends BaseFragment {
             if (realm != null)
                 realm.close();
         }
+        UIUtils.hideSoftKeyboard(getActivity());
         getActivity().onBackPressed();
     }
 
-    private Integer addHistory(int taskId, int changeType, TempNewData newData, Integer streetId, Integer tempStreetId, Realm realm) {
-        return addHistory(taskId, changeType, newData, streetId, tempStreetId, realm, null);
+    private Integer addHistory(int taskId, int changeType, TempNewData newData, TempNewData oldData, Integer streetId, Integer tempStreetId, Realm realm) {
+        return addHistory(taskId, changeType, newData, oldData, streetId, tempStreetId, realm, null);
     }
 
-    private Integer addHistory(int taskId, int changeType, TempNewData newData, Integer streetId, Integer tempStreetId, Realm realm, Integer referenceId) {
+    private Integer addHistory(int taskId, int changeType, TempNewData newData, TempNewData oldData, Integer streetId, Integer tempStreetId, Realm realm, Integer referenceId) {
         History history = new History();
         history.setTaskId(taskId);
         history.setChangeType(changeType);
         history.setNewData(newData);
+        history.setOldData(oldData);
         history.setObjectId(streetId);
         history.setTempObjectId(tempStreetId);
         history.setReferenceId(referenceId);
         history.setObjectType(1);
 
-        return HistoryManager.getInstance().addOrUpdateHistory(history, realm);
+        return HistoryManager.getInstance().addOrUpdateHistory(userId,history, realm);
     }
 
 

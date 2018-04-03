@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.utils.GsonUtils;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 

@@ -34,13 +34,16 @@ import com.constantlab.statistics.models.GeoPolygon;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.models.User;
 import com.constantlab.statistics.network.Constants;
 import com.constantlab.statistics.network.RTService;
 import com.constantlab.statistics.network.ServiceGenerator;
+import com.constantlab.statistics.network.TaskRequest;
 import com.constantlab.statistics.network.model.ApartmentItem;
 import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
 import com.constantlab.statistics.network.model.BuildingItem;
 import com.constantlab.statistics.network.model.GeoItem;
+import com.constantlab.statistics.network.model.GetReferenceRequest;
 import com.constantlab.statistics.network.model.StreetItem;
 import com.constantlab.statistics.network.model.TaskItem;
 import com.constantlab.statistics.ui.MainActivity;
@@ -100,15 +103,16 @@ public class SyncService extends IntentService {
     }
 
     private void handleSync(ResultReceiver resultReceiver) {
-        rtService = ServiceGenerator.createService(RTService.class);
+        rtService = ServiceGenerator.createService(RTService.class, SyncService.this);
         loadChangeTypes(resultReceiver);
     }
 
-    private void handleSuccess(ResultReceiver resultReceiver) {
+    private void handleSuccess(ResultReceiver resultReceiver, String message) {
         SharedPreferencesManager.getInstance().setSyncing(this, false);
         Bundle bundle = new Bundle();
         int code = SyncResultReceiver.RESULT_CODE_OK;
         bundle.putSerializable(SyncResultReceiver.PARAM_RESULT, true);
+        bundle.putSerializable(SyncResultReceiver.PARAM_MESSAGE, message);
         if (resultReceiver != null) {
             resultReceiver.send(code, bundle);
         }
@@ -210,31 +214,19 @@ public class SyncService extends IntentService {
         return isInBackground;
     }
 
-    //
     private void loadChangeTypes(ResultReceiver resultReceiver) {
-//        Call<BasicMultipleDataResponse<ChangeType>> call = rtService.getChangeTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_CHANGE_TYPE);
-//        call.enqueue(new Callback<BasicMultipleDataResponse<ChangeType>>() {
-//            @Override
-//            public void onResponse(Call<BasicMultipleDataResponse<ChangeType>> call, Response<BasicMultipleDataResponse<ChangeType>> response) {
-//                if (response.body().isSuccessNestedStatus()) {
-//                    RealmManager.getInstance().clearLocalData();
-//                    RealmManager.getInstance().insertTypes(response.body().getData());
-//                    loadStreetTypes(resultReceiver);
-//                } else {
-//                    handleError(resultReceiver, getString(R.string.message_wrong_key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BasicMultipleDataResponse<ChangeType>> call, Throwable t) {
-//                handleError(resultReceiver, getString(R.string.message_connection_problem));
-//            }
-//        });
         try {
-            Call<BasicMultipleDataResponse<ChangeType>> call = rtService.getChangeTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_CHANGE_TYPE);
+            Call<BasicMultipleDataResponse<ChangeType>> call = rtService.getChangeTypes(
+                    new GetReferenceRequest(SharedPreferencesManager.getInstance().getUser(this).getKey(), Constants.REF_TYPE_CHANGE_TYPE));
             Response<BasicMultipleDataResponse<ChangeType>> response = call.execute();
             if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
-                RealmManager.getInstance().clearLocalData();
+                RealmManager.getInstance().clearLocalData(SharedPreferencesManager.getInstance().getUser(SyncService.this).getUserId());
+                try {
+                    SharedPreferencesManager.getInstance().clearGeoPoint(getApplicationContext());
+                } catch (Exception e) {
+
+                }
+
                 RealmManager.getInstance().insertTypes(response.body().getData());
                 loadStreetTypes(resultReceiver);
             } else {
@@ -246,28 +238,9 @@ public class SyncService extends IntentService {
     }
 
     private void loadStreetTypes(ResultReceiver resultReceiver) {
-
-//        Call<BasicMultipleDataResponse<StreetType>> call = rtService.getStreetTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_STREET_TYPE);
-//        call.enqueue(new Callback<BasicMultipleDataResponse<StreetType>>() {
-//            @Override
-//            public void onResponse(Call<BasicMultipleDataResponse<StreetType>> call, Response<BasicMultipleDataResponse<StreetType>> response) {
-//                if (response.body().isSuccessNestedStatus()) {
-//                    RealmManager.getInstance().insertTypes(response.body().getData());
-//                    loadBuildingTypes(resultReceiver);
-////                    handleSuccess(resultReceiver);
-//                } else {
-//                    handleError(resultReceiver, getString(R.string.message_wrong_key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BasicMultipleDataResponse<StreetType>> call, Throwable t) {
-//                handleError(resultReceiver, getString(R.string.message_connection_problem));
-//            }
-//        });
-
         try {
-            Call<BasicMultipleDataResponse<StreetType>> call = rtService.getStreetTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_STREET_TYPE);
+            Call<BasicMultipleDataResponse<StreetType>> call = rtService.getStreetTypes(
+                    new GetReferenceRequest(SharedPreferencesManager.getInstance().getUser(this).getKey(), Constants.REF_TYPE_STREET_TYPE));
             Response<BasicMultipleDataResponse<StreetType>> response = call.execute();
             if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
                 RealmManager.getInstance().insertTypes(response.body().getData());
@@ -281,27 +254,11 @@ public class SyncService extends IntentService {
     }
 
     private void loadBuildingTypes(ResultReceiver resultReceiver) {
-//        Call<BasicMultipleDataResponse<BuildingType>> call = rtService.getBuildingTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_BUILDING_TYPE);
-//        call.enqueue(new Callback<BasicMultipleDataResponse<BuildingType>>() {
-//            @Override
-//            public void onResponse(Call<BasicMultipleDataResponse<BuildingType>> call, Response<BasicMultipleDataResponse<BuildingType>> response) {
-//                if (response.body().isSuccessNestedStatus()) {
-//                    RealmManager.getInstance().insertTypes(response.body().getData());
-//                    loadBuildingStatusTypes(resultReceiver);
-//                } else {
-//                    handleError(resultReceiver, getString(R.string.message_wrong_key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BasicMultipleDataResponse<BuildingType>> call, Throwable t) {
-//                handleError(resultReceiver, getString(R.string.message_connection_problem));
-//            }
-//        });
 
 
         try {
-            Call<BasicMultipleDataResponse<BuildingType>> call = rtService.getBuildingTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_BUILDING_TYPE);
+            Call<BasicMultipleDataResponse<BuildingType>> call = rtService.getBuildingTypes(
+                    new GetReferenceRequest(SharedPreferencesManager.getInstance().getUser(this).getKey(), Constants.REF_TYPE_BUILDING_TYPE));
             Response<BasicMultipleDataResponse<BuildingType>> response = call.execute();
             if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
                 RealmManager.getInstance().insertTypes(response.body().getData());
@@ -315,26 +272,10 @@ public class SyncService extends IntentService {
     }
 
     private void loadBuildingStatusTypes(ResultReceiver resultReceiver) {
-//        Call<BasicMultipleDataResponse<BuildingStatus>> call = rtService.getBuildingStatusTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_BUILDING_STATUS);
-//        call.enqueue(new Callback<BasicMultipleDataResponse<BuildingStatus>>() {
-//            @Override
-//            public void onResponse(Call<BasicMultipleDataResponse<BuildingStatus>> call, Response<BasicMultipleDataResponse<BuildingStatus>> response) {
-//                if (response.body().isSuccessNestedStatus()) {
-//                    RealmManager.getInstance().insertTypes(response.body().getData());
-//                    loadApartmentTypes(resultReceiver);
-//                } else {
-//                    handleError(resultReceiver, getString(R.string.message_wrong_key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BasicMultipleDataResponse<BuildingStatus>> call, Throwable t) {
-//                handleError(resultReceiver, getString(R.string.message_connection_problem));
-//            }
-//        });
 
         try {
-            Call<BasicMultipleDataResponse<BuildingStatus>> call = rtService.getBuildingStatusTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_BUILDING_STATUS);
+            Call<BasicMultipleDataResponse<BuildingStatus>> call = rtService.getBuildingStatusTypes(
+                    new GetReferenceRequest(SharedPreferencesManager.getInstance().getUser(this).getKey(), Constants.REF_TYPE_BUILDING_STATUS));
             Response<BasicMultipleDataResponse<BuildingStatus>> response = call.execute();
             if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
                 RealmManager.getInstance().insertTypes(response.body().getData());
@@ -348,27 +289,9 @@ public class SyncService extends IntentService {
     }
 
     private void loadApartmentTypes(ResultReceiver resultReceiver) {
-//        Call<BasicMultipleDataResponse<ApartmentType>> call = rtService.getApartmentTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_APARTMENT_TYPE);
-//        call.enqueue(new Callback<BasicMultipleDataResponse<ApartmentType>>() {
-//            @Override
-//            public void onResponse(Call<BasicMultipleDataResponse<ApartmentType>> call, Response<BasicMultipleDataResponse<ApartmentType>> response) {
-//                if (response.body().isSuccessNestedStatus()) {
-//                    RealmManager.getInstance().insertTypes(response.body().getData());
-//                    syncData(resultReceiver);
-////                    handleSuccess(resultReceiver);
-//                } else {
-//                    handleError(resultReceiver, getString(R.string.message_wrong_key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BasicMultipleDataResponse<ApartmentType>> call, Throwable t) {
-//                handleError(resultReceiver, getString(R.string.message_connection_problem));
-//            }
-//        });
-
         try {
-            Call<BasicMultipleDataResponse<ApartmentType>> call = rtService.getApartmentTypes(SharedPreferencesManager.getInstance().getKey(this), Constants.REF_TYPE_APARTMENT_TYPE);
+            Call<BasicMultipleDataResponse<ApartmentType>> call = rtService.getApartmentTypes(
+                    new GetReferenceRequest(SharedPreferencesManager.getInstance().getUser(this).getKey(), Constants.REF_TYPE_APARTMENT_TYPE));
             Response<BasicMultipleDataResponse<ApartmentType>> response = call.execute();
             if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
                 RealmManager.getInstance().insertTypes(response.body().getData());
@@ -383,36 +306,26 @@ public class SyncService extends IntentService {
     }
 
     private void syncData(ResultReceiver resultReceiver) {
-//        Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskList(SharedPreferencesManager.getInstance().getKey(this));
-//        call.enqueue(new Callback<BasicMultipleDataResponse<TaskItem>>() {
-//            @Override
-//            public void onResponse(Call<BasicMultipleDataResponse<TaskItem>> call, Response<BasicMultipleDataResponse<TaskItem>> response) {
-//                if (response.body().isSuccess()) {
-//                    insertTasks(response.body().getData());
-//                    SharedPreferencesManager.getInstance().setLastSyncFromServer(SyncService.this, Calendar.getInstance().getTimeInMillis());
-//                    handleSuccess(resultReceiver);
-//                } else {
-//                    handleError(resultReceiver, getString(R.string.message_wrong_key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BasicMultipleDataResponse<TaskItem>> call, Throwable t) {
-//                handleError(resultReceiver, getString(R.string.message_connection_problem));
-//            }
-//        });
-//
         try {
-            Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskList(SharedPreferencesManager.getInstance().getKey(this));
+            Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskList(new TaskRequest(SharedPreferencesManager.getInstance().getUser(this).getKey()));
             Response<BasicMultipleDataResponse<TaskItem>> response = call.execute();
-            if (response.code() == 200 && response.isSuccessful() && response.body().isSuccess()) {
+            if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
                 insertTasks(response.body().getData());
                 NotificationCenter.getInstance().notifyOnSyncFromServer();
-                SharedPreferencesManager.getInstance().setLastSyncFromServer(SyncService.this, Calendar.getInstance().getTimeInMillis());
-                handleSuccess(resultReceiver);
+                User user = SharedPreferencesManager.getInstance().getUser(SyncService.this);
+                User realmUser = RealmManager.getInstance().getUser(user.getUsername(), user.getPassword());
+                realmUser.setLastSyncFromServer(Calendar.getInstance().getTimeInMillis());
+                RealmManager.getInstance().saveUser(realmUser);
+                SharedPreferencesManager.getInstance().setUser(SyncService.this, realmUser);
+                handleSuccess(resultReceiver, response.body().getMessage());
+            } else if (response.body() != null && response.body().getMessage() != null) {
+                handleError(resultReceiver, response.body().getMessage());
             } else {
-                handleError(resultReceiver, getString(R.string.message_wrong_key));
+                handleError(resultReceiver, getString(R.string.message_connection_problem));
+
             }
+
+
         } catch (IOException e) {
             handleError(resultReceiver, getString(R.string.message_connection_problem));
         }
@@ -422,58 +335,89 @@ public class SyncService extends IntentService {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-
-            if (realm.where(Task.class).findAll().size() == 0) {
+            User user = SharedPreferencesManager.getInstance().getUser(SyncService.this);
+            Integer userId = user.getUserId();
+            if (realm.where(Task.class).equalTo("user_id", userId).findAll().size() == 0) {
                 realm.executeTransaction(realmObject -> {
                     int taskId = 1;
-                    int polygonId = 1;
+                    Number currentLocalIdNum = realmObject.where(Task.class).max("local_id");
+                    if (currentLocalIdNum != null) {
+                        taskId = currentLocalIdNum.intValue() + 1;
+                    }
                     int streetId = 1;
+                    currentLocalIdNum = realmObject.where(Street.class).max("local_id");
+                    if (currentLocalIdNum != null) {
+                        streetId = currentLocalIdNum.intValue() + 1;
+                    }
                     int buildingId = 1;
+                    currentLocalIdNum = realmObject.where(Building.class).max("local_id");
+                    if (currentLocalIdNum != null) {
+                        buildingId = currentLocalIdNum.intValue() + 1;
+                    }
                     int apartmentId = 1;
+                    currentLocalIdNum = realmObject.where(Apartment.class).max("local_id");
+                    if (currentLocalIdNum != null) {
+                        apartmentId = currentLocalIdNum.intValue() + 1;
+                    }
                     for (TaskItem taskItem : items) {
                         Task task = Task.getTask(taskItem);
-                        task.setKato(taskItem.getDetails().getKato());
+                        task.setLocalId(taskId++);
+                        task.setUserId(userId);
                         realmObject.insert(task);
-                        if (taskItem.getDetails() != null) {
-                            for (GeoItem geoItem : taskItem.getDetails().getGeoItems()) {
-                                GeoPolygon polygon = GeoPolygon.getGeoPolygon(task.getTaskId(), geoItem);
-                                polygon.setLocalId(polygonId++);
-                                realmObject.insert(polygon);
-                            }
-                        }
+//                        if (taskItem.getDetails() != null) {
+//                            for (GeoItem geoItem : taskItem.getDetails().getGeoItems()) {
+//                                GeoPolygon polygon = GeoPolygon.getGeoPolygon(task.getTaskId(), geoItem);
+//                                polygon.setLocalId(polygonId++);
+//                                realmObject.insert(polygon);
+//                            }
+//                        }
 
-                        for (StreetItem streetItem : taskItem.getDetails().getStreetItems()) {
+                        for (StreetItem streetItem : taskItem.getStreetItems()) {
                             Street street = Street.getStreet(streetItem);
-                            street.setTaskId(taskItem.getTaskId());
-                            street.setKato(taskItem.getDetails().getKato());
+                            street.setTaskId(task.getTaskId());
+                            street.setKato(taskItem.getKatoCode());//taskItem.getDetails().getKato()
                             street.setLocalId(streetId++);
-                            realmObject.insert(street);
-
-                            if (streetItem.getAddressData() != null && streetItem.getAddressData().size() > 0) {
-                                StreetItem.AddressData addressData = streetItem.getAddressData().get(0);
-                                List<BuildingItem> buildingItems = addressData.getBuildingItems();
-                                for (BuildingItem buildingItem : buildingItems) {
+                            street.setUserId(userId);
+                            int buildingsCount = 0;
+                            int streetAptCount = 0;
+                            int streetResidentsCount = 0;
+                            if (streetItem.getBuildings() != null) {
+                                for (BuildingItem buildingItem : streetItem.getBuildings()) {
+                                    buildingsCount++;
+                                    int bldAptCount = 0;
+                                    int bldResidentsCount = 0;
                                     Building building = Building.getBuilding(buildingItem);
                                     building.setStreetId(streetItem.getId());
                                     building.setTaskId(task.getTaskId());
                                     building.setKato(String.valueOf(street.getKato()));
-                                    building.setStreetName(streetItem.getTitle());
-                                    building.setStreetType(addressData.getStreetType());
-
                                     building.setLocalId(buildingId++);
-
-                                    realmObject.insert(building);
+                                    building.setUserId(userId);
 
                                     for (ApartmentItem apartmentItem : buildingItem.getApartmentItems()) {
+                                        streetAptCount++;
+                                        bldAptCount++;
+                                        bldResidentsCount += apartmentItem.getInhabitants();
                                         Apartment apartment = Apartment.getApartment(apartmentItem);
                                         apartment.setBuildingId(buildingItem.getId());
                                         apartment.setTaskId(task.getTaskId());
                                         apartment.setLocalId(apartmentId++);
+                                        apartment.setUserId(userId);
                                         realmObject.insert(apartment);
                                     }
-
+                                    if (!Building.isFlatLevelEnabled(building.getBuildingType(), building.getBuildingStatus())) {
+                                        bldResidentsCount = building.getTemporaryInhabitants();
+                                    }
+                                    streetResidentsCount += bldResidentsCount;
+                                    building.setApartmentCount(bldAptCount);
+                                    building.setResidentsCount(bldResidentsCount);
+                                    realmObject.insert(building);
                                 }
                             }
+
+                            street.setBuildingCount(buildingsCount);
+                            street.setApartmentCount(streetAptCount);
+                            street.setResidentsCount(streetResidentsCount);
+                            realmObject.insert(street);
                         }
                     }
 

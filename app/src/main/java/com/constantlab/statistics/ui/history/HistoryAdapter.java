@@ -3,10 +3,7 @@ package com.constantlab.statistics.ui.history;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.History;
-import com.constantlab.statistics.ui.buildings.BuildingsAdapter;
-import com.constantlab.statistics.ui.customviews.BuildingView;
 import com.constantlab.statistics.ui.customviews.HistoryView;
 
 import java.util.List;

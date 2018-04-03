@@ -39,6 +39,7 @@
 
 
     <dimen name="nav_bar_icon">24dp</dimen>
+    <dimen name="icon_history">32dp</dimen>
 
     <dimen name="text_super_ex_small">9sp</dimen>
     <dimen name="text_ex_small">11sp</dimen>
@@ -50,6 +51,7 @@
 
     <dimen name="bb_height">52dp</dimen>
 
+    <dimen name="margin_ex_small">5dp</dimen>
     <dimen name="margin_small">10dp</dimen>
     <dimen name="margin_medium">15dp</dimen>
     <dimen name="margin_large">20dp</dimen>
@@ -70,6 +72,11 @@
     <!--<dimen name=""></dimen>-->
     <!--<dimen name=""></dimen>-->
     <!--<dimen name=""></dimen>-->
+
+
+    <dimen name="ic_x">23dp</dimen>
+
+    <dimen name="ic_my_location">48dp</dimen>
 
 
 </resources>

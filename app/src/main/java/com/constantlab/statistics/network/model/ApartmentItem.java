@@ -8,7 +8,8 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class ApartmentItem {
-    @SerializedName("id")
+
+    @SerializedName("flat_id")
     @Expose
     protected Integer id;
 
@@ -16,7 +17,7 @@ public class ApartmentItem {
     @Expose
     protected Integer inhabitants;
 
-    @SerializedName("num")
+    @SerializedName("flat_num")
     @Expose
     protected String number;
 
@@ -32,7 +33,6 @@ public class ApartmentItem {
     @Expose
     protected Integer flatType;
 
-
     public Integer getId() {
         return id;
     }
@@ -42,11 +42,7 @@ public class ApartmentItem {
     }
 
     public Integer getInhabitants() {
-        return inhabitants;
-    }
-
-    public void setInhabitants(Integer inhabitants) {
-        this.inhabitants = inhabitants;
+        return inhabitants == null?0:inhabitants;
     }
 
     public String getNumber() {
@@ -61,23 +57,11 @@ public class ApartmentItem {
         return flatOwner;
     }
 
-    public void setFlatOwner(String flatOwner) {
-        this.flatOwner = flatOwner;
-    }
-
     public String getFlatComment() {
         return flatComment;
     }
 
-    public void setFlatComment(String flatComment) {
-        this.flatComment = flatComment;
-    }
-
     public Integer getFlatType() {
         return flatType;
-    }
-
-    public void setFlatType(Integer flatType) {
-        this.flatType = flatType;
     }
 }

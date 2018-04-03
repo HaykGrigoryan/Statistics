@@ -65,9 +65,22 @@
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/btn_margin"
+                android:layout_marginLeft="@dimen/btn_margin"
+                android:layout_marginRight="@dimen/btn_margin"
+                android:layout_marginTop="@dimen/btn_margin"
                 android:padding="@dimen/tv_authorization_system_padding_medium"
                 android:text="@string/btn_text_login"
+                android:textAllCaps="false"
+                android:textSize="@dimen/btn_text_size" />
+
+            <Button
+                android:id="@+id/btn_server_info"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/btn_margin"
+                android:padding="@dimen/tv_authorization_system_padding_medium"
+                android:text="@string/label_settings"
                 android:textAllCaps="false"
                 android:textSize="@dimen/btn_text_size" />
         </LinearLayout>

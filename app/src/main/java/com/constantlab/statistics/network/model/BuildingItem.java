@@ -10,9 +10,13 @@ import java.util.List;
  */
 
 public class BuildingItem {
-    @SerializedName("id")
+    @SerializedName("house_id")
     @Expose
     protected Integer id;
+
+    @SerializedName("parent_id")
+    @Expose
+    protected Integer parentId;
 
     @SerializedName("house_type_id")
     @Expose
@@ -22,7 +26,7 @@ public class BuildingItem {
     @Expose
     protected Integer buildingStatus;
 
-    @SerializedName("house_number")
+    @SerializedName("house_num")
     @Expose
     protected String buildingNumber;
 
@@ -62,17 +66,11 @@ public class BuildingItem {
         return buildingType;
     }
 
-    public void setBuildingType(Integer buildingType) {
-        this.buildingType = buildingType;
-    }
 
     public String getBuildingNumber() {
         return buildingNumber;
     }
 
-    public void setBuildingNumber(String buildingNumber) {
-        this.buildingNumber = buildingNumber;
-    }
 
     public List<ApartmentItem> getApartmentItems() {
         return apartmentItems;
@@ -86,47 +84,32 @@ public class BuildingItem {
         return buildingStatus;
     }
 
-    public void setBuildingStatus(Integer buildingStatus) {
-        this.buildingStatus = buildingStatus;
-    }
 
     public Integer getBuildingPeople() {
         return buildingPeople;
     }
 
-    public void setBuildingPeople(Integer buildingPeople) {
-        this.buildingPeople = buildingPeople;
-    }
 
     public String getBuildingComment() {
         return buildingComment;
-    }
-
-    public void setBuildingComment(String buildingComment) {
-        this.buildingComment = buildingComment;
     }
 
     public Double getBuildingLat() {
         return buildingLat;
     }
 
-    public void setBuildingLat(Double buildingLat) {
-        this.buildingLat = buildingLat;
-    }
 
     public Double getBuildingLng() {
         return buildingLng;
     }
 
-    public void setBuildingLng(Double buildingLng) {
-        this.buildingLng = buildingLng;
-    }
 
     public String getBuildingOwner() {
         return buildingOwner;
     }
 
-    public void setBuildingOwner(String buildingOwner) {
-        this.buildingOwner = buildingOwner;
+    public Integer getParentId() {
+        return parentId;
     }
+
 }

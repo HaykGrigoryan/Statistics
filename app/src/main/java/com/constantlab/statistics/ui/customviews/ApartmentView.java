@@ -60,6 +60,8 @@ public class ApartmentView extends RelativeLayout {
             tvResidents.setText(String.format(Locale.getDefault(), FORMAT, apartment.getTotalInhabitants()));
         else
             tvResidents.setText(ZERO);
+
+        btnEdit.setImageResource(apartment.isEdited() ? R.drawable.ic_edit_green : R.drawable.ic_edit);
     }
 
     public void setEditButtonListener(View.OnClickListener listener) {

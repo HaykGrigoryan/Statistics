@@ -22,7 +22,7 @@ import java.util.Locale;
 public class TaskView extends FrameLayout {
 
     private static final String FORMAT = "%d";
-    TextView tvTaskName, tvTaskDate;
+    TextView tvTaskName, tvTaskDate, tvTaskKato, tvTaskComment;
     AppCompatImageView btnHistory;
 
     public TaskView(Context context) {
@@ -50,13 +50,17 @@ public class TaskView extends FrameLayout {
     private void init() {
         inflate(getContext(), R.layout.view_task, this);
         tvTaskName = findViewById(R.id.tv_task_name);
-        tvTaskDate = findViewById(R.id.tv_task_date);
+        tvTaskKato = findViewById(R.id.tv_task_date);
+        tvTaskDate = findViewById(R.id.tv_task_kato);
+        tvTaskComment = findViewById(R.id.tv_task_comment);
         btnHistory = findViewById(R.id.btn_history);
     }
 
     public void setData(Task task) {
         tvTaskName.setText(task.getDisplayName());
-        tvTaskDate.setText(task.getDisplayDateBegin());
+        tvTaskKato.setText(task.getDisplayKato(getContext()));
+        tvTaskDate.setText(task.getDisplayDateBegin(getContext()));
+        tvTaskComment.setText(task.getComment());
     }
 
     public void setHistoryButtonListener(View.OnClickListener listener) {

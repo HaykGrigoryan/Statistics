@@ -103,8 +103,6 @@
                 android:textAllCaps="false"
                 android:textColor="#eff0f8"
                 android:textSize="@dimen/text_small_medium" />
-
-
         </LinearLayout>
     </ScrollView>
 

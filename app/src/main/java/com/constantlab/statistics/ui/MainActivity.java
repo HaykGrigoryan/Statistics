@@ -6,37 +6,20 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.MenuItem;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.constantlab.statistics.R;
-import com.constantlab.statistics.models.Address;
-import com.constantlab.statistics.models.AddressStreet;
-import com.constantlab.statistics.models.Apartment;
-import com.constantlab.statistics.models.ApartmentType;
-import com.constantlab.statistics.models.Building;
-import com.constantlab.statistics.models.BuildingStatus;
-import com.constantlab.statistics.models.BuildingType;
-import com.constantlab.statistics.models.Kato;
-import com.constantlab.statistics.models.Street;
-import com.constantlab.statistics.models.StreetType;
-import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.app.SyncManager;
 import com.constantlab.statistics.ui.base.BaseActivity;
 import com.constantlab.statistics.ui.base.BaseFragment;
-import com.constantlab.statistics.ui.map.MapFragment;
 import com.constantlab.statistics.ui.map.OSMMapFragment;
 import com.constantlab.statistics.ui.sync.SyncFragment;
 import com.constantlab.statistics.ui.tasks.TasksFragment;
@@ -48,9 +31,6 @@ import com.roughike.bottombar.BottomBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 
 public class MainActivity extends BaseActivity implements INavigation, ISync, ActivityCompat.OnRequestPermissionsResultCallback {
     private static final int REQUEST_WRITE_PERMISSION = 786;
@@ -77,17 +57,15 @@ public class MainActivity extends BaseActivity implements INavigation, ISync, Ac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestPermission();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-//        insertDummyContent();
-
         showTaskFragment(TasksFragment.newInstance(), false);
         showTaskContainer();
         bottomBar = findViewById(R.id.bottom_navigation);
         bottomBar.setOnTabSelectListener(tabId -> {
             switch (tabId) {
                 case R.id.tab_tasks:
+                    showFragment(SyncFragment.newInstance(), false);
                     showTaskContainer();
                     break;
                 case R.id.tab_sync:
@@ -98,15 +76,18 @@ public class MainActivity extends BaseActivity implements INavigation, ISync, Ac
                             hideTaskContainer();
                         }
                     }, 100);
+
                     break;
                 case R.id.tab_map:
-                    showFragment(OSMMapFragment.newInstance(OSMMapFragment.MapAction.VIEW), false);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            hideTaskContainer();
-                        }
-                    }, 100);
+                    if (checkForPermission()) {
+                        showFragment(OSMMapFragment.newInstance(OSMMapFragment.MapAction.VIEW), false);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                hideTaskContainer();
+                            }
+                        }, 100);
+                    }
                     break;
             }
         });
@@ -139,50 +120,67 @@ public class MainActivity extends BaseActivity implements INavigation, ISync, Ac
                 }
             }
         });
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkForPermission();
+        }
 //        isStoragePermissionGranted();
 
     }
 
-    public  boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-////                Log.v(TAG,"Permission is granted");
-//                return true;
-//            } else {
-//                Log.v(TAG,"Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                return false;
+    private boolean checkForPermission() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) || ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Snackbar.make(mContentView, getString(R.string.msg_grand_body), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.label_grand), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                requestStoragePermission();
+                            }
+                        })
+                        .show();
+            } else {
+                requestStoragePermission();
             }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-//            Log.v(TAG,"Permission is granted");
+            return false;
+        } else {
             return true;
         }
-        return false;
     }
 
-
-    private void refreshBottomNavigationSize(BottomNavigationView bottomNavigationView) {
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView)
-                bottomNavigationView.getChildAt(0);
-        for (int i = 0; i < menuView.getChildCount(); i++) {
-            final View iconView =
-                    menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
-            final ViewGroup.LayoutParams layoutParams =
-                    iconView.getLayoutParams();
-            final DisplayMetrics displayMetrics =
-                    getResources().getDisplayMetrics();
-            layoutParams.height = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
-//                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
-//                            displayMetrics);
-            layoutParams.width = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
-//                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
-//                            displayMetrics);
-            iconView.setLayoutParams(layoutParams);
-        }
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_WRITE_PERMISSION);
     }
+//
+//
+//    private void refreshBottomNavigationSize(BottomNavigationView bottomNavigationView) {
+//        BottomNavigationMenuView menuView = (BottomNavigationMenuView)
+//                bottomNavigationView.getChildAt(0);
+//        for (int i = 0; i < menuView.getChildCount(); i++) {
+//            final View iconView =
+//                    menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
+//            final ViewGroup.LayoutParams layoutParams =
+//                    iconView.getLayoutParams();
+//            final DisplayMetrics displayMetrics =
+//                    getResources().getDisplayMetrics();
+//            layoutParams.height = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
+////                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
+////                            displayMetrics);
+//            layoutParams.width = (int) getResources().getDimensionPixelSize(R.dimen.botomBar_img_size);
+////                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getResources().getDimension(R.dimen.botomBar_img_size),
+////                            displayMetrics);
+//            iconView.setLayoutParams(layoutParams);
+//        }
+//    }
 
     private void showTaskContainer() {
         mFragmentContainer.setVisibility(View.GONE);
@@ -192,273 +190,6 @@ public class MainActivity extends BaseActivity implements INavigation, ISync, Ac
     private void hideTaskContainer() {
         mFragmentContainer.setVisibility(View.VISIBLE);
         mTaskContainer.setVisibility(View.GONE);
-    }
-
-    private void insertDummyContent() {
-        insertStreetType();
-        insertAddressStreets();
-//        insertHouseWalls();
-        insertBuildingStatus();
-        insertBuildingTypes();
-        insertApartmentTypes();
-        insertKato();
-        insertAddress();
-        insertBuilding();
-        insertStreets();
-        insertTasks();
-    }
-
-    private void insertBuildingTypes() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(BuildingType.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    BuildingType buildingType = new BuildingType();
-                    buildingType.setId(1);
-                    buildingType.setName("Тип 1");
-                    realmObject.insertOrUpdate(buildingType);
-                    buildingType.setId(2);
-                    buildingType.setName("Тип 2");
-                    realmObject.insert(buildingType);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertBuildingStatus() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(BuildingStatus.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    BuildingStatus buildingStatus = new BuildingStatus();
-                    buildingStatus.setId(1);
-                    buildingStatus.setStatus("Статус 1");
-                    realmObject.insertOrUpdate(buildingStatus);
-                    buildingStatus.setId(2);
-                    buildingStatus.setStatus("Статус 2");
-                    realmObject.insert(buildingStatus);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertApartmentTypes() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(ApartmentType.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    ApartmentType apartmentType = new ApartmentType();
-                    apartmentType.setId(1);
-                    apartmentType.setName("Квартира");
-                    realmObject.insertOrUpdate(apartmentType);
-                    apartmentType.setId(2);
-                    apartmentType.setName("Комната");
-                    realmObject.insertOrUpdate(apartmentType);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertTasks() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(Task.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    Task task = new Task();
-                    task.setTaskId(1);
-                    RealmResults<Street> realmList = realmObject.where(Street.class).findAll();
-                    RealmList<Street> streetsRealmList = new RealmList<>();
-                    streetsRealmList.addAll(realmList);
-//                    task.setStreetList(streetsRealmList);
-//                    task.setTotalBuildings(task.getStreetList().size());
-                    int totalApartments = 0;
-                    int totalResidents = 0;
-
-//                    //Count Apartments
-//                    for (Street street : task.getStreetList()) {
-//                        for (Building building : street.getBuildingList()) {
-//                            if (building.getApartmentList() != null) {
-//                                totalApartments += building.getApartmentList().size();
-//                                for (Apartment apartment : building.getApartmentList()) {
-//                                    totalResidents += apartment.getTotalInhabitants();
-//                                }
-//                            }
-//                        }
-//                    }
-//                    task.setTotalApartments(totalApartments);
-//                    task.setTotalResidents(totalResidents);
-                    task.setName("Задания 1");
-                    realmObject.insert(task);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertStreets() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(Street.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    Street street = new Street();
-                    street.setId(1);
-                    RealmResults<Building> realmList = realmObject.where(Building.class).findAll();
-                    RealmList<Building> buildingRealmList = new RealmList<>();
-                    buildingRealmList.addAll(realmList);
-//                    street.setBuildingList(buildingRealmList);
-
-                    //Count Apartments
-                    street.setName("Иманова");
-                    realmObject.insert(street);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertBuilding() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(Building.class).findAll().size() == 0) {
-                realm.executeTransaction(realObject -> {
-                    Building building = new Building();
-                    building.setId(1);
-//                    Address address = realObject.where(Address.class).findFirst();
-//                    building.setAddress(address);
-//                    building.setHouseNumber("11");
-//                    building.setFloorNumber(1);
-//                    building.setTotalFlats(100);
-//                    building.setAreaSq(85.0f);
-                    building.setLongitude(null);
-                    building.setLongitude(null);
-                    building.setOwnerName("Никита Карачев");
-                    BuildingType buildingType = realObject.where(BuildingType.class).findFirst();
-//                    building.setBuildingType(buildingType);
-                    BuildingStatus buildingStatus = realObject.where(BuildingStatus.class).findFirst();
-//                    building.setBuildingStatus(buildingStatus);
-                    Apartment apartment = new Apartment();
-                    apartment.setId(1);
-//                    apartment.setApartmentNumber("1");
-                    ApartmentType apartmentType = realObject.where(ApartmentType.class).findFirst();
-//                    apartment.setApartmentType(apartmentType);
-                    apartment.setOwnerName("Yerzhan Ryskaliyev");
-                    apartment.setTotalInhabitants(3);
-                    RealmList<Apartment> apartments = new RealmList<>();
-                    apartments.add(apartment);
-//                    building.setApartmentList(apartments);
-                    realObject.insert(building);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertAddress() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(Address.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    Address address = new Address();
-                    Kato kato = realmObject.where(Kato.class).findFirst();
-                    address.setKato(kato);
-                    AddressStreet street = realmObject.where(AddressStreet.class).findFirst();
-                    address.setStreet(street);
-                    StreetType streetType = realmObject.where(StreetType.class).findFirst();
-                    address.setStreetType(streetType);
-                    realmObject.insertOrUpdate(address);
-                    address.setStreetType(streetType);
-                    street = realmObject.where(AddressStreet.class).equalTo("id", 2).findFirst();
-                    address.setStreet(street);
-                    address.setKato(kato);
-                    realmObject.insertOrUpdate(address);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertKato() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(Kato.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    Kato kato = new Kato();
-                    kato.setId(1);
-                    kato.setNameRu("Г.АЯГОЗ");
-                    kato.setNameKz("АЯГӨЗ Қ.");
-                    realmObject.insert(kato);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertAddressStreets() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(AddressStreet.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    AddressStreet street = new AddressStreet();
-                    street.setId(1);
-                    street.setTitleRu("Субурская");
-                    street.setTitleKz("СИБИРСКАЯ");
-                    realmObject.insertOrUpdate(street);
-                    street.setId(2);
-                    street.setTitleRu("С.Саметова");
-                    street.setTitleKz("С.Саметова");
-                    realmObject.insertOrUpdate(street);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    private void insertStreetType() {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            if (realm.where(StreetType.class).findAll().size() == 0) {
-                realm.executeTransaction(realmObject -> {
-                    StreetType streetType = new StreetType();
-                    streetType.setId(1);
-                    streetType.setName("УЛИЦА");
-                    realmObject.insert(streetType);
-                });
-            }
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
     }
 
     @Override
@@ -499,17 +230,20 @@ public class MainActivity extends BaseActivity implements INavigation, ISync, Ac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            showMessage("Granted");
+        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults.length == 2) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (bottomBar.getCurrentTabId() == R.id.tab_map) {
+//                showExtDirFilesCount();
+                    showFragment(OSMMapFragment.newInstance(OSMMapFragment.MapAction.VIEW), false);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideTaskContainer();
+                        }
+                    }, 100);
+                }
+            }
         }
-
-    }
-
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
-        } else {
-//            showMessage("Granted");
-        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

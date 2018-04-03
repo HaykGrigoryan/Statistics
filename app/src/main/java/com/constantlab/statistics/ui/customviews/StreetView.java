@@ -60,13 +60,14 @@ public class StreetView extends RelativeLayout {
     public void setData(Street street) {
 //        streetName.setText(getContext().getString(R.string.label_street_short) + " " + street.getName());
         streetName.setText(street.getName());
+//        street.initCounts(street.getUserId());
         buidingsCount
-                .setText(String.format(Locale.getDefault(), FORMAT, street.getBuidingsCount()));
+                .setText(String.format(Locale.getDefault(), FORMAT, street.getBuildingCount()));
         apartmentsCount
                 .setText(String.format(Locale.getDefault(), FORMAT, street.getApartmentCount()));
         residentsCount
                 .setText(String.format(Locale.getDefault(), FORMAT, street.getResidentsCount()));
-
+        btnEdit.setImageResource(street.isEdited() ? R.drawable.ic_edit_green : R.drawable.ic_edit);
     }
 
     public void setEditButtonListener(View.OnClickListener listener) {

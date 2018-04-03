@@ -48,7 +48,7 @@
                     android:paddingRight="@dimen/padding_small"
                     android:fontFamily="@font/opensanslight"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/text_medium_large"
+                    android:textSize="@dimen/text_medium"
                     android:text="Task #1" />
 
                 <android.support.v7.widget.AppCompatImageView

@@ -57,16 +57,24 @@ public class BuildingView extends RelativeLayout {
     }
 
     public void setData(Building building) {
-        buildingName.setText(building.getDisplayAddress(getContext()));
+        buildingName.setText(building.getHouseNumber());//building.getUserId()
         apartmentsCount
-                .setText(building.getApartmentCount() != null ? String.format(Locale.getDefault(), FORMAT, building.getApartmentCount()) : ZERO);
-        int residents = building.getApartmentInhabitantsCount();
-        
+                .setText(String.format(Locale.getDefault(), FORMAT, building.getApartmentCount()));//building.getApartmentCount(building.getUserId()) != null ? String.format(Locale.getDefault(), FORMAT, building.getApartmentCount(building.getUserId())) : ZERO
+        int residents = 0;
+        if (Building.isFlatLevelEnabled(building.getBuildingType(), building.getBuildingStatus())) {
+            residents = building.getResidentsCount();// building.getApartmentInhabitantsCount(building.getUserId());
+        } else {
+            residents = building.getTemporaryInhabitants();
+        }
+
+
         if (residents == 0) {
             residentsCount.setText(ZERO);
         } else {
             residentsCount.setText(String.format(Locale.getDefault(), FORMAT, residents));
         }
+
+        btnEdit.setImageResource(building.isEdited() ? R.drawable.ic_edit_green : R.drawable.ic_edit);
     }
 
     public void setEditButtonListener(View.OnClickListener listener) {

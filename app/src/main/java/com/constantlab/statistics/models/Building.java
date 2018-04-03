@@ -12,6 +12,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -23,7 +24,9 @@ public class Building extends RealmObject {
     @PrimaryKey
     private Integer local_id;
     private Integer id;
+    private Integer parentId;
     private String houseNumber;
+    private String houseNumberLowerCase;
     private Integer buildingStatus;
     private Integer buildingType;
     private String ownerName;
@@ -31,13 +34,17 @@ public class Building extends RealmObject {
     private Double longitude;
     private Integer street_id;
     private String kato;
-    private String streetName;
     private String comment;
     private Integer temporaryInhabitants;
-    private Integer streetType;
     private boolean isNew;
+    private boolean isEdited;
     private Integer task_id;
     private Integer historyId;
+    private Integer user_id;
+    private long change_time;
+
+    private int apartmentCount;
+    private int residentsCount;
 
     public Integer getBuildingType() {
         return buildingType == null ? 0 : buildingType;
@@ -71,9 +78,9 @@ public class Building extends RealmObject {
         this.id = id;
     }
 
-    public String getDisplayAddress(Context context) {
+    public String getDisplayAddress(Integer userId) {
 //        return context.getString(R.string.label_street_short) + " " + getStreetName() + " " + context.getString(R.string.label_bld_short) + " " + getHouseNumber();
-        return getStreetName() + " " + getHouseNumber();
+        return getStreetName(userId) + " " + getHouseNumber();
     }
 
     public String getHouseNumber() {
@@ -82,6 +89,9 @@ public class Building extends RealmObject {
 
     public void setHouseNumber(String houseNumber) {
         this.houseNumber = houseNumber;
+        if (houseNumber != null) {
+            houseNumberLowerCase = houseNumber.toLowerCase();
+        }
     }
 
     public Double getLatitude() {
@@ -140,32 +150,25 @@ public class Building extends RealmObject {
         this.temporaryInhabitants = temporaryInhabitants;
     }
 
-    public String getStreetName() {
-        String street = streetName;
-        if (street == null) {
-            Realm realm = null;
-            try {
-                realm = Realm.getDefaultInstance();
-                street = realm.where(Street.class).equalTo("id", street_id).findFirst().getName();
-                return street;
-            } finally {
-                if (realm != null)
-                    realm.close();
-            }
+    public String getStreetName(Integer userId) {
+        String street = "";
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            street = realm.where(Street.class).equalTo("user_id", userId).equalTo("id", street_id).findFirst().getName();
+            return street;
+        } finally {
+            if (realm != null)
+                realm.close();
         }
-        return street;
     }
 
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
+    public Integer getParentId() {
+        return parentId;
     }
 
-    public Integer getStreetType() {
-        return streetType;
-    }
-
-    public void setStreetType(Integer streetType) {
-        this.streetType = streetType;
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public static Building getBuilding(BuildingItem item) {
@@ -179,43 +182,65 @@ public class Building extends RealmObject {
         building.setLatitude(item.getBuildingLat());
         building.setLongitude(item.getBuildingLng());
         building.setTemporaryInhabitants(item.getBuildingPeople());
-
+        building.setParentId(item.getParentId());
         return building;
     }
 
-    public Integer getApartmentCount() {
-        Realm realm = null;
-        int apartmentCount = 0;
-        try {
-            realm = Realm.getDefaultInstance();
 
-            List<Apartment> apartments = realm.where(Apartment.class).equalTo("building_id", id).equalTo("task_id", task_id).findAll();
-            apartmentCount = apartments.size();
-
-            return apartmentCount;
-        } finally {
-            if (realm != null)
-                realm.close();
-        }
-    }
-
-    public Integer getApartmentInhabitantsCount() {
-        Realm realm = null;
-        int inhabitantsCount = 0;
-        try {
-            realm = Realm.getDefaultInstance();
-
-            List<Apartment> apartments = realm.where(Apartment.class).equalTo("building_id", id).equalTo("task_id", task_id).findAll();
-            for (Apartment apartment : apartments) {
-                inhabitantsCount += apartment.getTotalInhabitants();
+    public static void refreshCounts(Integer userId, Integer task_id, Integer street_id, Integer buildingId, Realm realm) {
+        Building building = realm.where(Building.class).equalTo("user_id", userId).equalTo("task_id", task_id).equalTo("street_id", street_id).equalTo("id", buildingId).findFirst();
+        if (building != null) {
+            int aptCount = 0;
+            int residentsCount = 0;
+            RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("user_id", userId).equalTo("task_id", task_id).equalTo("building_id", buildingId).findAll();
+            aptCount = apartments.size();
+            if (!Building.isFlatLevelEnabled(building.getBuildingType(), building.getBuildingStatus())) {
+                residentsCount = building.getTemporaryInhabitants();
+            } else {
+                for (Apartment apartment : apartments) {
+                    residentsCount += apartment.getTotalInhabitants();
+                }
             }
 
-            return inhabitantsCount;
-        } finally {
-            if (realm != null)
-                realm.close();
+            building.setApartmentCount(aptCount);
+            building.setResidentsCount(residentsCount);
+            realm.insertOrUpdate(building);
         }
     }
+
+//    public Integer getApartmentCount(Integer userId) {
+//        Realm realm = null;
+//        int apartmentCount = 0;
+//        try {
+//            realm = Realm.getDefaultInstance();
+//
+//            List<Apartment> apartments = realm.where(Apartment.class).equalTo("user_id", userId).equalTo("building_id", id).equalTo("task_id", task_id).findAll();
+//            apartmentCount = apartments.size();
+//
+//            return apartmentCount;
+//        } finally {
+//            if (realm != null)
+//                realm.close();
+//        }
+//    }
+//
+//    public Integer getApartmentInhabitantsCount(Integer userId) {
+//        Realm realm = null;
+//        int inhabitantsCount = 0;
+//        try {
+//            realm = Realm.getDefaultInstance();
+//
+//            List<Apartment> apartments = realm.where(Apartment.class).equalTo("user_id", userId).equalTo("building_id", id).equalTo("task_id", task_id).findAll();
+//            for (Apartment apartment : apartments) {
+//                inhabitantsCount += apartment.getTotalInhabitants();
+//            }
+//
+//            return inhabitantsCount;
+//        } finally {
+//            if (realm != null)
+//                realm.close();
+//        }
+//    }
 
     public boolean isNew() {
         return isNew;
@@ -223,6 +248,14 @@ public class Building extends RealmObject {
 
     public void setNew(boolean aNew) {
         isNew = aNew;
+    }
+
+    public boolean isEdited() {
+        return isEdited;
+    }
+
+    public void setEdited(boolean edited) {
+        isEdited = edited;
     }
 
     public Integer getLocalId() {
@@ -266,5 +299,41 @@ public class Building extends RealmObject {
             }
         }
         return false;
+    }
+
+    public static boolean isFlatLevelEnabled(Integer type, Integer status) {
+        return !Building.isStatusInactive(status) && !Building.isTypeSpetialInstitution(type) && !Building.isTypeClosedInstitution(type);
+    }
+
+    public Integer getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(Integer user_id) {
+        this.user_id = user_id;
+    }
+
+    public long getChangeTime() {
+        return change_time;
+    }
+
+    public void setChangeTime(long change_time) {
+        this.change_time = change_time;
+    }
+
+    public int getApartmentCount() {
+        return apartmentCount;
+    }
+
+    public void setApartmentCount(int apartmentCount) {
+        this.apartmentCount = apartmentCount;
+    }
+
+    public int getResidentsCount() {
+        return residentsCount;
+    }
+
+    public void setResidentsCount(int residentsCount) {
+        this.residentsCount = residentsCount;
     }
 }
