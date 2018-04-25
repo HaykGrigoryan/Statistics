@@ -34,7 +34,7 @@ public class ServiceGenerator {
                     .baseUrl(Constants.SERVER_URL)
                     .addConverterFactory(GsonConverterFactory.create());
 
-    public static <S> S createService(Class<S> serviceClass, Context context) {
+    public static <S> S createService(Class<S> serviceClass, Context context, boolean useGzip) {
         SSLSocketFactory sslSocketFactory = null;
 
 
@@ -70,6 +70,8 @@ public class ServiceGenerator {
             e.printStackTrace();
         } catch (Exception e) {
         }
+
+        httpClient.interceptors().clear();
         // Create an ssl socket factory with our all-trusting manager
         httpClient.interceptors().add(new LogJsonInterceptor());
         httpClient.addInterceptor(chain -> {
@@ -81,10 +83,13 @@ public class ServiceGenerator {
             Request request = requestBuilder.build();
             return chain.proceed(request);
         });
+        if (useGzip) {
+            httpClient.interceptors().add(new GzipRequestInterceptor());
+        }
 
         //TODO Set Level.NONE on release
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
         OkHttpClient client = httpClient.addInterceptor(interceptor).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10, TimeUnit.MINUTES).sslSocketFactory(sslSocketFactory).build();
         builder.baseUrl(Constants.constructBaseURL(context));

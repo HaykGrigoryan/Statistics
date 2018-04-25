@@ -57,10 +57,12 @@ import com.constantlab.statistics.utils.SharedPreferencesManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.List;
@@ -105,7 +107,7 @@ public class SyncFragment extends BaseFragment implements ISync {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userId = SharedPreferencesManager.getInstance().getUser(getContext()).getUserId();
-        rtService = ServiceGenerator.createService(RTService.class, getContext());
+        rtService = ServiceGenerator.createService(RTService.class, getContext(), true);
     }
 
     @Nullable
@@ -264,7 +266,7 @@ public class SyncFragment extends BaseFragment implements ISync {
     private void performSendHistory(List<TaskSend> sendData) {
         loading(true);
 
-        Call<BasicSingleDataResponse<String>> call = rtService.addChangesJSON(sendData);
+        Call<BasicSingleDataResponse<String>> call = rtService.addChangesGzip(sendData);
         call.enqueue(new Callback<BasicSingleDataResponse<String>>() {
             @Override
             public void onResponse(Call<BasicSingleDataResponse<String>> call, Response<BasicSingleDataResponse<String>> response) {
@@ -281,6 +283,7 @@ public class SyncFragment extends BaseFragment implements ISync {
                         Toast.makeText(getContext(), getContext().getString(R.string.message_success_sync_to_server), Toast.LENGTH_SHORT).show();
                     }
                 }
+
                 if (response.body() != null && response.body().getMessage() != null) {
                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
@@ -305,6 +308,23 @@ public class SyncFragment extends BaseFragment implements ISync {
         SharedPreferencesManager.getInstance().setSyncing(getContext(), true);
         SyncService.startServiceToSync(getActivity(), new SyncDataResultReceiver((MainActivity) getActivity()));
         loadButtonState();
+//        Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskListGzip(new TaskRequest("zj1e5IEubqNMsfYS"));
+//        call.enqueue(new Callback<BasicMultipleDataResponse<TaskItem>>() {
+//            @Override
+//            public void onResponse(Call<BasicMultipleDataResponse<TaskItem>> call, Response<BasicMultipleDataResponse<TaskItem>> response) {
+//                if (response.code() == 200 && response.body().isSuccessNestedStatus()) {
+//
+//                }
+//
+//                loading(false);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<BasicMultipleDataResponse<TaskItem>> call, Throwable t) {
+//                Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+//                loading(false);
+//            }
+//        });
     }
 
     @Override

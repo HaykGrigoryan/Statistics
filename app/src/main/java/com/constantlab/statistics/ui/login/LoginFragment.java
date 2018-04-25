@@ -114,7 +114,7 @@ public class LoginFragment extends BaseFragment {
             SharedPreferencesManager.getInstance().setUser(getContext(), user);
             goToMain();
         } else {
-            RTService rtService = ServiceGenerator.createService(RTService.class, getContext());
+            RTService rtService = ServiceGenerator.createService(RTService.class, getContext(), false);
             Call<BasicSingleDataResponse<String>> call = rtService.getKey(new GetKeyRequest(username, password));
             loading(true);
             call.enqueue(new Callback<BasicSingleDataResponse<String>>() {

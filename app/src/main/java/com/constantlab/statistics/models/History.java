@@ -12,6 +12,8 @@ import com.constantlab.statistics.utils.GsonUtils;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
 import com.google.gson.annotations.SerializedName;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +108,13 @@ public class History extends RealmObject implements Serializable {
 
         }
         return message;
+    }
+
+    public GeoPoint getPoint() {
+        if (change_type == 14 && new_data != null && new_data.getLat() != null && new_data.getLon() != null) {
+            return new GeoPoint(new_data.getLat(), new_data.getLon());
+        }
+        return null;
     }
 
     public Integer getTaskId() {

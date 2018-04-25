@@ -36,6 +36,7 @@ import com.constantlab.statistics.R;
 import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.GeoPolygon;
+import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
@@ -246,12 +247,18 @@ public class OSMMapFragment extends BaseFragment {
 
         } else if (mMapAction == MapAction.VIEW) {
             ArrayList<OverlayItem> markers = new ArrayList<>();
-            List<Building> buildings = RealmManager.getInstance().getBuildingsWithPoints(userId);
-            for (Building building : buildings) {
-                OverlayItem item = new OverlayItem("", "", new GeoPoint(building.getLatitude(), building.getLongitude()));
+            List<History> histories = RealmManager.getInstance().getUserAddedPoints(userId);
+//            List<Building> buildings = RealmManager.getInstance().getBuildingsWithPoints(userId);
+//            for (Building building : buildings) {
+//                OverlayItem item = new OverlayItem("", "", new GeoPoint(building.getLatitude(), building.getLongitude()));
+//                item.setMarker(ContextCompat.getDrawable(getActivity(), R.drawable.map_marker));
+//                markers.add(item);
+////                mInitialIcon = new ItemizedIconOverlay<>(getActivity(), markers, null);
+//            }
+            for (History history : histories) {
+                OverlayItem item = new OverlayItem("", "", history.getPoint());
                 item.setMarker(ContextCompat.getDrawable(getActivity(), R.drawable.map_marker));
                 markers.add(item);
-//                mInitialIcon = new ItemizedIconOverlay<>(getActivity(), markers, null);
             }
             mMap.getOverlays().add(new ItemizedIconOverlay<>(getActivity(), markers, null));
             mMap.invalidate();

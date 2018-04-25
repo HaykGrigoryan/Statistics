@@ -103,7 +103,7 @@ public class SyncService extends IntentService {
     }
 
     private void handleSync(ResultReceiver resultReceiver) {
-        rtService = ServiceGenerator.createService(RTService.class, SyncService.this);
+        rtService = ServiceGenerator.createService(RTService.class, SyncService.this, false);
         loadChangeTypes(resultReceiver);
     }
 
@@ -307,7 +307,7 @@ public class SyncService extends IntentService {
 
     private void syncData(ResultReceiver resultReceiver) {
         try {
-            Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskList(new TaskRequest(SharedPreferencesManager.getInstance().getUser(this).getKey()));
+            Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskListGzip(new TaskRequest(SharedPreferencesManager.getInstance().getUser(this).getKey()));
             Response<BasicMultipleDataResponse<TaskItem>> response = call.execute();
             if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
                 insertTasks(response.body().getData());
@@ -324,8 +324,6 @@ public class SyncService extends IntentService {
                 handleError(resultReceiver, getString(R.string.message_connection_problem));
 
             }
-
-
         } catch (IOException e) {
             handleError(resultReceiver, getString(R.string.message_connection_problem));
         }

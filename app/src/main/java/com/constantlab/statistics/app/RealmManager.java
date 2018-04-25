@@ -475,6 +475,24 @@ public class RealmManager {
         return buildings;
     }
 
+    public List<History> getUserAddedPoints(Integer userId) {
+        Realm realm = null;
+        List<History> histories = new ArrayList<>();
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<History> b = realm.where(History.class).equalTo("user_id", userId).equalTo("change_type",14).findAll();
+            if (b != null) {
+                histories = realm.copyFromRealm(b);
+            }
+
+        } finally {
+            if (realm != null)
+                realm.close();
+        }
+
+        return histories;
+    }
+
     public void changeHistoryInactiveStatus(Integer taskId, Integer buildingId, boolean inactive, Realm realm, Integer userId) {
         RealmResults<Apartment> apartments = realm.where(Apartment.class).equalTo("user_id", userId).equalTo("task_id", taskId).equalTo("building_id", buildingId).findAll();
         if (apartments == null) {

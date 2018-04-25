@@ -9,6 +9,10 @@ import android.widget.EditText;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.ui.base.BaseActivity;
+import com.constantlab.statistics.utils.Helper;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by Sunny Kinger on 04-12-2017.
@@ -31,6 +35,13 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_fragment);
         showFragment(LoginFragment.newInstance(), false);
+//        try {
+//            Helper.SHA1(Helper.readFromFile());
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

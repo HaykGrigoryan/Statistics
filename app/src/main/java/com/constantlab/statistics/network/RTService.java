@@ -36,6 +36,10 @@ public interface RTService {
     @POST("get_task_list")
     Call<BasicMultipleDataResponse<TaskItem>> getTaskList(@Body TaskRequest taskRequest);
 
+    @POST("get_task_list_gzip")
+    Call<BasicMultipleDataResponse<TaskItem>> getTaskListGzip(@Body TaskRequest taskRequest);
+
+
     @POST("get_reference")
     Call<BasicMultipleDataResponse<StreetType>> getStreetTypes(@Body GetReferenceRequest getReferenceRequest);
 
@@ -56,4 +60,7 @@ public interface RTService {
 
     @POST("add_changes")
     Call<BasicSingleDataResponse<String>> addChangesJSON(@Body List<TaskSend> history);
+
+    @POST("add_changes_gzip")
+    Call<BasicSingleDataResponse<String>> addChangesGzip(@Body List<TaskSend> history);
 }
