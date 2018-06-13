@@ -36,7 +36,7 @@ public class ConstKeys {
     public static final String KEY_USER_KEY = PACKAGE_NAME + "_KEY_USER_KEY";
     public static final String KEY_LAST_SYNC_FROM_SERVER = PACKAGE_NAME + "_KEY_LAST_SYNC_FROM_SERVER";
     public static final String KEY_LAST_SYNC_TO_SERVER = PACKAGE_NAME + "_KEY_LAST_SYNC_TO_SERVER";
-    public static final String KEY_SYNCING = PACKAGE_NAME + "_KEY_SYNCING";
+    public static final String KEY_SYNCING_INT = PACKAGE_NAME + "_KEY_SYNCING_INT";
 
     public static final String KEY_GEOPOINT = PACKAGE_NAME + "_KEY_GEOPOINT";
     public static final String KEY_ZOOM = PACKAGE_NAME + "_KEY_ZOOM";

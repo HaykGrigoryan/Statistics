@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3D51B3</color>
-    <color name="colorPrimaryDark">#3D51B3</color>
-    <color name="colorAccent">#3D51B3</color>
+    <color name="colorPrimary">#fc6333</color>
+    <color name="colorPrimaryDark">#ff5722</color>
+    <color name="colorAccent">#ff5722</color>
 
     <color name="colorAccentSecondary">#F0785A</color>
     <color name="text_primary">#212121</color>
@@ -17,4 +17,8 @@
 
     <color name="dialog_title">#2d2d2d</color>
     <color name="line_color_gray">#bababa</color>
+    <color name="color_header">#000000</color>
+    <color name="color_nav">#f9fafa</color>
+    <color name="color_nav_ic_color">#dc3232</color>
+    <color name="color_nav_item">#dc3232</color>
 </resources>

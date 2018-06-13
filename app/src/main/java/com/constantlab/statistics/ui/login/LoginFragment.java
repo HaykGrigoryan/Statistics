@@ -126,14 +126,14 @@ public class LoginFragment extends BaseFragment {
                         SharedPreferencesManager.getInstance().setUser(getContext(), RealmManager.getInstance().getUser(username, password));
                         goToMain();
                     } else {
-                        Toast.makeText(getContext(), getContext().getString(R.string.message_wrong_credentials), Toast.LENGTH_SHORT).show();
+                        showToast(getContext().getString(R.string.message_connection_problem));
                     }
                     loading(false);
                 }
 
                 @Override
                 public void onFailure(Call<BasicSingleDataResponse<String>> call, Throwable t) {
-                    Toast.makeText(getContext(), getContext().getString(R.string.message_connection_problem), Toast.LENGTH_SHORT).show();
+                    showToast(getContext().getString(R.string.message_connection_problem));
                     loading(false);
                 }
             });

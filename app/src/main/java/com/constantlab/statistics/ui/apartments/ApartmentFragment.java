@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -167,6 +168,9 @@ public class ApartmentFragment extends BaseFragment implements ApartmentRecycler
         rvApartments.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setSmoothScrollbarEnabled(true);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvApartments.getContext(),
+                llm.getOrientation());
+        rvApartments.addItemDecoration(dividerItemDecoration);
         rvApartments.setLayoutManager(llm);
         rvApartments.setAdapter(mApartmentRecyclerViewAdapter);
 

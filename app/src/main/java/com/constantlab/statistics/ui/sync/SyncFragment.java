@@ -134,9 +134,9 @@ public class SyncFragment extends BaseFragment implements ISync {
     }
 
     private void loadButtonState() {
-        loaderSync.setVisibility(SharedPreferencesManager.getInstance().isSyncing(getContext()) ? View.VISIBLE : View.INVISIBLE);
-        btnSyncWithServer.setEnabled(!SharedPreferencesManager.getInstance().isSyncing(getContext()));
-        btnSyncToServer.setEnabled(!SharedPreferencesManager.getInstance().isSyncing(getContext()));
+//        loaderSync.setVisibility(SharedPreferencesManager.getInstance().isSyncing(getContext()) ? View.VISIBLE : View.INVISIBLE);
+//        btnSyncWithServer.setEnabled(!SharedPreferencesManager.getInstance().isSyncing(getContext()));
+//        btnSyncToServer.setEnabled(!SharedPreferencesManager.getInstance().isSyncing(getContext()));
     }
 
     @OnClick(R.id.btn_sync_with_server)
@@ -305,8 +305,8 @@ public class SyncFragment extends BaseFragment implements ISync {
     }
 
     private void startSync() {
-        SharedPreferencesManager.getInstance().setSyncing(getContext(), true);
-        SyncService.startServiceToSync(getActivity(), new SyncDataResultReceiver((MainActivity) getActivity()));
+        SharedPreferencesManager.getInstance().setSyncing(getContext(), 0);
+        SyncService.startServiceToSync(getActivity(), new SyncDataResultReceiver((MainActivity) getActivity()),true);
         loadButtonState();
 //        Call<BasicMultipleDataResponse<TaskItem>> call = rtService.getTaskListGzip(new TaskRequest("zj1e5IEubqNMsfYS"));
 //        call.enqueue(new Callback<BasicMultipleDataResponse<TaskItem>>() {

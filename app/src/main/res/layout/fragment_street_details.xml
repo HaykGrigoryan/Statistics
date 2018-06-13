@@ -34,7 +34,6 @@
                     android:layout_marginEnd="@dimen/margin_medium"
                     android:layout_marginStart="@dimen/margin_medium"
                     android:enabled="false"
-                    android:fontFamily="@font/opensansregular"
                     android:hint="@string/hint_street_name"
                     android:inputType="textNoSuggestions"
                     android:padding="@dimen/padding_large"

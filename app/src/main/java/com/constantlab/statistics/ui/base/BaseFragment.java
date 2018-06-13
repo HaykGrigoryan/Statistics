@@ -2,6 +2,7 @@ package com.constantlab.statistics.ui.base;
 
 
 import android.app.ProgressDialog;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
@@ -65,6 +66,9 @@ public abstract class BaseFragment extends Fragment {
      */
     public void showToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+    public void showSnackMessage(String message) {
+        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
     }
 
     /**

@@ -76,14 +76,14 @@ public class SharedPreferencesManager {
 //        prefs.edit().remove(ConstKeys.KEY_LAST_SYNC_FROM_SERVER).remove(ConstKeys.KEY_LAST_SYNC_TO_SERVER).commit();
 //    }
 
-    public void setSyncing(Context context, boolean syncing) {
+    public void setSyncing(Context context, int state) {
         SharedPreferences prefs = context.getSharedPreferences(ConstKeys.KEY_APP_SHARED_PREFERENCES, 0);
-        prefs.edit().putBoolean(ConstKeys.KEY_SYNCING, syncing).commit();
+        prefs.edit().putInt(ConstKeys.KEY_SYNCING_INT, state).commit();
     }
 
-    public boolean isSyncing(Context context) {
+    public int isSyncing(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(ConstKeys.KEY_APP_SHARED_PREFERENCES, 0);
-        return prefs.getBoolean(ConstKeys.KEY_SYNCING, false);
+        return prefs.getInt(ConstKeys.KEY_SYNCING_INT, -1);
     }
 
     public void setGeoPoint(Context context, GeoPoint geoPoint) {

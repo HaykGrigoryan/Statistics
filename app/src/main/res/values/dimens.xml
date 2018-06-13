@@ -18,8 +18,11 @@
     <!--activity_main.xml-->
     <dimen name="bottomBar_height">60dp</dimen>
     <dimen name="loader_size">50dp</dimen>
+    <dimen name="nav_loader_size">25dp</dimen>
     <dimen name="ic_sort_size">30dp</dimen>
     <dimen name="botomBar_img_size">24dp</dimen>
+
+    <dimen name="logo_size">60dp</dimen>
 
     <dimen name="design_bottom_navigation_height" tools:override="true">24dp</dimen>
     <!--activity_main.xml-->
@@ -40,6 +43,8 @@
 
     <dimen name="nav_bar_icon">24dp</dimen>
     <dimen name="icon_history">32dp</dimen>
+
+    <dimen name="fab_size">32dp</dimen>
 
     <dimen name="text_super_ex_small">9sp</dimen>
     <dimen name="text_ex_small">11sp</dimen>
@@ -78,5 +83,10 @@
 
     <dimen name="ic_my_location">48dp</dimen>
 
+    <dimen name="padding_nav_header_top">48dp</dimen>
 
+    <dimen name="padding_toolbar">15dp</dimen>
+
+    <dimen name="nav_icon_size">28dp</dimen>
+    <dimen name="nav_header_logo">48dp</dimen>
 </resources>

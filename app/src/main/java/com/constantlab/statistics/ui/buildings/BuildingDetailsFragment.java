@@ -331,7 +331,7 @@ public class BuildingDetailsFragment extends BaseFragment {
 
         if (mSelectedLat == null || mSelectedLat.isNaN() || mSelectedLon == null || mSelectedLon.isNaN()) {
             if (proceed) {
-                Toast.makeText(getContext(), getString(R.string.message_location_required), Toast.LENGTH_SHORT).show();
+                showToast(getString(R.string.message_location_required));
             }
             proceed = false;
         }

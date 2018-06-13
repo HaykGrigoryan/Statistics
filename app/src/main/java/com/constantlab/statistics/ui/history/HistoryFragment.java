@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -115,6 +116,9 @@ public class HistoryFragment extends BaseFragment {
         rvHistory.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setSmoothScrollbarEnabled(true);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvHistory.getContext(),
+                llm.getOrientation());
+        rvHistory.addItemDecoration(dividerItemDecoration);
         rvHistory.setLayoutManager(llm);
         rvHistory.setAdapter(mHistoryAdapter);
     }

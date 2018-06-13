@@ -23,9 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:layout_toLeftOf="@id/iv_add"
+        android:layout_toLeftOf="@id/iv_add_dummy"
         android:layout_toRightOf="@+id/iv_back"
-        android:fontFamily="@font/opensansregular"
         android:singleLine="true"
         android:text="@string/title_street"
         android:textAlignment="center"
@@ -44,13 +43,14 @@
     <!--app:srcCompat="@drawable/ic_map_nav" />-->
 
     <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/iv_add"
+        android:id="@+id/iv_add_dummy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center_vertical|end"
         android:tint="@android:color/white"
+        android:visibility="invisible"
         app:srcCompat="@drawable/ic_add" />
 
 

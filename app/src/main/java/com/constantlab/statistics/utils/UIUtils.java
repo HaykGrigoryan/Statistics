@@ -1,6 +1,7 @@
 package com.constantlab.statistics.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -18,5 +19,14 @@ public class UIUtils {
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
         activity.getCurrentFocus().clearFocus();
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

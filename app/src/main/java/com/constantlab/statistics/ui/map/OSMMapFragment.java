@@ -19,8 +19,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,6 +39,7 @@ import com.constantlab.statistics.app.RealmManager;
 import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.GeoPolygon;
 import com.constantlab.statistics.models.History;
+import com.constantlab.statistics.ui.MainActivity;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.utils.ConstKeys;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
@@ -78,7 +81,7 @@ public class OSMMapFragment extends BaseFragment {
     TextView tvSelect;
 
     @BindView(R.id.icMyLocation)
-    View lMyLocation;
+    FloatingActionButton lMyLocation;
     private ItemizedIconOverlay mInitialIcon;
 
     private GeoPoint mCurrentLocation;
@@ -88,6 +91,8 @@ public class OSMMapFragment extends BaseFragment {
     private Toast mToast;
 
     GPSTracker gps;
+    @BindView(R.id.lMenu)
+    View mMenuIcon;
 
     public static OSMMapFragment newInstance(OSMMapFragment.MapAction action, Integer taskId) {
         OSMMapFragment fragment = new OSMMapFragment();
@@ -167,6 +172,14 @@ public class OSMMapFragment extends BaseFragment {
         if (mMapAction != OSMMapFragment.MapAction.PICK_LOCATION) {
             tvSelect.setVisibility(View.GONE);
         }
+
+
+        mMenuIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).getDrawer().openDrawer(Gravity.LEFT);
+            }
+        });
         BoundingBox boundingBox = new BoundingBox(55.50799, 87.35359, 40.53480, 46.42304);
         mMap.setClickable(true);
         mMap.setBuiltInZoomControls(true);
@@ -181,6 +194,7 @@ public class OSMMapFragment extends BaseFragment {
         ));
         mMap.setMinZoomLevel(1);
         mMap.setMaxZoomLevel(18);
+        mMenuIcon.setVisibility(View.INVISIBLE);
         mMap.addOnFirstLayoutListener(new MapView.OnFirstLayoutListener() {
             @Override
             public void onFirstLayout(View v, int left, int top, int right, int bottom) {
@@ -246,6 +260,7 @@ public class OSMMapFragment extends BaseFragment {
 //            drawPolygon(geoPoints);
 
         } else if (mMapAction == MapAction.VIEW) {
+            mMenuIcon.setVisibility(View.VISIBLE);
             ArrayList<OverlayItem> markers = new ArrayList<>();
             List<History> histories = RealmManager.getInstance().getUserAddedPoints(userId);
 //            List<Building> buildings = RealmManager.getInstance().getBuildingsWithPoints(userId);
@@ -276,7 +291,12 @@ public class OSMMapFragment extends BaseFragment {
                     }
                     mMap.invalidate();
                 } else {
-                    mToast.show();
+                    if (mMapAction == MapAction.VIEW) {
+                        ((MainActivity) getActivity()).showSnackMessage(getString(R.string.msg_waiting_location));
+                    } else {
+                        ((MapActivity) getActivity()).showSnackMessage(getString(R.string.msg_waiting_location));
+                    }
+//                    mToast.show();
                 }
             }
         });
@@ -359,7 +379,7 @@ public class OSMMapFragment extends BaseFragment {
             getActivity().setResult(Activity.RESULT_OK, intent);
             getActivity().finish();
         } else {
-            showToast(getString(R.string.select_location));
+            showSnackMessage(getString(R.string.select_location));
         }
     }
 

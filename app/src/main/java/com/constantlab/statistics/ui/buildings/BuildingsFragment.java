@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -148,6 +149,9 @@ public class BuildingsFragment extends BaseFragment implements BuildingRecyclerV
         rvBuildings.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setSmoothScrollbarEnabled(true);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvBuildings.getContext(),
+                llm.getOrientation());
+        rvBuildings.addItemDecoration(dividerItemDecoration);
         rvBuildings.setLayoutManager(llm);
         rvBuildings.setAdapter(mBuildingRecyclerViewAdapter);
     }

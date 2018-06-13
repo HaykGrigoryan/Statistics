@@ -24,7 +24,6 @@
             android:layout_marginEnd="@dimen/margin_medium"
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_toLeftOf="@+id/sort_order"
-            android:fontFamily="@font/opensansregular"
             android:hint="@string/hint_search"
             android:inputType="textNoSuggestions"
             android:padding="@dimen/padding_large"
@@ -66,5 +65,17 @@
         android:textSize="@dimen/text_medium_large"
         android:visibility="invisible"
         tools:visibility="visible" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/iv_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/margin_medium"
+        app:fabSize="normal"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_add" />
 
 </RelativeLayout>

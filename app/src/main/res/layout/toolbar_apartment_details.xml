@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:fontFamily="@font/opensansregular"
+        android:layout_marginLeft="@dimen/margin_ex_small"
         android:text="@string/title_add_apartment"
         android:textAlignment="center"
         android:textColor="@android:color/white"

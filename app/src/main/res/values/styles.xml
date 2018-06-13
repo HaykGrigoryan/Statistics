@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
     </style>
 
     <style name="BottomBarText" parent="@android:style/TextAppearance.Medium">
@@ -13,5 +15,15 @@
     </style>
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ThemeOverlay.AppCompat.navTheme">
+
+        <!--&lt;!&ndash; Color of text and icon when SELECTED &ndash;&gt;-->
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+
+        <!--&lt;!&ndash; Background color when SELECTED &ndash;&gt;-->
+        <!--<item name="colorControlHighlight">@color/text_secondary</item>-->
+
     </style>
 </resources>

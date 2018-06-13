@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimaryDark"
+    android:padding="@dimen/padding_large">
+
+    <RelativeLayout
+        android:id="@+id/lMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/iv_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_menu" />
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:fontFamily="@font/opensansregular"
-        android:padding="@dimen/padding_large"
         android:text="@string/title_tasks"
         android:textColor="@android:color/white"
         android:textSize="@dimen/toolbar_title"
-        android:titleTextAppearance="@style/Toolbar.TitleText"
-        />
+        android:titleTextAppearance="@style/Toolbar.TitleText" />
 
-</FrameLayout>
+</RelativeLayout>

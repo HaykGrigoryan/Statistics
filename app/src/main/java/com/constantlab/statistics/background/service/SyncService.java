@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ResultReceiver;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.constantlab.statistics.R;
 import com.constantlab.statistics.app.RealmManager;
+import com.constantlab.statistics.app.SyncManager;
 import com.constantlab.statistics.background.NotifReceiver;
 import com.constantlab.statistics.background.exception.FunctionalException;
 import com.constantlab.statistics.background.receivers.SyncResultReceiver;
@@ -31,25 +33,33 @@ import com.constantlab.statistics.models.BuildingStatus;
 import com.constantlab.statistics.models.BuildingType;
 import com.constantlab.statistics.models.ChangeType;
 import com.constantlab.statistics.models.GeoPolygon;
+import com.constantlab.statistics.models.History;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.StreetType;
 import com.constantlab.statistics.models.Task;
 import com.constantlab.statistics.models.User;
+import com.constantlab.statistics.models.send.TaskSend;
 import com.constantlab.statistics.network.Constants;
 import com.constantlab.statistics.network.RTService;
 import com.constantlab.statistics.network.ServiceGenerator;
 import com.constantlab.statistics.network.TaskRequest;
 import com.constantlab.statistics.network.model.ApartmentItem;
 import com.constantlab.statistics.network.model.BasicMultipleDataResponse;
+import com.constantlab.statistics.network.model.BasicSingleDataResponse;
 import com.constantlab.statistics.network.model.BuildingItem;
 import com.constantlab.statistics.network.model.GeoItem;
 import com.constantlab.statistics.network.model.GetReferenceRequest;
 import com.constantlab.statistics.network.model.StreetItem;
 import com.constantlab.statistics.network.model.TaskItem;
 import com.constantlab.statistics.ui.MainActivity;
+import com.constantlab.statistics.utils.DateUtils;
 import com.constantlab.statistics.utils.NotificationCenter;
 import com.constantlab.statistics.utils.SharedPreferencesManager;
+import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
@@ -65,7 +75,8 @@ import retrofit2.Response;
 
 public class SyncService extends IntentService {
     private enum Actions {
-        SYNC_FROM_SERVER
+        SYNC_FROM_SERVER,
+        SEND_TO_SERVER
     }
 
     private enum PARAM {
@@ -90,6 +101,8 @@ public class SyncService extends IntentService {
             final String action = intent.getAction();
             if (Actions.SYNC_FROM_SERVER.name().equals(action)) {
                 handleSync(resultReceiver);
+            } else if (Actions.SEND_TO_SERVER.name().equals(action)) {
+                handleSend(resultReceiver);
             }
         }
     }
@@ -107,8 +120,77 @@ public class SyncService extends IntentService {
         loadChangeTypes(resultReceiver);
     }
 
+    private void handleSend(ResultReceiver resultReceiver) {
+        rtService = ServiceGenerator.createService(RTService.class, SyncService.this, true);
+        User user = SharedPreferencesManager.getInstance().getUser(this);
+        List<History> histories = RealmManager.getInstance().getNotSyncedHistories(user.getUserId());
+        if (histories.size() != 0) {
+            List<TaskSend> dataForSend = SyncManager.construct(this, histories, user.getUserId());
+            try {
+                createChangesLog(new Gson().toJson(dataForSend));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            performSendHistory(dataForSend, resultReceiver, user);
+        } else {
+            handleSuccess(resultReceiver, getString(R.string.msg_no_changes));
+        }
+
+    }
+
+    private void performSendHistory(List<TaskSend> sendData, ResultReceiver resultReceiver, User mUser) {
+        try {
+            Call<BasicSingleDataResponse<String>> call = rtService.addChangesGzip(sendData);
+            Response<BasicSingleDataResponse<String>> response = call.execute();
+            if (response.code() == 200 && response.isSuccessful() && response.body().isSuccessNestedStatus()) {
+                RealmManager.getInstance().updateNotSyncHistories(mUser.getUserId());
+                User user = SharedPreferencesManager.getInstance().getUser(SyncService.this);
+                User realmUser = RealmManager.getInstance().getUser(user.getUsername(), user.getPassword());
+                realmUser.setLastSyncToServer(Calendar.getInstance().getTimeInMillis());
+                RealmManager.getInstance().saveUser(realmUser);
+                SharedPreferencesManager.getInstance().setUser(SyncService.this, realmUser);
+                if (response.body().getMessage() == null) {
+                    handleSuccess(resultReceiver, getString(R.string.message_success_sync_to_server));
+                } else {
+                    handleSuccess(resultReceiver, response.body().getMessage());
+                }
+
+            } else if (response.body() != null && response.body().getMessage() != null) {
+                handleError(resultReceiver, response.body().getMessage());
+            } else {
+                handleError(resultReceiver, getString(R.string.message_connection_problem));
+
+            }
+        } catch (IOException e) {
+            handleError(resultReceiver, getString(R.string.message_connection_problem));
+        }
+    }
+
+    private boolean createChangesLog(String changesJson) {
+        String logFileName = "change_" + SharedPreferencesManager.getInstance().getUser(this).getUsername() + "_" + DateUtils.getSyncDate(Calendar.getInstance().getTimeInMillis()) + ".json";
+        try {
+            File sdCard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdCard.getAbsolutePath() + "/" + "StatisticsLog");
+            dir.mkdirs();
+            File file = new File(dir, logFileName);
+
+            FileOutputStream fos = new FileOutputStream(file);
+//            FileOutputStream fos = getContext().openFileOutput(logFileName, Context.MODE_PRIVATE);
+            if (changesJson != null) {
+                fos.write(changesJson.getBytes());
+            }
+            fos.close();
+            return true;
+        } catch (FileNotFoundException fileNotFound) {
+            return false;
+        } catch (IOException ioException) {
+            return false;
+        }
+    }
+
     private void handleSuccess(ResultReceiver resultReceiver, String message) {
-        SharedPreferencesManager.getInstance().setSyncing(this, false);
+        SharedPreferencesManager.getInstance().setSyncing(this, -1);
         Bundle bundle = new Bundle();
         int code = SyncResultReceiver.RESULT_CODE_OK;
         bundle.putSerializable(SyncResultReceiver.PARAM_RESULT, true);
@@ -122,7 +204,7 @@ public class SyncService extends IntentService {
     }
 
     private void handleError(ResultReceiver resultReceiver, String message) {
-        SharedPreferencesManager.getInstance().setSyncing(this, false);
+        SharedPreferencesManager.getInstance().setSyncing(this, -1);
         Bundle bundle = new Bundle();
         int code = SyncResultReceiver.RESULT_CODE_ERROR;
         bundle.putSerializable(SyncResultReceiver.PARAM_EXCEPTION, new FunctionalException(message));
@@ -137,8 +219,7 @@ public class SyncService extends IntentService {
 
     @Override
     public void onDestroy() {
-//        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
-        SharedPreferencesManager.getInstance().setSyncing(this, false);
+        SharedPreferencesManager.getInstance().setSyncing(this, -1);
         super.onDestroy();
     }
 
@@ -147,14 +228,6 @@ public class SyncService extends IntentService {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-//    @Override
-//    public void onTaskRemoved(Intent rootIntent) {
-//        Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
-//        restartServiceIntent.setPackage(getPackageName());
-//        startService(restartServiceIntent);
-//        super.onTaskRemoved(rootIntent);
-//    }
 
     public void showNotification(Context context, String title, String body, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -186,11 +259,11 @@ public class SyncService extends IntentService {
         notificationManager.notify(notificationId, mBuilder.build());
     }
 
-    public static void startServiceToSync(Context context, SyncResultReceiver.ResultReceiverCallBack resultReceiverCallBack) {
+    public static void startServiceToSync(Context context, SyncResultReceiver.ResultReceiverCallBack resultReceiverCallBack, boolean isSync) {
         SyncResultReceiver bankResultReceiver = new SyncResultReceiver(new Handler(context.getMainLooper()));
         bankResultReceiver.setReceiver(resultReceiverCallBack);
         Intent intent = new Intent(context, SyncService.class);
-        intent.setAction(Actions.SYNC_FROM_SERVER.name());
+        intent.setAction(isSync ? Actions.SYNC_FROM_SERVER.name() : Actions.SEND_TO_SERVER.name());
         intent.putExtra(PARAM.RESULT_RECEIVER.name(), bankResultReceiver);
         context.startService(intent);
     }

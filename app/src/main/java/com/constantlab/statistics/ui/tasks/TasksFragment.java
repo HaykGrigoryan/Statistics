@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.constantlab.statistics.models.Building;
 import com.constantlab.statistics.models.GeoPolygon;
 import com.constantlab.statistics.models.Street;
 import com.constantlab.statistics.models.Task;
+import com.constantlab.statistics.ui.MainActivity;
 import com.constantlab.statistics.ui.base.BaseFragment;
 import com.constantlab.statistics.ui.buildings.BuildingActivity;
 import com.constantlab.statistics.ui.buildings.BuildingsFragment;
@@ -51,6 +54,9 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
     TextView tvNoTasks;
     private TasksAdapter mTaskAdapter;
 
+    @BindView(R.id.lMenu)
+    View mMenuIcon;
+
     public static TasksFragment newInstance() {
         return new TasksFragment();
     }
@@ -73,6 +79,17 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
 //            showDummyData();
 //        }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mMenuIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).getDrawer().openDrawer(Gravity.LEFT);
+            }
+        });
     }
 
     private void refreshData() {
@@ -106,18 +123,31 @@ public class TasksFragment extends BaseFragment implements TasksAdapter.Interact
         rvTasks.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setSmoothScrollbarEnabled(true);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvTasks.getContext(),
+                llm.getOrientation());
+        rvTasks.addItemDecoration(dividerItemDecoration);
         rvTasks.setLayoutManager(llm);
         rvTasks.setAdapter(mTaskAdapter);
     }
 
     @Override
     public void onTaskSelected(Task task, int position) {
-        NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getTaskId(), task.getDisplayName()));//Actions.VIEW_BUILDINGS
+        int sync = SharedPreferencesManager.getInstance().isSyncing(getContext());
+        if (sync == 0) {
+            showSnackMessage(getString(R.string.message_sync_in_progress));
+        } else {
+            NotificationCenter.getInstance().notifyOpenPage(StreetFragment.newInstance(task.getTaskId(), task.getDisplayName()));//Actions.VIEW_BUILDINGS
+        }
     }
 
     @Override
     public void onTaskHistory(Task task, int position) {
-        NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getTaskId(), task.getDisplayName()));//Actions.VIEW_BUILDINGS
+        int sync = SharedPreferencesManager.getInstance().isSyncing(getContext());
+        if (sync == 0) {
+            showSnackMessage(getString(R.string.message_sync_in_progress));
+        } else {
+            NotificationCenter.getInstance().notifyOpenPage(HistoryFragment.newInstance(task.getTaskId(), task.getDisplayName()));//Actions.VIEW_BUILDINGS
+        }
     }
 
     @Override

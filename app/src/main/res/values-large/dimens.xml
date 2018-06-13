@@ -18,8 +18,12 @@
     <!--activity_main.xml-->
     <dimen name="bottomBar_height">120dp</dimen>
     <dimen name="loader_size">100dp</dimen>
+    <dimen name="nav_loader_size">50dp</dimen>
+
     <dimen name="ic_sort_size">60dp</dimen>
     <dimen name="botomBar_img_size">48dp</dimen>
+
+    <dimen name="logo_size">120dp</dimen>
     <!--activity_main.xml-->
 
     <dimen name="toolbar_title">36sp</dimen>
@@ -38,6 +42,7 @@
     <dimen name="nav_bar_icon">48dp</dimen>
     <dimen name="icon_history">72dp</dimen>
 
+    <dimen name="fab_size">72dp</dimen>
     <dimen name="text_super_ex_small">18sp</dimen>
     <dimen name="text_ex_small">24sp</dimen>
     <dimen name="text_small">28sp</dimen>
@@ -58,4 +63,6 @@
     <dimen name="hint_lines_large">16</dimen>
 
     <dimen name="ic_my_location">72dp</dimen>
+
+    <dimen name="nav_header_logo">72dp</dimen>
 </resources>

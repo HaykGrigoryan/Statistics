@@ -12,7 +12,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 //        multiDexEnabled true
         resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
-
+        vectorDrawables.useSupportLibrary = true
 //        ndk {
 //            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
 //        }
